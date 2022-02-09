@@ -1,0 +1,4 @@
+int
+float
+main
+return
