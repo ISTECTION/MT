@@ -1,6 +1,7 @@
 #include "argparse/argparse.hpp"
 
 #include "const_table.hpp"
+#include "var_table.hpp"
 
 #include <filesystem>
 #include <iostream>
@@ -31,7 +32,8 @@ int main(int argc, const char* argv[]) {
         const std::filesystem::path keywords = "file/keywords.txt";
 
         const_table<std::string> keywords_table(keywords);
-        std::cout << keywords_table.get_num("return") << std::endl;
+
+
 
     } catch(const std::runtime_error& err) {
         constexpr size_t args_no_received = 2;

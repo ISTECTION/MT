@@ -11,6 +11,8 @@ set(SOURCES
 set(HEADERS
     include/argparse/argparse.hpp
     include/const_table.hpp
+    include/var_table.hpp
+    include/lexeme.hpp
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS})
