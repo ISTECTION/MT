@@ -4,7 +4,8 @@
             "name": "Win32",
             "cppStandard": "c++17",
             "includePath": [
-                "${workspaceFolder}/include"
+                "${workspaceFolder}/include",
+                "D:\\MEGA\\NSTU\\CODE\\C++\\Include\\googletest\\googletest\\include"
             ]
         }
     ],

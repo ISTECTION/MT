@@ -33,8 +33,6 @@ int main(int argc, const char* argv[]) {
 
         const_table<std::string> keywords_table(keywords);
 
-
-
     } catch(const std::runtime_error& err) {
         constexpr size_t args_no_received = 2;
         std::cerr << err.what() << std::endl;
