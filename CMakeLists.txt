@@ -22,6 +22,7 @@ target_include_directories(
     ${PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
+# -DGTEST_COMPILE=ON
 if(GTEST_COMPILE)
     message("GTEST_COMPILE=ON")
     add_subdirectory(googletest)
