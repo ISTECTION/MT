@@ -8,6 +8,12 @@
 #include <optional>
 #include <string>
 
+namespace Path_Const_Table {
+    const std::filesystem::path
+        keywords  = "file/keywords.txt",
+        operation = "file/operation.txt";
+}
+
 int main(int argc, const char* argv[]) {
     std::ios_base::sync_with_stdio(false);
 
@@ -29,9 +35,12 @@ int main(int argc, const char* argv[]) {
                   ? _prs.get<std::string>("-o")
                   : _inp.parent_path() / "output.txt";
 
-        const std::filesystem::path keywords = "file/keywords.txt";
+        const_table<std::string>
+            keywords_table (Path_Const_Table::keywords),
+            operation_table(Path_Const_Table::operation);
 
-        const_table<std::string> keywords_table(keywords);
+        std::cout << operation_table.contains("==") << std::endl;
+
 
     } catch(const std::runtime_error& err) {
         constexpr size_t args_no_received = 2;
