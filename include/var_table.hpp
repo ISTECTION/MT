@@ -24,7 +24,7 @@ public:
     bool add(const std::string& name);
 
     bool contains(const std::string& name) const;
-    int  find(const std::string& name) const;
+    int  find_in_table(const std::string& name) const;
 
     bool set_type (const std::string& name, size_t type);
     bool set_value(const std::string& name, bool value);
@@ -49,12 +49,12 @@ bool var_table::add(const std::string& name) {
 }
 
 bool var_table::contains(const std::string& name) const {
-    return find(name) < 0
+    return find_in_table(name) < 0
         ? false
         : true;
 }
 
-int var_table::find(const std::string& name) const {
+int var_table::find_in_table(const std::string& name) const {
     size_t hash = get_hash(name);
     lexeme find_t(name);
     using _Iter = std::vector<lexeme>::const_iterator;
@@ -71,7 +71,7 @@ bool var_table::set_type(const std::string& name, size_t type) {
     if (contains(name)) {
         size_t hash = get_hash(name);
 
-        int _pos = find(name);
+        int _pos = find_in_table(name);
         table[hash][_pos].set_type(type);
 
         return true;
@@ -84,7 +84,7 @@ bool var_table::set_value(const std::string& name, bool value) {
     if (contains(name)) {
         size_t hash = get_hash(name);
 
-        int _pos = find(name);
+        int _pos = find_in_table(name);
         table[hash][_pos].set_value(value);
 
         return true;
