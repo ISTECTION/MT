@@ -6,6 +6,13 @@
 #include <filesystem>
 #include <string>
 
+
+TEST(Lexeme, operator) {
+
+    lexeme _l("FIO");
+    ASSERT_EQ(_l == lexeme("FIO"), true);
+}
+
 TEST(ConstTable, readFile) {
 
     using ::std::filesystem::path;
