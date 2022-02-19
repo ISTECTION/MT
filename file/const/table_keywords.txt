@@ -1,4 +1,4 @@
-float
 int
+char
 main
 return

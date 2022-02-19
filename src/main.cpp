@@ -1,18 +1,13 @@
 #include "argparse/argparse.hpp"
 
-#include "const_table.hpp"
-#include "var_table.hpp"
+#include "translator.hpp"
 
 #include <filesystem>
 #include <iostream>
 #include <optional>
+#include <fstream>
+#include <sstream>
 #include <string>
-
-namespace Path_Const_Table {
-    const std::filesystem::path
-        keywords  = "file/keywords.txt",
-        operation = "file/operation.txt";
-}
 
 int main(int argc, const char* argv[]) {
     std::ios_base::sync_with_stdio(false);
@@ -22,25 +17,57 @@ int main(int argc, const char* argv[]) {
         .help( "path to input files" )
         .required();
 
-    _prs.add_argument("-o", "--output")
-        .help( "path to output files" );
-
     try {
         using ::std::filesystem::path;
         _prs.parse_args(argc, argv);
 
-        std::optional _opt = _prs.present("-o");
         path _inp = _prs.get<std::string>("-i");
-        path _out = _opt.has_value()
-                  ? _prs.get<std::string>("-o")
-                  : _inp.parent_path() / "output.txt";
 
-        const_table<std::string>
-            keywords_table (Path_Const_Table::keywords),
-            operation_table(Path_Const_Table::operation);
+        const_table<std::string> keywords(Path_Const_Table::keywords);
+        std::cout << "contains (int): " << keywords.contains("int") << '\n';
+        int i1 = keywords.get_num("int");
 
-        std::cout << operation_table.contains("==") << std::endl;
+        std::cout << "get_num (int): " << i1 << '\n';
+        std::cout << "get_elem "
+            << i1 << ": "
+            << keywords.get_elem(i1).has_value() << '\n';
 
+        std::cout << "get_elem "
+            << 8 << ": "
+            << keywords.get_elem(8).has_value() << '\n';
+
+        std::ofstream fout("table1.txt");
+        fout << keywords;
+        fout.close();
+
+        var_table var_tab;
+        std::optional<place> pl = var_tab.add("name");
+        if (pl != std::nullopt)
+            std::cout << "place (\"name\"): "     << pl.value();
+
+        pl = var_tab.add("position");
+        if (pl != std::nullopt)
+            std::cout << "place (\"position\"): " << pl.value();
+
+        std::cout
+            << "get_hash (\"position\"): "
+            << var_tab.get_hash("position") << '\n';
+
+        std::optional<place> pl0 = var_tab.add("a");
+        std::optional<place> pl1 = var_tab.add("b");
+        std::optional<place> pl2 = var_tab.add("lenght");
+        std::optional<place> pl3 = var_tab.add("width");
+
+        var_tab.set_type(pl0.value(), TYPE::CHAR);
+        var_tab.set_type(pl1.value(), TYPE::CHAR);
+        var_tab.set_type(pl3.value(), TYPE::INT);
+
+        var_tab.set_value(pl2.value(), true);
+        var_tab.set_value(pl3.value(), true);
+
+        fout.open("table.txt");
+        fout << var_tab;
+        fout.close();
 
     } catch(const std::runtime_error& err) {
         constexpr size_t args_no_received = 2;
@@ -48,6 +75,5 @@ int main(int argc, const char* argv[]) {
         std::cerr <<    _prs    << std::endl;
         std::exit(args_no_received);
     }
-
     return 0;
 }
