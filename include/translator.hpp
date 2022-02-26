@@ -8,21 +8,25 @@
 #include <filesystem>
 #include <sstream>
 #include <fstream>
+#include <cassert>
 #include <string>
-#include <cctype>               /// для функции isalpha
+#include <cctype>               /// Для функции isalpha и isalnum
+
+
+using _Iter_buf = ::std::istreambuf_iterator<char>;
 
 
 class translator
 {
 private:
     /// Постоянные таблицы
-    const_table<std::string> operations;    /// 0
-    const_table<std::string> keywords;      /// 1
-    const_table<char> separators;           /// 2
+    const_table<std::string> operations;    /// 1
+    const_table<std::string> keywords;      /// 2
+    const_table<char> separators;           /// 3
 
     /// Переменные таблицы
-    var_table identifiers;                  /// 3
-    var_table constants;                    /// 4
+    var_table identifiers;                  /// 4
+    var_table constants;                    /// 5
 
     std::ostringstream nocomment_code;
 
@@ -31,115 +35,191 @@ private:
 
 public:
     explicit translator(const std::filesystem::path& _src_path)
-        : keywords(Path_Const_Table::keywords),
-          operations(Path_Const_Table::operations),
+        : operations(Path_Const_Table::operations),
+          keywords(Path_Const_Table::keywords),
           separators(Path_Const_Table::separators),
           _directory(_src_path.parent_path()) {
 
-        bool _is = analyse(_src_path);
-        // if (_is == true)
-        //     std::cout
-        //         << "Generate files: "
-        //         <<  _src_path.parent_path() / "token.txt"
-        //         << '\n';
-        // else
-        //     std::cout
-        //         << "Erorr file: "
-        //         << _src_path.parent_path() / "error.txt"
-        //         << '\n';
+        auto print_error =
+            [](std::string_view filename) -> bool {
+                std::cout
+                    << "file not open: "
+                    << filename << '\n';
+                return false; };
+
+        std::ifstream fin(_src_path);
+        fin.is_open()
+            ? analyse(fin)
+            : assert(print_error(_src_path.stem().string()));
     }
 
 private:
-    bool analyse(const std::filesystem::path& );
+    void analyse(std::ifstream& );
 
+    /// Очистка от комментариев
+    std::optional<_ERROR> decomment(std::istreambuf_iterator<char>& );
 };
 
-bool translator::analyse(const std::filesystem::path& src_path) {
+std::optional<_ERROR>
+translator::decomment (std::istreambuf_iterator<char>& iit) {
+    using _eos_buf = ::std::istreambuf_iterator<char>;
 
-    std::ifstream fin_source(src_path);
-    if (fin_source.is_open()) {
-        std::ostringstream os_token, os_error;
+    if (*iit != '/') return std::nullopt;
+    if (++iit == _eos_buf())
+        return std::optional { _ERROR::EOF_FILE };
 
-        using _Iter_buf =
-            std::istreambuf_iterator<char>;
+    if (*iit == '/')
+        do {
+            if (++iit == _eos_buf())
+                return std::nullopt;
+        } while (*iit != '\n');
+    else if (*iit == '*') {
+        char _preview,      /// Предыдущий символ
+             _current;      /// Текущий    символ
+        do {
+            _preview = *(++iit);
+            if (iit == _eos_buf())
+                return std::optional { _ERROR::UNCLOSED_COMMENT };
 
-        _Iter_buf eos, iit(fin_source);
+            if (*iit == '*') {
+                _current = *(++iit);
 
-        while (iit != eos) {
-
-            /// Если символ является буквой
-            if (std::isalpha(*iit)) {
-                std::ostringstream _str;
-
-                do {
-                    nocomment_code << *iit;         /// Сохраняем код без комментариев
-                    _str           << *iit;         /// Текущее слово
-
-                    ++iit;
-                    if (iit == eos)
-                        return read_error_in_stream(
-                                os_error, _ERROR::UNEXPECTED_SYMBOL);
-
-                } while (std::isalpha(*iit));
-
-                int _flag = keywords.get_num(_str.str());
-                if (_flag != -1) {
-
-                    // std::cout << _str.str() << " : " << _flag << '\n';
-                    os_token << token(1, _flag, -1);
-
-                } else {
-
-
-                }
+                if (iit == _eos_buf())
+                    return std::optional { _ERROR::UNCLOSED_COMMENT };
             }
+        } while (_preview != '*' || _current != '/');
+        /// После выхода из цикла итератор указывает на /
+        ++iit;  /// Поэтому переходим на следующий символ
+    } else
+        return std::optional { _ERROR::UNEXPECTED_SYMBOL };
 
-            if (*iit == '/') {  /// Processing comments
-                ++iit;
+    return std::nullopt;
+}
 
-                if (iit == eos)
-                    return read_error_in_stream(
-                            os_error, _ERROR::UNEXPECTED_SYMBOL);
+void translator::analyse (std::ifstream& _ifstream) {
+    std::ostringstream os_token, os_error;
 
-                if (*iit == '/')
-                    do { ++iit; } while (*iit != '\n'); /// Возможно тут понадобится iit != oes
-                else if (*iit == '*') {
+    _Iter_buf eos, iit(_ifstream);
+    while (iit != eos) {
 
-                    char _preview,      /// Предыдущий символ
-                         _current;      /// Текущий символ
+        std::optional<_ERROR> err_deccoment = decomment(iit);
+        if (err_deccoment != std::nullopt)
+            read_error_in_stream(os_error, err_deccoment.value());
 
-                    do {
-                        _preview = *(++iit);
-                        if (iit == eos)
-                            return read_error_in_stream(
-                                    os_error, _ERROR::UNCLOSED_COMMENT);
 
-                        if (*iit == '*') {
-                            _current = *(++iit);
 
-                            if (iit == eos)
-                                return read_error_in_stream(
-                                        os_error, _ERROR::UNCLOSED_COMMENT);
-                        }
-                    } while (_preview != '*' || _current != '/');
-                } else
-                     return read_error_in_stream(
-                            os_error, _ERROR::UNEXPECTED_SYMBOL);
-            } /// Processing comments
+        while (*iit == '\n' || *iit == '\t' || *iit == ' ') ++iit;
 
-            ++iit;
-        }
-        std::cout << os_token.str() << std::endl;
 
-        return true;
+        std::cout << *iit;
 
-    } else {
-        std::cerr
-            << "file not open: "
-            << src_path.string().c_str() << '\n';
-
-        return false;
+        // ++iit;
     }
+    std::cout << os_token.str() << std::endl;
+    std::cout << os_error.str() << std::endl;
+
+    // while (iit != eos) {
+
+    //     std::cout << *iit;
+
+
+    //     ++iit;
+    // }
+
+
+    //     while (iit != eos) {
+
+    //         /// Если символ является буквой или '_'
+    //         if (std::isalpha(*iit) || *iit == '_') {
+    //             std::ostringstream _str;
+    //             do {
+    //                 nocomment_code << *iit;         /// Сохраняем код без комментариев
+    //                 _str           << *iit;         /// Текущее слово
+
+    //                 if (++iit == eos) return read_error_in_stream(
+    //                         os_error, _ERROR::EOF_FILE);
+    //             } while (std::isalnum(*iit) || *iit == '_');
+
+    //             int _flag = keywords.get_num(_str.str());
+    //             if (_flag != -1)
+    //                 os_token
+    //                     << token(TABLE::KEYWORDS, _flag, -1);
+    //             else {
+    //                 std::optional<place> pl =
+    //                     identifiers.find_in_table(_str.str());
+
+    //                 if (pl == std::nullopt)
+    //                     pl = identifiers.add(_str.str());
+
+    //                 using Pos = ::place::Pos;
+    //                 place pl_value = pl.value();
+    //                 os_token
+    //                     <<  token(TABLE::IDENTIFIERS,
+    //                         pl_value(Pos::ROW    ),
+    //                         pl_value(Pos::COLLUMN));
+    //             }
+    //         } else if (separators.contains(*iit)) {
+    //             nocomment_code << *iit;
+
+    //             int flag = separators.get_num(*iit);
+    //             if (flag != -1)
+    //                 os_token << token(TABLE::SEPARATORS, flag, -1);
+
+    //             ++iit;
+    //         }
+    //         else if (*iit == '/') {  /// Processing comments
+    //             ++iit;
+
+    //             if (iit == eos)
+    //                 return read_error_in_stream(
+    //                         os_error, _ERROR::UNEXPECTED_SYMBOL);
+
+    //             if (*iit == '/')
+    //                 do { ++iit; } while (*iit != '\n'); /// Возможно тут понадобится iit != oes
+    //             else if (*iit == '*') {
+
+    //                 char _preview,      /// Предыдущий символ
+    //                      _current;      /// Текущий символ
+
+    //                 do {
+    //                     _preview = *(++iit);
+    //                     if (iit == eos)
+    //                         return read_error_in_stream(
+    //                                 os_error, _ERROR::UNCLOSED_COMMENT);
+
+    //                     if (*iit == '*') {
+    //                         _current = *(++iit);
+
+    //                         if (iit == eos)
+    //                             return read_error_in_stream(
+    //                                     os_error, _ERROR::UNCLOSED_COMMENT);
+    //                     }
+    //                 } while (_preview != '*' || _current != '/');
+    //             } else
+    //                  return read_error_in_stream(
+    //                         os_error, _ERROR::UNEXPECTED_SYMBOL);
+    //         } /// Processing comments
+
+    //         while (*iit == '\n' || *iit == '\t' || *iit == ' ') ++iit;
+
+    //         ++iit;
+    //     }
+    //     std::cout << os_token.str() << std::endl;
+    //     std::cout << os_error.str() << std::endl;
+
+    //     std::cout << identifiers;
+    //     std::cout << keywords;
+
+
+    //     return true;
+
+    // } else {
+    //     std::cerr
+    //         << "file not open: "
+    //         << src_path.string().c_str() << '\n';
+
+    //     return false;
+    // }
 }
 
 #endif /// _TRANSLATOR_HPP

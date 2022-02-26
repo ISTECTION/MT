@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.14 FATAL_ERROR)
 
-project(MT VERSION 1.0 LANGUAGES CXX)
+project(mt VERSION 1.0 LANGUAGES CXX)
 
 set(EXECUTABLE_OUTPUT_PATH "bin")
 set(SOURCES src/main.cpp)
@@ -26,16 +26,27 @@ target_include_directories(
     ${PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
+if(MSVC)
+    target_compile_options(${PROJECT_NAME} PRIVATE /W4 /WX)
+else()
+    target_compile_options(${PROJECT_NAME} PRIVATE
+        # -Wall
+        # -Wextra
+        # -pedantic
+        # -Werror
+        )
+endif()
+
 # Путь до рабочего каталога
 set(WORKING_PATH ${CMAKE_CURRENT_SOURCE_DIR})
 
 # Установка рабочего каталога для VS
-# Назначение проекта в качестве запускаемовго
 set_target_properties(${PROJECT_NAME} PROPERTIES
-    VS_DEBUGGER_WORKING_DIRECTORY ${WORKING_PATH})
+VS_DEBUGGER_WORKING_DIRECTORY ${WORKING_PATH})
 
 # Попробовать это переделать
 # set_property - старая функция CMake < 3.6
+# Назначение проекта в качестве запускаемовго
 set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT MT)
 
 # -DGTEST_COMPILE=ON

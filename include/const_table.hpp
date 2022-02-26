@@ -30,11 +30,13 @@ private:
 public:
     explicit const_table (const std::filesystem::path& _path) {
         std::ifstream fin(_path);
-        if (fin.is_open()) read_file(fin);
-        else std::cerr
-            << "file not open: "
-            << _path.string().c_str()
-            << '\n';
+        bool is_open = read_file(fin);
+
+        if (is_open == false)
+            std::cerr
+                << "file not open: "
+                << _path.string().c_str()
+                << '\n';
     }
 
     /**
@@ -43,7 +45,8 @@ public:
      * @param elem Элемент для поиска
      * @return int Индекс элемента (-1 если элемент не был найден)
      */
-    int  get_num  (_Type elem) const;
+    int get_num (_Type elem) const;
+
     /**
      * @brief Проверка существования элемента
      *
@@ -73,22 +76,24 @@ public:
      * @param elem Элемент для поиска
      * @return int Индекс элемента (-1 если элемент не был найден)
      */
-    int  operator[] (_Type elem) const noexcept;
+    int operator[] (_Type elem) const noexcept;
 
     /**
      * @brief Возвращает константный итератор на начало таблицы
      */
     typename std::set<_Type>::const_iterator begin () const;
+
     /**
      * @brief Возвращает константный итератор на конец таблицы
      */
     typename std::set<_Type>::const_iterator end () const;
 
 private:
+
     /**
      * @brief Функция чтения файла
      */
-    void read_file (std::ifstream& );
+    bool read_file (std::ifstream& );
 
     /**
      * @brief Добавляет элемент в таблицу
@@ -113,7 +118,7 @@ bool const_table<_Type>::contains (_Type elem) const {
     _Iter it = table.find(elem);
     return it == table.end()
         ? false
-        : true;
+        : true ;
 }
 
 template <typename _Type>
@@ -128,21 +133,20 @@ int const_table<_Type>::get_num (_Type elem) const {
 template <typename _Type>
 std::optional<_Type> const_table<_Type>::get_elem (size_t num) const {
     using _Iter = typename std::set<_Type>::iterator;
-    _Iter it = table.begin();
-    std::advance(it, num);
-
-    return num >= table.size()
-        ? std::nullopt
-        : std::optional { *it } ;
+    if (num < table.size()) {
+        _Iter it = table.begin();
+        std::advance(it, num);
+        return std::optional { *it };
+    } else
+        return std::nullopt;
 }
 
 template <typename _Type>
-void const_table<_Type>::read_file (std::ifstream& istream) {
-    _Type elem;
-    while (!istream.eof()) {
-        istream >> elem;
-        add(elem);
-    }
+bool const_table<_Type>::read_file (std::ifstream& _istream) {
+    auto read = [this](std::ifstream& _istream) -> bool {
+        for (_Type elem; _istream >> elem; add(elem));
+        return true; };
+    return _istream.is_open() ? read(_istream) : false;
 }
 
 template <typename _Type>
@@ -161,7 +165,6 @@ std::ostream& operator<< (std::ostream& out, const const_table<V>& _tbl) {
 
     tabulate::Table movies;
     _Iter it = _tbl.begin();
-
     for (size_t pos = 0; it != _tbl.end(); pos++) {
         movies.add_row({
                 std::to_string(pos),

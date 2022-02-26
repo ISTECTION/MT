@@ -51,7 +51,7 @@ public:
      * @param plc  Класс хранящий позицию лексемы
      * @param type Значение типа
      */
-    void set_type  (const place& plc, TYPE type );
+    var_table& set_type  (const place& plc, TYPE type );
 
     /**
      * @brief Устанавить значение объекту
@@ -59,7 +59,7 @@ public:
      * @param plc   Класс хранящий позицию лексемы
      * @param value Принимает true, если значение было инициализировано
      */
-    void set_value (const place& plc, bool value);
+    var_table& set_value (const place& plc, bool value);
 
     /**
      * @brief Получить лексему
@@ -97,13 +97,13 @@ public:
     /**
      * @brief Получить размерность строки таблицы
      *
-     * @param row     Индекс строки
-     * @return size_t Размерность таблицы
+     * @param row  Индекс строки
+     * @return int Размерность таблицы
      */
-    inline size_t get_size_row (size_t row) const {
+    inline int get_size_row (size_t row) const {
         return row < table.size()
             ? table[row].size()
-            : 0 ; }
+            : -1 ; }
 
     /**
      * @brief Выводит таблицу в поток
@@ -120,13 +120,9 @@ bool var_table::contains (const std::string& name) const {
 std::optional<lexeme> var_table::get_lexeme (const place& _place) const {
     size_t i = _place(place::Pos::ROW);
     size_t j = _place(place::Pos::COLLUMN);
-
-    if (i >= get_size_table())
-        return std::nullopt;
-    else if (get_size_row(i))
-        return std::optional { table[i][j] };
-    else
-        return std::nullopt;
+    return static_cast<int>(j) < get_size_row(i)
+        ? std::optional { table[i][j] }
+        : std::nullopt ;
 }
 
 std::optional<place> var_table::add (const std::string& name) {
@@ -152,22 +148,22 @@ std::optional<place> var_table::find_in_table (const std::string& name) const {
     return it == table[hash].end()
             ? std::nullopt
             : std::optional {
-                place(
-                    hash,
-                    std::distance(table[hash].begin(), it)) };
+                place(hash,std::distance(table[hash].begin(), it)) };
 }
 
 inline size_t var_table::get_hash (const std::string& name) const {
     return std::hash<std::string>{ }(name) % get_size_table(); }
 
-void var_table::set_type (const place& plc, TYPE type) {
+var_table& var_table::set_type (const place& plc, TYPE type) {
     using Pos = ::place::Pos;
     table[plc(Pos::ROW)][plc(Pos::COLLUMN)].set_type(type);
+    return *this;
 }
 
-void var_table::set_value (const place& plc, bool value) {
+var_table& var_table::set_value (const place& plc, bool value) {
     using Pos = ::place::Pos;
     table[plc(Pos::ROW)][plc(Pos::COLLUMN)].set_value(value);
+    return *this;
 }
 
 std::vector<std::vector<lexeme>>::const_iterator var_table::begin () const {

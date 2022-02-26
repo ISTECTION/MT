@@ -108,4 +108,18 @@ TEST(VarTable, set_value) {
     ASSERT_EQ(lex.value().get_init(), true);
 }
 
+TEST(VarTable, set_value_type) {
+
+    var_table _tbl;
+    std::optional<place> _opt1 = _tbl.add("a");
+
+    _tbl.set_type(_opt1.value(), TYPE::INT)
+        .set_value(_opt1.value(), true);
+
+    std::optional<lexeme> lex = _tbl.get_lexeme(_opt1.value());
+    ASSERT_EQ(lex.value().get_name(), "a");
+    ASSERT_EQ(lex.value().get_type(), TYPE::INT);
+    ASSERT_EQ(lex.value().get_init(), true);
+}
+
 /// ~~~~~ VAR_TABLE ~~~~~ ///
