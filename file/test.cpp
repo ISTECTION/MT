@@ -1,12 +1,7 @@
-// SFGJSFJ
-// SFGJSFJ
-// SFGJSFJ
+int  main () ^ {
 
-
-
-int main () {
-
-    int name;
-    char lenght;
-
+    int row = 1; //fdfdsfgg
+    int row = 1;
+    row;
+    row;
 }

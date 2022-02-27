@@ -52,7 +52,7 @@ public:
 
         auto print_error =
             [](std::string_view filename) -> bool {
-                std::cout
+                std::cerr
                     << "file not open: "
                     << filename << '\n';
                 return false; };
@@ -60,7 +60,7 @@ public:
         std::ifstream fin(_src_path);
         fin.is_open()
             ? analyse(fin)
-            : assert(print_error(_src_path.stem().string()));
+            : assert(print_error(_src_path.filename().string()));
     }
 
 private:
@@ -68,7 +68,7 @@ private:
     void analyse(std::ifstream& );
 
     /// Очистка от комментариев
-    std::optional<_ERROR> decomment (std::istreambuf_iterator<char>& ) const;
+    std::optional<_ERROR> decomment (std::istreambuf_iterator<char>& );
     std::optional<_ERROR> lexical (std::istreambuf_iterator<char>& );
 
     /// РГЗ : Вариант 7
@@ -97,9 +97,13 @@ translator::balanced (std::istreambuf_iterator<char>& iit) {
     return std::nullopt;
 }
 
+void translator::skip_spaces (std::istreambuf_iterator<char>& iit) {
+    for (; *iit == '\n' || *iit == '\t' || *iit == ' '; ++iit)
+        nocomment_code << *iit;
+}
 
 std::optional<_ERROR>
-translator::decomment (std::istreambuf_iterator<char>& iit) const {
+translator::decomment (std::istreambuf_iterator<char>& iit) {
     using _eos_buf = ::std::istreambuf_iterator<char>;
 
     if (*iit != '/') return std::nullopt;
@@ -130,6 +134,7 @@ translator::decomment (std::istreambuf_iterator<char>& iit) const {
         ++iit;  /// Поэтому переходим на следующий символ
     } else
         return std::optional { _ERROR::UNEXPECTED_SYMBOL };
+
     return std::nullopt;
 }
 
@@ -207,22 +212,30 @@ translator::lexical (std::istreambuf_iterator<char>& iit) {
             return err_bracket;
     }
     /// END: Если символ является разделителем
+    /// BEGIN: Если символ недопустим
+    else {
+        std::cout << "fds";
+        ++iit;
+        return std::optional { _ERROR::UNEXPECTED_SYMBOL };
+    }
+    /// END: Если символ недопустим
 
     return std::nullopt;
 }
 
-void translator::skip_spaces (std::istreambuf_iterator<char>& iit) {
-    for (; *iit == '\n' || *iit == '\t' || *iit == ' '; ++iit)
-        nocomment_code << *iit;
-}
 
 void translator::analyse (std::ifstream& _ifstream) {
-
     _Iter_buf eos, iit(_ifstream);
+
     while (iit != eos) {
+
+        skip_spaces(iit);
+
         std::optional<_ERROR> err_deccoment = decomment(iit);
         if (err_deccoment != std::nullopt)
             read_error_in_stream(os_error, err_deccoment.value());
+
+        skip_spaces(iit);
 
         std::optional<_ERROR> err_lexical = lexical(iit);
         if (err_lexical != std::nullopt)
@@ -233,7 +246,6 @@ void translator::analyse (std::ifstream& _ifstream) {
 
     if (_bracket.size() != 0)
         read_error_in_stream(os_error, _ERROR::BRACKET_MISTAKE);
-
 
     std::cout << trim(nocomment_code) << std::endl;
     std::cout << "token: \n" << os_token.str() << std::endl;
