@@ -1,7 +1,6 @@
 #ifndef _PLACE_HPP
 #define _PLACE_HPP
 
-
 /**
  * @brief Класс для хранения позиции элемента в двумерном массиве
  */
@@ -38,14 +37,10 @@ public:
 };
 
 size_t place::operator() (Pos _pos) const noexcept {
-    return _pos == Pos::ROW
-        ? i
-        : j ;
-}
+    return _pos == Pos::ROW ? i : j ; }
 
 std::ostream& operator<< (std::ostream& out, const place& _plc) {
     return out
             << _plc(place::Pos::ROW)     << ' '
-            << _plc(place::Pos::COLLUMN) << '\n';
-}
+            << _plc(place::Pos::COLLUMN) << '\n'; }
 #endif /// _PLACE_HPP

@@ -4,7 +4,11 @@
 enum class _ERROR {
     UNEXPECTED_SYMBOL,      ///< Неожиданный символ
     EOF_FILE,               ///< Неожиданный конец файла
-    UNCLOSED_COMMENT        ///< Незакрытый комментарий
+    UNCLOSED_COMMENT,       ///< Незакрытый комментарий
+
+
+
+    BRACKET_MISTAKE         ///< Неравное количество закрывающихся-открывающихся скобок
 };
 
 
@@ -25,9 +29,15 @@ void read_error_in_stream (_Stream& _stream, _ERROR _error_code) {
         break;
 
 
-    default:
+    case _ERROR::BRACKET_MISTAKE:
+        _stream << "incorrect use of brackets" << '\n';
         break;
+
+    /// --------------- DEFAULT --------------- ///
+    default:
+        _stream << "unidentified error" << '\n';
     }
+
 }
 
 #endif /// _ERROR_HPP

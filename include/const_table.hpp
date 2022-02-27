@@ -2,6 +2,7 @@
 #define _CONST_TABLE_HPP
 #include "tabulate/tabulate.hpp"
 
+#include <type_traits>
 #include <filesystem>
 #include <iostream>
 #include <optional>
@@ -12,7 +13,7 @@
 namespace Path_Const_Table {
     const std::filesystem::path
     ///    letters     = "file/const/table_letters.txt",
-    ///    numbers     = "file/const/table_numbers.txt",
+    ///    digits     = "file/const/table_digits.txt",
         keywords    = "file/const/table_keywords.txt",
         operations  = "file/const/table_operations.txt",
         separators  = "file/const/table_separators.txt";
@@ -164,13 +165,19 @@ std::ostream& operator<< (std::ostream& out, const const_table<V>& _tbl) {
     using _Iter = typename std::set<V>::const_iterator;
 
     tabulate::Table movies;
-    _Iter it = _tbl.begin();
-    for (size_t pos = 0; it != _tbl.end(); pos++) {
-        movies.add_row({
-                std::to_string(pos),
-                std::string(*it) });
-        ++it;
+    if(std::is_same<V, std::string>::value ) {
+        _Iter it = _tbl.begin();
+        for (size_t pos = 0; it != _tbl.end(); pos++) {
+            movies.add_row({
+                    std::to_string(pos),
+                    std::string(*it) });
+            ++it;
+        }
     }
+    else {
+        std::cerr << "This type is not processed" << '\n';
+        std::exit(2); }
+
     movies.column(0).format().font_align(tabulate::FontAlign::center).width(8);
     movies.column(1).format().font_align(tabulate::FontAlign::center).width(32);
     return out << movies << '\n';
