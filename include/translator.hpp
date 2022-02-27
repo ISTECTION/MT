@@ -214,7 +214,6 @@ translator::lexical (std::istreambuf_iterator<char>& iit) {
     /// END: Если символ является разделителем
     /// BEGIN: Если символ недопустим
     else {
-        std::cout << "fds";
         ++iit;
         return std::optional { _ERROR::UNEXPECTED_SYMBOL };
     }
@@ -251,9 +250,9 @@ void translator::analyse (std::ifstream& _ifstream) {
     std::cout << "token: \n" << os_token.str() << std::endl;
     std::cout << "error: \n" << os_error.str() << std::endl;
 
-    // std::cout << "keywords: \n"    << keywords;
-    // std::cout << "keywords: \n"    << separators;
-    // std::cout << "identifiers: \n" << identifiers;
+    std::cout << "keywords: \n"    << keywords;
+    std::cout << "keywords: \n"    << separators;
+    std::cout << "identifiers: \n" << identifiers;
 
 }
 
