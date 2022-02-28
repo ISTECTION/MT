@@ -113,13 +113,13 @@ public:
 
 bool var_table::contains (const std::string& name) const {
     return find_in_table(name) == std::nullopt
-        ? false
-        : true;
+        ? false : true;
 }
 
 std::optional<lexeme> var_table::get_lexeme (const place& _place) const {
-    size_t i = _place(place::Pos::ROW);
-    size_t j = _place(place::Pos::COLLUMN);
+    using enum place::Pos;
+    size_t i = _place(ROW);
+    size_t j = _place(COLLUMN);
     return static_cast<int>(j) < get_size_row(i)
         ? std::optional { table[i][j] }
         : std::nullopt ;
@@ -148,21 +148,21 @@ std::optional<place> var_table::find_in_table (const std::string& name) const {
     return it == table[hash].end()
             ? std::nullopt
             : std::optional {
-                place(hash,std::distance(table[hash].begin(), it)) };
+                place(hash, std::distance(table[hash].begin(), it)) };
 }
 
 inline size_t var_table::get_hash (const std::string& name) const {
     return std::hash<std::string>{ }(name) % get_size_table(); }
 
 var_table& var_table::set_type (const place& plc, TYPE type) {
-    using Pos = ::place::Pos;
-    table[plc(Pos::ROW)][plc(Pos::COLLUMN)].set_type(type);
+    using enum place::Pos;
+    table[plc(ROW)][plc(COLLUMN)].set_type(type);
     return *this;
 }
 
 var_table& var_table::set_value (const place& plc, bool value) {
-    using Pos = ::place::Pos;
-    table[plc(Pos::ROW)][plc(Pos::COLLUMN)].set_value(value);
+    using enum place::Pos;
+    table[plc(ROW)][plc(COLLUMN)].set_value(value);
     return *this;
 }
 

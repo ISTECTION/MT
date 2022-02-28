@@ -2,7 +2,7 @@
     "configurations": [
         {
             "name": "Win32",
-            "cppStandard": "c++17",
+            "cppStandard": "c++20",
             "includePath": [
                 "${workspaceFolder}/include",
                 "D:\\MEGA\\NSTU\\CODE\\C++\\Include\\googletest\\googletest\\include"

@@ -106,34 +106,38 @@ std::optional<_ERROR>
 translator::decomment (std::istreambuf_iterator<char>& iit) {
     using _eos_buf = ::std::istreambuf_iterator<char>;
 
-    if (*iit != '/') return std::nullopt;
-    if (++iit == _eos_buf())
-        return std::optional { _ERROR::EOF_FILE };
+    do {
+        if (*iit != '/') return std::nullopt;
+        if (++iit == _eos_buf())
+            return std::optional { _ERROR::EOF_FILE };
 
-    if (*iit == '/')
-        do {
-            if (++iit == _eos_buf())
-                return std::nullopt;
-        } while (*iit != '\n');
-    else if (*iit == '*') {
-        char _preview,      /// Предыдущий символ
-             _current;      /// Текущий    символ
-        do {
-            _preview = *(++iit);
-            if (iit == _eos_buf())
-                return std::optional { _ERROR::UNCLOSED_COMMENT };
-
-            if (*iit == '*') {
-                _current = *(++iit);
-
+        if (*iit == '/')
+            do {
+                if (++iit == _eos_buf())
+                    return std::nullopt;
+            } while (*iit != '\n');
+        else if (*iit == '*') {
+            char _preview,      /// Предыдущий символ
+                _current;      /// Текущий    символ
+            do {
+                _preview = *(++iit);
                 if (iit == _eos_buf())
                     return std::optional { _ERROR::UNCLOSED_COMMENT };
-            }
-        } while (_preview != '*' || _current != '/');
-        /// После выхода из цикла итератор указывает на /
-        ++iit;  /// Поэтому переходим на следующий символ
-    } else
-        return std::optional { _ERROR::UNEXPECTED_SYMBOL };
+
+                if (*iit == '*') {
+                    _current = *(++iit);
+
+                    if (iit == _eos_buf())
+                        return std::optional { _ERROR::UNCLOSED_COMMENT };
+                }
+            } while (_preview != '*' || _current != '/');
+            /// После выхода из цикла итератор указывает на /
+            ++iit;  /// Поэтому переходим на следующий символ
+        } else
+            return std::optional { _ERROR::UNEXPECTED_SYMBOL };
+
+        skip_spaces(iit);
+    } while (*iit == '/');
 
     return std::nullopt;
 }
@@ -226,15 +230,12 @@ translator::lexical (std::istreambuf_iterator<char>& iit) {
 void translator::analyse (std::ifstream& _ifstream) {
     _Iter_buf eos, iit(_ifstream);
 
+    skip_spaces(iit);
     while (iit != eos) {
-
-        skip_spaces(iit);
 
         std::optional<_ERROR> err_deccoment = decomment(iit);
         if (err_deccoment != std::nullopt)
             read_error_in_stream(os_error, err_deccoment.value());
-
-        skip_spaces(iit);
 
         std::optional<_ERROR> err_lexical = lexical(iit);
         if (err_lexical != std::nullopt)
@@ -250,10 +251,9 @@ void translator::analyse (std::ifstream& _ifstream) {
     std::cout << "token: \n" << os_token.str() << std::endl;
     std::cout << "error: \n" << os_error.str() << std::endl;
 
-    std::cout << "keywords: \n"    << keywords;
-    std::cout << "keywords: \n"    << separators;
-    std::cout << "identifiers: \n" << identifiers;
-
+    // std::cout << "keywords: \n"    << keywords;
+    // std::cout << "keywords: \n"    << separators;
+    // std::cout << "identifiers: \n" << identifiers;
 }
 
 #endif /// _TRANSLATOR_HPP
