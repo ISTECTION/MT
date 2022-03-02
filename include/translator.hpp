@@ -306,10 +306,12 @@ void translator::analyse (std::ifstream& _ifstream) {
     std::cout << "token: \n" << os_token.str() << std::endl;
     std::cout << "error: \n" << os_error.str() << std::endl;
 
-    std::cout << "keywords:    \n" << keywords;
-    std::cout << "separators:  \n" << separators;
-    std::cout << "identifiers: \n" << identifiers;
-    std::cout << "constants:   \n" << constants;
-    std::cout << "operations:  \n" << operations;
+    std::ofstream fout(_directory / "table.txt");
+    fout << "keywords:    \n" << keywords;
+    fout << "separators:  \n" << separators;
+    fout << "identifiers: \n" << identifiers;
+    fout << "constants:   \n" << constants;
+    fout << "operations:  \n" << operations;
+    fout.close();
 }
 #endif /// _TRANSLATOR_HPP

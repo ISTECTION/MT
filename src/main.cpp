@@ -11,7 +11,6 @@
 
 #include <ranges>
 
-namespace views = std::ranges::views;
 
 
 int main(int argc, const char* argv[]) {
@@ -29,14 +28,11 @@ int main(int argc, const char* argv[]) {
         path _inp = _prs.get<std::string>("-i");
         translator trs(_inp);
 
-
     } catch(const std::runtime_error& err) {
         constexpr size_t args_no_received = 2;
         std::cerr << err.what() << std::endl;
         std::cerr <<    _prs    << std::endl;
         std::exit(args_no_received);
     }
-
-
     return 0;
 }

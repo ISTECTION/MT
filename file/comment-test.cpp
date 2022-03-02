@@ -1,9 +1,5 @@
-////    Program calculation
-
-//      Program calculation
-///     Program calculation
-
 /**
+ * Doxygen-style
  * @brief Краткое описание программы
  *
  * @param _left     Левостороннее  значение
@@ -21,4 +17,12 @@
 
 /* /* **** */  /* */
 
-// Program calculation
+//      Program calculation
+///     Program calculation
+////////Program calculation
+
+/**/
+/***/
+/****/
+/** **/
+/** Random text **/

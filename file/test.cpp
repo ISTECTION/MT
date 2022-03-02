@@ -1,12 +1,3 @@
-
-/**
- * @brief dfsfdsf
- *
- */
-
-int main () ^ {
-
-    int mal = 3;
-    mal += 4;
-
-}
+int main ()  {
+    int _lenght = 3;
+    _lenght

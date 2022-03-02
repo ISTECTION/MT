@@ -1,6 +1,14 @@
 int main() {
+    int _lenght = 1024;
+    int _rows = 4;
+    int _collumns = 4;
 
-    int name = 4;
-    +++;
-    return;
+    char symbol = 65;
+
+    int summa;
+    summa = _lenght + _rows;
+    summa++;
+
+    int _and = summa & _collumns;
+    return 0;
 }
