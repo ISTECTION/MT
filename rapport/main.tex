@@ -1,0 +1,61 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[left=20mm,top=20mm,total={170mm,257mm}]{geometry}
+
+
+\usepackage{styles/preamble}
+\usepackage{minted}                                     % Для вставок с кодом
+\usemintedstyle{vs}                                     % Стиль кода пакета minted
+
+\usepackage[dvipsnames]{xcolor}
+\setmainfont[Scale=1.0]{Noto Sans}  % Connect font
+
+\definecolor{background-gray}{gray}{1}
+\definecolor{mintedbackground}{rgb}{0.98,0.98,0.98}     % Color minted background
+
+% Property for C++ code
+\newmintedfile[cppcode]{cpp}{
+    bgcolor=background-gray,    % Background
+    fontfamily=tt,              % Font
+    linenos=true,               % Numbering
+    numberblanklines=true,      %
+    numbersep=3pt,              % Separator number
+    gobble=0,                   % Сожрать первые символы каждой строки
+    frame=leftline,             % Left line
+    framerule=0.2pt,            % Ширина линии
+    framesep=10pt,              % Отступ от разделителя
+    funcnamehighlighting=true,  %
+    tabsize=4,                  % Количество пробелов табуляции
+    mathescape=true,            % Включение математических формул
+    showspaces=false,           % Показывать пробелы
+    showtabs=false,             % Показывать табуляции
+    baselinestretch=1,          % Расстояние между строчками
+    breaklines                  % Перенос строк
+}
+
+\usepackage[most]{tcolorbox}    % для управления цветом
+\newtcolorbox{myquote}{
+    colback=background-gray,
+    coltext=black,
+    grow to right by=-1mm,
+    grow to left by=-1mm,
+    boxrule=-1mm,
+    boxsep=0pt
+} % настройки области с изменённым фоном
+
+% =================================================
+% НАЧАЛО ДОКУМЕНТА
+% =================================================
+
+
+
+\begin{document}
+\pagestyle{empty}
+
+\begin{myquote}
+    \begin{center}
+        \textbf{translator.hpp}
+    \end{center}
+\end{myquote}
+
+\cppcode{src/translator.hpp}
+\end{document}

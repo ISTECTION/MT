@@ -1,4 +1,9 @@
 build
 googletest/build
 doxygen
-prim.cpp
+rapport/src
+rapport/main.sta
+rapport/main.pdf
+rapport/main.log
+rapport/main.aux
+rapport/_minted-main
