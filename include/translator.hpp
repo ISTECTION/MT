@@ -18,8 +18,6 @@
 
 using _Iter_buf = ::std::istreambuf_iterator<char>;
 
-
-
 class translator
 {
 private:
@@ -314,5 +312,4 @@ void translator::analyse (std::ifstream& _ifstream) {
     std::cout << "constants:   \n" << constants;
     std::cout << "operations:  \n" << operations;
 }
-
 #endif /// _TRANSLATOR_HPP

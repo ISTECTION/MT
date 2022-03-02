@@ -179,31 +179,33 @@ std::ostream& operator<< (std::ostream& out, const var_table& _tab) {
                 _type == TYPE::UNDEFINED
                     ? "undefined"
                     : _type == TYPE::INT
-                        ? "int"
-                        : "char"; };
+                        ? "int" : "char"; };
 
     auto bool_to_str =
         [](bool _init) -> std::string {
             return _init == false
-                ? "false"
-                : "true" ; };
+                ? "false" : "true" ; };
 
     tabulate::Table movies;
 
-    movies.add_row({ "id", "name", "type", "init" });
+    movies.add_row({ "hash", "id", "name", "type", "init" });
     for (auto iter = _tab.begin(); iter != _tab.end(); iter++) {
-        for (auto it = iter->begin(); it  != iter->end(); it++) {
+        size_t collumn = 0;
+        for (auto it = iter->begin(); it  != iter->end(); it++, collumn++) {
             std::string _name = it->get_name();
             movies.add_row({
-                std::to_string(_tab.get_hash(_name)), _name,
+                std::to_string(_tab.get_hash(_name)),
+                std::to_string(collumn),
+                _name,
                 type_to_str(it->get_type()),
                 bool_to_str(it->get_init()) });
         }
     }
     movies.column(0).format().font_align(tabulate::FontAlign::center).width(8);
-    movies.column(1).format().font_align(tabulate::FontAlign::center).width(32);
-    movies.column(2).format().font_align(tabulate::FontAlign::center).width(15);
-    movies.column(3).format().font_align(tabulate::FontAlign::center).width(13);
+    movies.column(1).format().font_align(tabulate::FontAlign::center).width(8);
+    movies.column(2).format().font_align(tabulate::FontAlign::center).width(32);
+    movies.column(3).format().font_align(tabulate::FontAlign::center).width(15);
+    movies.column(4).format().font_align(tabulate::FontAlign::center).width(13);
 
     return out << movies << '\n';
 }
