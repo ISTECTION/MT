@@ -7,7 +7,7 @@
 inline void ltrim(std::string& _out) { _out.erase(0, _out.find_first_not_of(" \t\n")); }
 inline void rtrim(std::string& _out) { _out.erase(_out.find_last_not_of(" \t\n") + 1); }
 
-/// Возможен тут будет баг (написал на коленке в 1:08)
+
 bool not_spaces (const std::string& _line) {
     for (const auto& _elem : _line)
         if (_elem != ' ')

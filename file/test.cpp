@@ -1,20 +1,12 @@
-int  main () ^ {
 
-    //fsdfsd//fsdf  ///fsdfs
-    //fsdfs
-    //fsdfs
+/**
+ * @brief dfsfdsf
+ *
+ */
 
-    int row = 1;
-    int row = 1;
-    //fsdfsd//fsdf  ///fsdfs
-    //fsdfs
-    //fsdfs
-    row;
-    row;
+int main () ^ {
 
-    /*dgdfgd*/
-    /*fds*/
-
-    row;
+    int mal = 3;
+    mal += 4;
 
 }

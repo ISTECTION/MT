@@ -8,6 +8,7 @@
 #include "token.hpp"
 
 #include <filesystem>
+#include <iterator>
 #include <sstream>
 #include <fstream>
 #include <cassert>
@@ -28,7 +29,7 @@ private:
     /// Постоянные таблицы
     const_table<std::string> operations;    /// 1
     const_table<std::string> keywords;      /// 2
-    const_table<std::string> separators;           /// 3
+    const_table<std::string> separators;    /// 3
 
     /// Переменные таблицы
     var_table identifiers;                  /// 4
@@ -36,6 +37,10 @@ private:
 
     /// Поток для записи токенов и ошибок
     std::ostringstream os_token, os_error;
+
+    /// Текущий номер линии
+    std::string _current_str;
+    size_t _current_lines;
 
     /// Поток для записи анализируемого кода без комментариев
     std::ostringstream nocomment_code;
@@ -48,7 +53,8 @@ public:
         : operations(Path_Const_Table::operations),
           keywords(Path_Const_Table::keywords),
           separators(Path_Const_Table::separators),
-          _directory(_src_path.parent_path()) {
+          _directory(_src_path.parent_path()),
+          _current_lines(1) {
 
         auto print_error =
             [](std::string_view filename) -> bool {
@@ -83,7 +89,7 @@ std::optional<_ERROR>
 translator::balanced (std::istreambuf_iterator<char>& iit) {
 
     if (open_brackets(*iit)) {
-        _bracket.push(InfoBracket { _map_brackets[*iit], 0 });
+        _bracket.push(InfoBracket { _map_brackets[*iit], _current_lines });
         return std::nullopt;
     }
 
@@ -98,8 +104,15 @@ translator::balanced (std::istreambuf_iterator<char>& iit) {
 }
 
 void translator::skip_spaces (std::istreambuf_iterator<char>& iit) {
-    for (; *iit == '\n' || *iit == '\t' || *iit == ' '; ++iit)
+    for (; *iit == '\n' || *iit == '\t' || *iit == ' '; ++iit) {
+
+        _current_str   += *iit;         /// Текущая строка
         nocomment_code << *iit;
+
+        if (*iit == '\n') {
+            _current_str.clear();
+            _current_lines++; }
+    }
 }
 
 std::optional<_ERROR>
@@ -117,22 +130,28 @@ translator::decomment (std::istreambuf_iterator<char>& iit) {
                     return std::nullopt;
             } while (*iit != '\n');
         else if (*iit == '*') {
-            char _preview,      /// Предыдущий символ
-                _current;      /// Текущий    символ
+            char _preview,          /// Предыдущий символ
+                 _current;          /// Текущий    символ
+
+            if (++iit == _eos_buf())
+                return std::optional { _ERROR::UNCLOSED_COMMENT };
+            _current = *iit;
+
             do {
-                _preview = *(++iit);
-                if (iit == _eos_buf())
-                    return std::optional { _ERROR::UNCLOSED_COMMENT };
+                /// Подсчёт строк в блочном комментарии
+                if (*iit == '\n') _current_lines++;
 
-                if (*iit == '*') {
-                    _current = *(++iit);
-
-                    if (iit == _eos_buf())
-                        return std::optional { _ERROR::UNCLOSED_COMMENT };
-                }
+                std::swap(_preview, _current);
+                if (++iit == _eos_buf()) {
+                    _current_str = "/*";
+                    return std::optional { _ERROR::UNCLOSED_COMMENT }; }
+                _current = *iit;
             } while (_preview != '*' || _current != '/');
             /// После выхода из цикла итератор указывает на /
             ++iit;  /// Поэтому переходим на следующий символ
+            if (iit == _eos_buf())
+                return std::nullopt;
+
         } else
             return std::optional { _ERROR::UNEXPECTED_SYMBOL };
 
@@ -141,7 +160,6 @@ translator::decomment (std::istreambuf_iterator<char>& iit) {
 
     return std::nullopt;
 }
-
 
 std::optional<_ERROR>
 translator::lexical (std::istreambuf_iterator<char>& iit) {
@@ -153,7 +171,7 @@ translator::lexical (std::istreambuf_iterator<char>& iit) {
         do {
             nocomment_code << *iit;         /// Сохраняем код без комментариев
             _str           << *iit;         /// Текущее слово
-
+            _current_str   += *iit;         /// Текущая строка
             if (++iit == _eos_buf())
                 return std::optional { _ERROR::EOF_FILE };
 
@@ -182,17 +200,17 @@ translator::lexical (std::istreambuf_iterator<char>& iit) {
         do {
             nocomment_code << *iit;
             _digit         << *iit;
-
+            _current_str   += *iit;
             if (++iit == _eos_buf())
                 return std::optional { _ERROR::EOF_FILE };
 
         } while (std::isdigit(*iit));
 
         std::optional<place> _pl =
-                    constants.find_in_table(_digit.str());
+            constants.find_in_table(_digit.str());
 
         if (_pl == std::nullopt)
-                _pl = constants.add(_digit.str());
+            _pl = constants.add(_digit.str());
 
         place _pl_value = _pl.value();
         os_token << token(TABLE::CONSTANTS,
@@ -201,7 +219,6 @@ translator::lexical (std::istreambuf_iterator<char>& iit) {
     }
     /// END: Если символ является цифрой
     /// BEGIN: Если символ является разделителем
-
     else if (separators.contains(std::string { *iit } )) {
 
         /// Обработка ошибок в употреблении скобок
@@ -210,19 +227,48 @@ translator::lexical (std::istreambuf_iterator<char>& iit) {
         int flag = separators.get_num(std::string { *iit } );
         os_token << token(TABLE::SEPARATORS, flag, -1);
         nocomment_code << *iit;
-        ++iit;
+        _current_str   += *iit;         /// Текущая строка
 
+        ++iit;
         if (err_bracket != std::nullopt)
             return err_bracket;
     }
     /// END: Если символ является разделителем
+    /// BEGIN: Если символ является операцией
+    else if (operations.contains(std::string { *iit } )) {
+
+        std::string _operation { *iit };
+        nocomment_code << *iit;
+        _current_str   += *iit;         /// Текущая строка
+        if (++iit == _eos_buf())
+            return std::optional { _ERROR::EOF_FILE };
+
+        if (*iit == '+' || *iit == '-' ||
+            *iit == '<' || *iit == '>') {
+
+            nocomment_code << *iit;
+            _operation     += *iit;
+            _current_str   += *iit;         /// Текущая строка
+            if (++iit == _eos_buf())
+                return std::optional { _ERROR::EOF_FILE };
+        }
+
+        int flag = operations.get_num(_operation);
+        if (flag == -1)
+            return std::optional { _ERROR::OPERATION_NOT_EXIST };
+
+        os_token << token(TABLE::OPERATION, flag, -1);
+        return std::nullopt;
+    }
+    /// END: Если символ является операцией
     /// BEGIN: Если символ недопустим
     else {
+        _current_str += *iit;         /// Текущая строка
+
         ++iit;
         return std::optional { _ERROR::UNEXPECTED_SYMBOL };
     }
     /// END: Если символ недопустим
-
     return std::nullopt;
 }
 
@@ -232,28 +278,41 @@ void translator::analyse (std::ifstream& _ifstream) {
 
     skip_spaces(iit);
     while (iit != eos) {
-
         std::optional<_ERROR> err_deccoment = decomment(iit);
-        if (err_deccoment != std::nullopt)
-            read_error_in_stream(os_error, err_deccoment.value());
+        if (err_deccoment != std::nullopt)  {
+            InfoError iErr {
+                err_deccoment.value(),
+                _current_lines,
+                _current_str };
+            os_error << iErr; }
 
-        std::optional<_ERROR> err_lexical = lexical(iit);
-        if (err_lexical != std::nullopt)
-            read_error_in_stream(os_error, err_lexical.value());
+        if (iit != eos) {
+            std::optional<_ERROR> err_lexical = lexical(iit);
+            if (err_lexical != std::nullopt) {
+                InfoError iErr {
+                    err_lexical.value(),
+                    _current_lines,
+                    _current_str };
+                    os_error << iErr; }
+        }
 
         skip_spaces(iit);
     }
-
     if (_bracket.size() != 0)
-        read_error_in_stream(os_error, _ERROR::BRACKET_MISTAKE);
+        os_error << InfoError {
+            _ERROR::BRACKET_MISTAKE,
+            _current_lines,
+            std::string { _bracket.top().get_bracket() } };
 
     std::cout << trim(nocomment_code) << std::endl;
     std::cout << "token: \n" << os_token.str() << std::endl;
     std::cout << "error: \n" << os_error.str() << std::endl;
 
-    // std::cout << "keywords: \n"    << keywords;
-    // std::cout << "keywords: \n"    << separators;
-    // std::cout << "identifiers: \n" << identifiers;
+    std::cout << "keywords:    \n" << keywords;
+    std::cout << "separators:  \n" << separators;
+    std::cout << "identifiers: \n" << identifiers;
+    std::cout << "constants:   \n" << constants;
+    std::cout << "operations:  \n" << operations;
 }
 
 #endif /// _TRANSLATOR_HPP

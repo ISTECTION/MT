@@ -9,6 +9,10 @@
 #include <sstream>
 #include <string>
 
+#include <ranges>
+
+namespace views = std::ranges::views;
+
 
 int main(int argc, const char* argv[]) {
     std::ios_base::sync_with_stdio(false);
@@ -32,6 +36,7 @@ int main(int argc, const char* argv[]) {
         std::cerr <<    _prs    << std::endl;
         std::exit(args_no_received);
     }
+
 
     return 0;
 }

@@ -165,12 +165,14 @@ std::ostream& operator<< (std::ostream& out, const const_table<V>& _tbl) {
     using _Iter = typename std::set<V>::const_iterator;
 
     tabulate::Table movies;
-    if(std::is_same<V, std::string>::value ) {
+
+    movies.add_row({ "id", "name" });
+    if(std::is_same<V, std::string>::value) {
         _Iter it = _tbl.begin();
         for (size_t pos = 0; it != _tbl.end(); pos++) {
             movies.add_row({
                     std::to_string(pos),
-                    std::string(*it) });
+                    std::string { *it }  });
             ++it;
         }
     }
