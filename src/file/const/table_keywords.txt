@@ -1,4 +1,0 @@
-int
-char
-main
-return

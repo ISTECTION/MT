@@ -46,13 +46,18 @@ private:
     /// Директория для генерации файлов: tokens && error
     std::filesystem::path _directory;
 
+    /// Класс хранит аргументы переданные программе
+    std::optional<argparse::ArgumentParser> _prs;
+
 public:
-    explicit translator (const std::filesystem::path& _src_path)
+    explicit translator (const std::filesystem::path& _src_path,
+        std::optional<argparse::ArgumentParser> _prs = std::nullopt)
         : operations(Path_Const_Table::operations),
           keywords(Path_Const_Table::keywords),
           separators(Path_Const_Table::separators),
           _directory(_src_path.parent_path()),
-          _current_lines(1) {
+          _current_lines(1),
+          _prs(_prs) {
 
         auto print_error =
             [](std::string_view filename) -> bool {
@@ -80,7 +85,6 @@ private:
 
     /// Пропустить ['\n', '\t', ' ']
     void skip_spaces (std::istreambuf_iterator<char>& );
-
 };
 
 std::optional<_ERROR>
@@ -302,16 +306,40 @@ void translator::analyse (std::ifstream& _ifstream) {
             _current_lines,
             std::string { _bracket.top().get_bracket() } };
 
-    std::cout << trim(nocomment_code) << std::endl;
-    std::cout << "token: \n" << os_token.str() << std::endl;
-    std::cout << "error: \n" << os_error.str() << std::endl;
+    std::string _n_comm_code = trim(nocomment_code);
 
-    std::ofstream fout(_directory / "table.txt");
-    fout << "keywords:    \n" << keywords;
-    fout << "separators:  \n" << separators;
-    fout << "identifiers: \n" << identifiers;
-    fout << "constants:   \n" << constants;
-    fout << "operations:  \n" << operations;
-    fout.close();
+    if (_prs != std::nullopt && _prs.value().get<bool>("-t"))  {
+        std::ofstream fout(_directory / "table.txt");
+        fout << "keywords:    \n" << keywords;
+        fout << "separators:  \n" << separators;
+        fout << "identifiers: \n" << identifiers;
+        fout << "constants:   \n" << constants;
+        fout << "operations:  \n" << operations;
+        fout.close();
+
+        fout.open(_directory / "token.txt");
+        fout << os_token.str();
+        fout.close();
+
+        fout.open(_directory / "error.txt");
+        fout << os_error.str();
+        fout.close();
+
+        fout.open(_directory / "clearcode.cpp");
+        fout << _n_comm_code;
+        fout.close();
+
+    } else {
+        std::cout << _n_comm_code << std::endl;
+
+        std::cout << "keywords:    \n" << keywords;
+        std::cout << "separators:  \n" << separators;
+        std::cout << "identifiers: \n" << identifiers;
+        std::cout << "constants:   \n" << constants;
+        std::cout << "operations:  \n" << operations;
+
+        std::cout << "token: \n" << os_token.str() << std::endl;
+        std::cout << "error: \n" << os_error.str() << std::endl;
+    }
 }
 #endif /// _TRANSLATOR_HPP
