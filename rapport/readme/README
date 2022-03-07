@@ -1,7 +1,0 @@
-1. pygmentize
-2. python
-3. python/scripts
-
-
-4. function Tex-Compile ($file) { xelatex -shell-escape -syntex=1 -interaction=nonstopmode $file }
-5. Tex-Compile main.tex

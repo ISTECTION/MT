@@ -117,7 +117,7 @@ bool var_table::contains (const std::string& name) const {
 }
 
 std::optional<lexeme> var_table::get_lexeme (const place& _place) const {
-    using enum place::Pos;
+    using enum ::place::Pos;
     size_t i = _place(ROW);
     size_t j = _place(COLLUMN);
     return static_cast<int>(j) < get_size_row(i)
@@ -127,41 +127,35 @@ std::optional<lexeme> var_table::get_lexeme (const place& _place) const {
 
 std::optional<place> var_table::add (const std::string& name) {
     if (contains(name)) {
-        return
-            std::nullopt;
+        return std::nullopt;
     } else {
         size_t hash = get_hash(name);
         table[hash].push_back(lexeme(name));
-
-        return std::optional {
-            place(hash, table[hash].size() - 1) };
+        return std::optional { place(hash, table[hash].size() - 1) };
     }
 }
 
 std::optional<place> var_table::find_in_table (const std::string& name) const {
     size_t hash = get_hash(name);
     using _Iter = std::vector<lexeme>::const_iterator;
-    _Iter it =
-        std::find(
-            table[hash].begin(), table[hash].end(), lexeme(name));
+    _Iter it = std::find(table[hash].begin(), table[hash].end(), lexeme(name));
 
     return it == table[hash].end()
             ? std::nullopt
-            : std::optional {
-                place(hash, std::distance(table[hash].begin(), it)) };
+            : std::optional { place(hash, std::distance(table[hash].begin(), it)) };
 }
 
 inline size_t var_table::get_hash (const std::string& name) const {
     return std::hash<std::string>{ }(name) % get_size_table(); }
 
 var_table& var_table::set_type (const place& plc, TYPE type) {
-    using enum place::Pos;
+    using enum ::place::Pos;
     table[plc(ROW)][plc(COLLUMN)].set_type(type);
     return *this;
 }
 
 var_table& var_table::set_value (const place& plc, bool value) {
-    using enum place::Pos;
+    using enum ::place::Pos;
     table[plc(ROW)][plc(COLLUMN)].set_value(value);
     return *this;
 }
@@ -201,11 +195,13 @@ std::ostream& operator<< (std::ostream& out, const var_table& _tab) {
                 bool_to_str(it->get_init()) });
         }
     }
-    movies.column(0).format().font_align(tabulate::FontAlign::center).width(8);
-    movies.column(1).format().font_align(tabulate::FontAlign::center).width(8);
-    movies.column(2).format().font_align(tabulate::FontAlign::center).width(32);
-    movies.column(3).format().font_align(tabulate::FontAlign::center).width(15);
-    movies.column(4).format().font_align(tabulate::FontAlign::center).width(13);
+
+    using namespace ::tabulate;
+    movies.column(0).format().font_align(FontAlign::center).width(8);
+    movies.column(1).format().font_align(FontAlign::center).width(8);
+    movies.column(2).format().font_align(FontAlign::center).width(32);
+    movies.column(3).format().font_align(FontAlign::center).width(15);
+    movies.column(4).format().font_align(FontAlign::center).width(13);
 
     return out << movies << '\n';
 }

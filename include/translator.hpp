@@ -184,15 +184,15 @@ translator::lexical (std::istreambuf_iterator<char>& iit) {
             os_token << token(TABLE::KEYWORDS, _flag, -1);
         }
         else {
-            std::optional<place> _pl =
-                    identifiers.find_in_table(_str.str());
+            std::optional<place> _pl = identifiers.find_in_table(_str.str());
             if (_pl == std::nullopt)
                 _pl = identifiers.add(_str.str());
 
+            using enum ::place::Pos;
             place _pl_value = _pl.value();
             os_token << token(TABLE::IDENTIFIERS,
-                    _pl_value(place::Pos::ROW),
-                    _pl_value(place::Pos::COLLUMN));
+                    _pl_value(ROW),
+                    _pl_value(COLLUMN));
         }
     }
     /// END:   Если символ является буквой или '_'
@@ -207,6 +207,11 @@ translator::lexical (std::istreambuf_iterator<char>& iit) {
                 return std::optional { _ERROR::EOF_FILE };
 
         } while (std::isdigit(*iit));
+
+        if (std::isalpha(*iit) || *iit == '_') {
+            _current_str   += *iit;
+            return std::optional { _ERROR::UNEXPECTED_SYMBOL };
+        }
 
         std::optional<place> _pl =
             constants.find_in_table(_digit.str());
@@ -304,7 +309,7 @@ void translator::analyse (std::ifstream& _ifstream) {
         os_error << InfoError {
             _ERROR::BRACKET_MISTAKE,
             _current_lines,
-            std::string { _bracket.top().get_bracket() } };
+            "lack: " + std::string { _bracket.top().get_bracket() } };
 
     std::string _n_comm_code = trim(nocomment_code);
 
