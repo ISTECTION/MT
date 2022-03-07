@@ -9,7 +9,9 @@ enum class _ERROR {
     OPERATION_NOT_EXIST,    ///< Несуществующая операция
 
 
-    BRACKET_MISTAKE         ///< Неравное количество закрывающихся-открывающихся скобок
+    BRACKET_MISTAKE,        ///< Неравное количество закрывающихся-открывающихся скобок
+
+    DEFAULT                 ///< В конструктор передана строка с указанием ошибки
 };
 
 class InfoError {
@@ -18,11 +20,18 @@ private:
     size_t line;        ///< Индекс строки
 
     std::string str;    ///< Строка
+    std::string users_err;
 
 public:
     explicit InfoError (_ERROR _error, size_t _line, std::string _str)
       : error(_error),
         line (_line),
+        str(_str) { }
+
+    explicit InfoError (const std::string& _error, size_t _line, std::string _str)
+      : users_err(_error),
+        error(_ERROR::DEFAULT),
+        line(_line),
         str(_str) { }
 
     /**
@@ -45,6 +54,13 @@ public:
      * @return std::string Строка
      */
     std::string get_str () const { return str; }
+
+    /**
+     * @brief Возвращает строку с ошибкой
+     *
+     * @return std::string Строка
+     */
+    std::string get_users_err () const { return users_err; }
 };
 
 template <typename _Stream>
@@ -66,7 +82,7 @@ _Stream& operator<< (_Stream& _stream, const InfoError _info) {
         _stream << "incorrect use of brackets" << '\n'; break;
 
     /// --------------- DEFAULT --------------- ///
-    default: _stream << "unidentified error" << '\n';
+    default: _stream << _info.get_users_err() << '\n';
     /// --------------- DEFAULT --------------- ///
     }
     _stream << std::setw(4) << "" << " | " << _info.get_str() << '\n';

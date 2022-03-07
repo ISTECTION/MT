@@ -10,9 +10,7 @@
 #include <string>
 
 
-
 int main(int argc, const char* argv[]) {
-
     std::ios_base::sync_with_stdio(false);
     argparse::ArgumentParser _prs("MT", "0.0.1");
     _prs.add_argument("-i", "--input")

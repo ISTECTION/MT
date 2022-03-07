@@ -1,1 +1,1 @@
-.\build\bin\mt.exe -i .\file\test\incorrect\code.cpp
+.\build\bin\mt.exe -i .\file\test\bracket\code.cpp
