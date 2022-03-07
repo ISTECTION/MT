@@ -95,19 +95,16 @@ private:
 
 std::optional<_ERROR>
 translator::balanced (std::istreambuf_iterator<char>& iit) {
-
     if (open_brackets(*iit)) {
-        _bracket.push(InfoBracket { _map_brackets[*iit], _current_lines });
+        _bracket.push(
+            InfoBracket { _map_brackets[*iit], _current_lines });
         return std::nullopt;
-    }
-
-    if (close_brackets(*iit)) {
+    } else if (close_brackets(*iit)) {
         if (_bracket.empty() ||
             _bracket.top().get_bracket() != *iit)
             return std::optional { _ERROR::BRACKET_MISTAKE };
         else _bracket.pop();
     }
-
     return std::nullopt;
 }
 
@@ -285,7 +282,6 @@ translator::lexical (std::istreambuf_iterator<char>& iit) {
     return std::nullopt;
 }
 
-
 void translator::analyse (std::ifstream& _ifstream) {
     _Iter_buf eos, iit(_ifstream);
 
@@ -297,8 +293,7 @@ void translator::analyse (std::ifstream& _ifstream) {
                 _current_lines,
                 _current_str };
             os_error << iErr;
-            _count_error++;
-        }
+            _count_error++; }
 
         if (iit != eos) {
             std::optional<_ERROR> err_lexical = lexical(iit);
@@ -309,42 +304,39 @@ void translator::analyse (std::ifstream& _ifstream) {
                     _current_str };
                     os_error << iErr;
                 _count_error++;
-            }
-        }
+            } }
 
         skip_spaces(iit);
     }
+
     if (_bracket.size() != 0)
         os_error << InfoError {
             _ERROR::BRACKET_MISTAKE,
             _current_lines,
             "lack: " + std::string { _bracket.top().get_bracket() } };
 
-    std::string _n_comm_code = trim(nocomment_code);
+    std::ofstream fout(_directory / "token.txt");
+    fout << os_token.str();
+    fout.close();
 
-    if (_prs != std::nullopt && _prs.value().get<bool>("-s"))  {
-        std::ofstream fout(_directory / "table.txt");
-        fout << "keywords:    \n" << keywords;
-        fout << "separators:  \n" << separators;
-        fout << "identifiers: \n" << identifiers;
-        fout << "constants:   \n" << constants;
-        fout << "operations:  \n" << operations;
-        fout.close();
+    fout.open(_directory / "error.txt");
+    fout << os_error.str();
+    fout.close();
 
-        fout.open(_directory / "token.txt");
-        fout << os_token.str();
-        fout.close();
+    fout.open(_directory / "clearcode.cpp");
+    fout << trim(nocomment_code);
+    fout.close();
 
-        fout.open(_directory / "error.txt");
-        fout << os_error.str();
-        fout.close();
+    fout.open(_directory / "table.txt");
+    fout << "keywords:    \n" << keywords;
+    fout << "separators:  \n" << separators;
+    fout << "identifiers: \n" << identifiers;
+    fout << "constants:   \n" << constants;
+    fout << "operations:  \n" << operations;
+    fout.close();
 
-        fout.open(_directory / "clearcode.cpp");
-        fout << _n_comm_code;
-        fout.close();
-
-    } else {
-        std::cout << _n_comm_code << std::endl;
+    if (_prs != std::nullopt && _prs.value().get<bool>("-p")) {
+        std::cout << trim(nocomment_code) << std::endl;
 
         std::cout << "keywords:    \n" << keywords;
         std::cout << "separators:  \n" << separators;

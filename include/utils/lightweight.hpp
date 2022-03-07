@@ -38,5 +38,4 @@ auto print_error (std::string_view filename) -> bool {
     return false;
 }
 
-
 #endif /// _LIGHTWEIGHT_HPP
