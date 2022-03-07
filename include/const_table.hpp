@@ -10,8 +10,9 @@
 #include <string>
 #include <set>
 
-namespace Path_Const_Table {
+namespace path_const_table {
     const std::filesystem::path
+
     ///    letters     = "file/const/table_letters.txt",
     ///    digits     = "file/const/table_digits.txt",
         keywords    = "file/const/table_keywords.txt",

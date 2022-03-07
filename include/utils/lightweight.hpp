@@ -1,5 +1,6 @@
 #ifndef _LIGHTWEIGHT_HPP
 #define _LIGHTWEIGHT_HPP
+#include <string_view>
 #include <sstream>
 #include <cctype>
 #include <string>
@@ -31,5 +32,11 @@ inline std::string trim(const std::ostringstream& _out) {
     rtrim(_trim);
     return _trim;
 }
+
+auto print_error (std::string_view filename) -> bool {
+    std::cerr << "file not open: " << filename << '\n';
+    return false;
+}
+
 
 #endif /// _LIGHTWEIGHT_HPP

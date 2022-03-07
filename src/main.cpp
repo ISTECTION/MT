@@ -1,6 +1,7 @@
 #include "argparse/argparse.hpp"
 
 #include "translator.hpp"
+#include "parse.hpp"
 
 #include <filesystem>
 #include <iostream>
@@ -17,7 +18,7 @@ int main(int argc, const char* argv[]) {
         .help( "path to input files" )
         .required();
 
-    _prs.add_argument("-t", "--table")
+    _prs.add_argument("-s", "--save")
         .help("Print table to console")
         .default_value(false)
         .implicit_value(true);
@@ -28,6 +29,17 @@ int main(int argc, const char* argv[]) {
 
         path _inp = _prs.get<std::string>("-i");
         translator trs(_inp, _prs);
+
+        if (trs.syntax_fail()) {
+            std::cerr
+                << "generate error file: "
+                << (_inp.parent_path() / "error.txt").string()
+                << '\n';
+            assert(false);
+        }
+
+        parse _parse(_inp.parent_path());
+        std::cout << _parse;
 
     } catch(const std::runtime_error& err) {
         constexpr size_t args_no_received = 2;

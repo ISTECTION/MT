@@ -1,0 +1,4 @@
+void float int  1 1 0 0 0
+main            2 1 0 0 0
+switch          3 0 1 1 0
+{               4 1 0 0 1

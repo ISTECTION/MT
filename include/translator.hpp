@@ -35,6 +35,7 @@ private:
 
     /// Поток для записи токенов и ошибок
     std::ostringstream os_token, os_error;
+    size_t _count_error;
 
     /// Текущий номер линии
     std::string _current_str;
@@ -52,11 +53,12 @@ private:
 public:
     explicit translator (const std::filesystem::path& _src_path,
         std::optional<argparse::ArgumentParser> _prs = std::nullopt)
-        : operations(Path_Const_Table::operations),
-          keywords(Path_Const_Table::keywords),
-          separators(Path_Const_Table::separators),
+        : operations(path_const_table::operations),
+          keywords(path_const_table::keywords),
+          separators(path_const_table::separators),
           _directory(_src_path.parent_path()),
           _current_lines(1),
+          _count_error(0),
           _prs(_prs) {
 
         auto print_error =
@@ -69,8 +71,12 @@ public:
         std::ifstream fin(_src_path);
         fin.is_open()
             ? analyse(fin)
-            : assert(print_error(_src_path.filename().string()));
+            : assert(print_error(std::filesystem::canonical(_src_path.filename()).string()));
+        fin.close();
     }
+
+    bool syntax_success () const { return _count_error ? false : true; }
+    bool syntax_fail    () const { return not syntax_success(); }
 
 private:
     /// Лексический анализ
@@ -283,7 +289,6 @@ translator::lexical (std::istreambuf_iterator<char>& iit) {
 void translator::analyse (std::ifstream& _ifstream) {
     _Iter_buf eos, iit(_ifstream);
 
-    skip_spaces(iit);
     while (iit != eos) {
         std::optional<_ERROR> err_deccoment = decomment(iit);
         if (err_deccoment != std::nullopt)  {
@@ -291,7 +296,9 @@ void translator::analyse (std::ifstream& _ifstream) {
                 err_deccoment.value(),
                 _current_lines,
                 _current_str };
-            os_error << iErr; }
+            os_error << iErr;
+            _count_error++;
+        }
 
         if (iit != eos) {
             std::optional<_ERROR> err_lexical = lexical(iit);
@@ -300,7 +307,9 @@ void translator::analyse (std::ifstream& _ifstream) {
                     err_lexical.value(),
                     _current_lines,
                     _current_str };
-                    os_error << iErr; }
+                    os_error << iErr;
+                _count_error++;
+            }
         }
 
         skip_spaces(iit);
@@ -313,7 +322,7 @@ void translator::analyse (std::ifstream& _ifstream) {
 
     std::string _n_comm_code = trim(nocomment_code);
 
-    if (_prs != std::nullopt && _prs.value().get<bool>("-t"))  {
+    if (_prs != std::nullopt && _prs.value().get<bool>("-s"))  {
         std::ofstream fout(_directory / "table.txt");
         fout << "keywords:    \n" << keywords;
         fout << "separators:  \n" << separators;
