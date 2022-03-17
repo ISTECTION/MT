@@ -1,0 +1,2 @@
+   4 | Error: incorrect use of brackets
+     | lack: }

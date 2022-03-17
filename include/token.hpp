@@ -12,7 +12,10 @@ enum class TABLE {
     KEYWORDS,           ///< Таблица ключевых слов
     SEPARATORS,         ///< Таблица разделителей
     IDENTIFIERS,        ///< Таблица идентификаторов
-    CONSTANTS   };      ///< Таблица констант
+    CONSTANTS,          ///< Таблица констант
+
+    NOT_DEFINED = -1
+};
 
 /**
  * @brief Класс для хранения номера таблицы и позиции ключевого слова в ней
@@ -28,6 +31,13 @@ public:
     explicit token(TABLE _table, size_t _i, int _j)
         : table(_table), i(_i), j(_j) { }
 
+    explicit token()
+        : table(TABLE::NOT_DEFINED), i(0), j(0) { }
+
+    TABLE  get_table   () const { return table; }
+    size_t get_row     () const { return i;     }
+    int    get_column  () const { return j;     }
+
     /**
      * @brief Перегрузка оператора `operator<<` для вывода токена в поток
      *
@@ -35,8 +45,10 @@ public:
      * @param _tkn Екземляр класса, который будем выводить
      * @return std::ostream&
      */
-
     friend std::ostream& operator<< (std::ostream& out, const token& _tkn);
+
+
+    friend std::istream& operator>> (std::istream& in, token& _tkn);
 };
 
 std::ostream& operator<< (std::ostream& out, const token& _tkn) {
@@ -44,6 +56,17 @@ std::ostream& operator<< (std::ostream& out, const token& _tkn) {
             << to_underlying(_tkn.table) << ' '
             << _tkn.i                    << ' '
             << _tkn.j                    << '\n';
+}
+
+
+std::istream& operator>> (std::istream& in, token& _tkn) {
+    size_t table;
+    in >>  table;
+    in >> _tkn.i;
+    in >> _tkn.j;
+
+    _tkn.table = static_cast<TABLE>(table);
+    return in;
 }
 
 #endif /// _TOKEN_HPP

@@ -11,6 +11,7 @@
                 "-o",
                 "${fileDirname}\\${fileBasenameNoExtension}.exe",
                 "-ID:\\MEGA\\NSTU\\6 SEMESTER\\MT\\LAB-2\\Project\\include",
+                "-std=c++20"
             ],
             "options": {
                 "cwd": "${fileDirname}"

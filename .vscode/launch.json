@@ -14,7 +14,7 @@
             "program": "${fileDirname}\\${fileBasenameNoExtension}.exe",
             "args": [
                 "-i",
-                "D:\\MEGA\\NSTU\\6 SEMESTER\\MT\\LAB-2\\Project\\file\\test.cpp"
+                "..\\file\\test\\parse_test\\code.cpp"
             ],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",

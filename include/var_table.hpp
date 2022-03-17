@@ -117,7 +117,7 @@ bool var_table::contains (const std::string& name) const {
 }
 
 std::optional<lexeme> var_table::get_lexeme (const place& _place) const {
-    using enum ::place::Pos;
+    using enum ::place::POS;
     size_t i = _place(ROW);
     size_t j = _place(COLLUMN);
     return static_cast<int>(j) < get_size_row(i)
@@ -149,13 +149,13 @@ inline size_t var_table::get_hash (const std::string& name) const {
     return std::hash<std::string>{ }(name) % get_size_table(); }
 
 var_table& var_table::set_type (const place& plc, TYPE type) {
-    using enum ::place::Pos;
+    using enum ::place::POS;
     table[plc(ROW)][plc(COLLUMN)].set_type(type);
     return *this;
 }
 
 var_table& var_table::set_value (const place& plc, bool value) {
-    using enum ::place::Pos;
+    using enum ::place::POS;
     table[plc(ROW)][plc(COLLUMN)].set_value(value);
     return *this;
 }

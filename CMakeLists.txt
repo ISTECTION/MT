@@ -13,7 +13,8 @@ set(HEADERS
     include/lexeme.hpp
     include/token.hpp
     include/error.hpp
-    include/place.hpp)
+    include/place.hpp
+    include/parse.hpp)
 
 add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS})
 

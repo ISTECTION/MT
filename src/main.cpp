@@ -28,18 +28,10 @@ int main(int argc, const char* argv[]) {
         _prs.parse_args(argc, argv);
 
         path _inp = _prs.get<std::string>("-i");
-        translator trs(_inp, _prs);
+        parse _parser(_inp, _prs);
 
-        if (trs.syntax_fail()) {
-            std::cerr
-                << "generate error file: "
-                << (_inp.parent_path() / "error.txt").string()
-                << '\n';
-            assert(false);
-        }
-        parse _parse(_inp.parent_path());
-        if (_prs.get<bool>("-p"))
-            std::cout << _parse;
+        // if (_prs.get<bool>("-p"))
+        //     std::cout << _parser;
 
     } catch(const std::runtime_error& err) {
         constexpr size_t args_no_received = 2;

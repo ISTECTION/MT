@@ -1,1 +1,1 @@
-.\build\bin\mt.exe -i .\file\test\bracket\code.cpp
+.\build\bin\mt.exe -i .\file\test\parse_test\code.cpp

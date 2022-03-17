@@ -45,7 +45,7 @@ private:
     std::ostringstream nocomment_code;
 
     /// Директория для генерации файлов: tokens && error
-    std::filesystem::path _directory;
+    std::filesystem::path _parent_path;
 
     /// Класс хранит аргументы переданные программе
     std::optional<argparse::ArgumentParser> _prs;
@@ -56,7 +56,7 @@ public:
         : operations(path_const_table::operations),
           keywords(path_const_table::keywords),
           separators(path_const_table::separators),
-          _directory(_src_path.parent_path()),
+          _parent_path(_src_path.parent_path()),
           _current_lines(1),
           _count_error(0),
           _prs(_prs) {
@@ -77,23 +77,43 @@ public:
 
     bool syntax_success () const { return _count_error ? false : true; }
     bool syntax_fail    () const { return not syntax_success(); }
+    std::filesystem::path get_parrent_path () const { return _parent_path; }
+
+    std::string get_token_text (const token& _tkn) const;
 
 private:
     /// Лексический анализ
     void analyse(std::ifstream& );
 
     /// Очистка от комментариев
-    std::optional<_ERROR> decomment (std::istreambuf_iterator<char>& );
-    std::optional<_ERROR> lexical (std::istreambuf_iterator<char>& );
+    std::optional<LEXICAL> decomment (std::istreambuf_iterator<char>& );
+    std::optional<LEXICAL> lexical (std::istreambuf_iterator<char>& );
 
     /// РГЗ : Вариант 7
-    std::optional<_ERROR> balanced (std::istreambuf_iterator<char>& );
+    std::optional<LEXICAL> balanced (std::istreambuf_iterator<char>& );
 
     /// Пропустить ['\n', '\t', ' ']
     void skip_spaces (std::istreambuf_iterator<char>& );
 };
 
-std::optional<_ERROR>
+std::string
+translator::get_token_text (const token& _tkn) const {
+    switch (_tkn.get_table())
+    {
+        case TABLE::OPERATION  : return operations.get_elem(_tkn.get_row()).value(); break;
+        case TABLE::KEYWORDS   : return keywords  .get_elem(_tkn.get_row()).value(); break;
+        case TABLE::SEPARATORS : return separators.get_elem(_tkn.get_row()).value(); break;
+        // case TABLE::IDENTIFIERS: return identifiers.get_lexeme(place(_tkn.get_row(), _tkn.get_column())).value().get_name(); break;
+        // case TABLE::CONSTANTS  : return constants  .get_lexeme(place(_tkn.get_row(), _tkn.get_column())).value().get_name(); break;
+        case TABLE::IDENTIFIERS: return std::string {  "var"  }; break;
+        case TABLE::CONSTANTS  : return std::string { "const" }; break;
+
+        default: return std::string { };
+    }
+}
+
+
+std::optional<LEXICAL>
 translator::balanced (std::istreambuf_iterator<char>& iit) {
     if (open_brackets(*iit)) {
         _bracket.push(
@@ -102,7 +122,7 @@ translator::balanced (std::istreambuf_iterator<char>& iit) {
     } else if (close_brackets(*iit)) {
         if (_bracket.empty() ||
             _bracket.top().get_bracket() != *iit)
-            return std::optional { _ERROR::BRACKET_MISTAKE };
+            return std::optional { LEXICAL::BRACKET_MISTAKE };
         else _bracket.pop();
     }
     return std::nullopt;
@@ -120,14 +140,14 @@ void translator::skip_spaces (std::istreambuf_iterator<char>& iit) {
     }
 }
 
-std::optional<_ERROR>
+std::optional<LEXICAL>
 translator::decomment (std::istreambuf_iterator<char>& iit) {
     using _eos_buf = ::std::istreambuf_iterator<char>;
 
     do {
         if (*iit != '/') return std::nullopt;
         if (++iit == _eos_buf())
-            return std::optional { _ERROR::EOF_FILE };
+            return std::optional { LEXICAL::EOF_FILE };
 
         if (*iit == '/')
             do {
@@ -139,7 +159,7 @@ translator::decomment (std::istreambuf_iterator<char>& iit) {
                  _current;          /// Текущий    символ
 
             if (++iit == _eos_buf())
-                return std::optional { _ERROR::UNCLOSED_COMMENT };
+                return std::optional { LEXICAL::UNCLOSED_COMMENT };
             _current = *iit;
 
             do {
@@ -149,7 +169,7 @@ translator::decomment (std::istreambuf_iterator<char>& iit) {
                 std::swap(_preview, _current);
                 if (++iit == _eos_buf()) {
                     _current_str = "/*";
-                    return std::optional { _ERROR::UNCLOSED_COMMENT }; }
+                    return std::optional { LEXICAL::UNCLOSED_COMMENT }; }
                 _current = *iit;
             } while (_preview != '*' || _current != '/');
             /// После выхода из цикла итератор указывает на /
@@ -158,7 +178,7 @@ translator::decomment (std::istreambuf_iterator<char>& iit) {
                 return std::nullopt;
 
         } else
-            return std::optional { _ERROR::UNEXPECTED_SYMBOL };
+            return std::optional { LEXICAL::UNEXPECTED_SYMBOL };
 
         skip_spaces(iit);
     } while (*iit == '/');
@@ -166,7 +186,7 @@ translator::decomment (std::istreambuf_iterator<char>& iit) {
     return std::nullopt;
 }
 
-std::optional<_ERROR>
+std::optional<LEXICAL>
 translator::lexical (std::istreambuf_iterator<char>& iit) {
     using _eos_buf = ::std::istreambuf_iterator<char>;
 
@@ -178,7 +198,7 @@ translator::lexical (std::istreambuf_iterator<char>& iit) {
             _str           << *iit;         /// Текущее слово
             _current_str   += *iit;         /// Текущая строка
             if (++iit == _eos_buf())
-                return std::optional { _ERROR::EOF_FILE };
+                return std::optional { LEXICAL::EOF_FILE };
 
         } while (std::isalnum(*iit) || *iit == '_');
 
@@ -191,7 +211,7 @@ translator::lexical (std::istreambuf_iterator<char>& iit) {
             if (_pl == std::nullopt)
                 _pl = identifiers.add(_str.str());
 
-            using enum ::place::Pos;
+            using enum ::place::POS;
             place _pl_value = _pl.value();
             os_token << token(TABLE::IDENTIFIERS,
                     _pl_value(ROW),
@@ -207,13 +227,13 @@ translator::lexical (std::istreambuf_iterator<char>& iit) {
             _digit         << *iit;
             _current_str   += *iit;
             if (++iit == _eos_buf())
-                return std::optional { _ERROR::EOF_FILE };
+                return std::optional { LEXICAL::EOF_FILE };
 
         } while (std::isdigit(*iit));
 
         if (std::isalpha(*iit) || *iit == '_') {
             _current_str   += *iit;
-            return std::optional { _ERROR::UNEXPECTED_SYMBOL };
+            return std::optional { LEXICAL::UNEXPECTED_SYMBOL };
         }
 
         std::optional<place> _pl =
@@ -222,17 +242,18 @@ translator::lexical (std::istreambuf_iterator<char>& iit) {
         if (_pl == std::nullopt)
             _pl = constants.add(_digit.str());
 
+        using enum ::place::POS;
         place _pl_value = _pl.value();
         os_token << token(TABLE::CONSTANTS,
-                _pl_value(place::Pos::ROW),
-                _pl_value(place::Pos::COLLUMN));
+                _pl_value(ROW),
+                _pl_value(COLLUMN));
     }
     /// END: Если символ является цифрой
     /// BEGIN: Если символ является разделителем
     else if (separators.contains(std::string { *iit } )) {
 
         /// Обработка ошибок в употреблении скобок
-        std::optional<_ERROR> err_bracket = balanced(iit);
+        std::optional<LEXICAL> err_bracket = balanced(iit);
 
         int flag = separators.get_num(std::string { *iit } );
         os_token << token(TABLE::SEPARATORS, flag, -1);
@@ -251,7 +272,7 @@ translator::lexical (std::istreambuf_iterator<char>& iit) {
         nocomment_code << *iit;
         _current_str   += *iit;         /// Текущая строка
         if (++iit == _eos_buf())
-            return std::optional { _ERROR::EOF_FILE };
+            return std::optional { LEXICAL::EOF_FILE };
 
         if (*iit == '+' || *iit == '-' ||
             *iit == '<' || *iit == '>') {
@@ -260,12 +281,12 @@ translator::lexical (std::istreambuf_iterator<char>& iit) {
             _operation     += *iit;
             _current_str   += *iit;         /// Текущая строка
             if (++iit == _eos_buf())
-                return std::optional { _ERROR::EOF_FILE };
+                return std::optional { LEXICAL::EOF_FILE };
         }
 
         int flag = operations.get_num(_operation);
         if (flag == -1)
-            return std::optional { _ERROR::OPERATION_NOT_EXIST };
+            return std::optional { LEXICAL::OPERATION_NOT_EXIST };
 
         os_token << token(TABLE::OPERATION, flag, -1);
         return std::nullopt;
@@ -276,7 +297,7 @@ translator::lexical (std::istreambuf_iterator<char>& iit) {
         _current_str += *iit;         /// Текущая строка
 
         ++iit;
-        return std::optional { _ERROR::UNEXPECTED_SYMBOL };
+        return std::optional { LEXICAL::UNEXPECTED_SYMBOL };
     }
     /// END: Если символ недопустим
     return std::nullopt;
@@ -286,7 +307,7 @@ void translator::analyse (std::ifstream& _ifstream) {
     _Iter_buf eos, iit(_ifstream);
 
     while (iit != eos) {
-        std::optional<_ERROR> err_deccoment = decomment(iit);
+        std::optional<LEXICAL> err_deccoment = decomment(iit);
         if (err_deccoment != std::nullopt)  {
             InfoError iErr {
                 err_deccoment.value(),
@@ -296,7 +317,7 @@ void translator::analyse (std::ifstream& _ifstream) {
             _count_error++; }
 
         if (iit != eos) {
-            std::optional<_ERROR> err_lexical = lexical(iit);
+            std::optional<LEXICAL> err_lexical = lexical(iit);
             if (err_lexical != std::nullopt) {
                 InfoError iErr {
                     err_lexical.value(),
@@ -309,25 +330,27 @@ void translator::analyse (std::ifstream& _ifstream) {
         skip_spaces(iit);
     }
 
-    if (_bracket.size() != 0)
+    if (_bracket.size() != 0) {
         os_error << InfoError {
-            _ERROR::BRACKET_MISTAKE,
+            LEXICAL::BRACKET_MISTAKE,
             _current_lines,
             "lack: " + std::string { _bracket.top().get_bracket() } };
+        _count_error++;
+    }
 
-    std::ofstream fout(_directory / "token.txt");
+    std::ofstream fout(_parent_path / "token.txt");
     fout << os_token.str();
     fout.close();
 
-    fout.open(_directory / "error.txt");
+    fout.open(_parent_path / "error.txt");
     fout << os_error.str();
     fout.close();
 
-    fout.open(_directory / "clearcode.cpp");
+    fout.open(_parent_path / "clearcode.cpp");
     fout << trim(nocomment_code);
     fout.close();
 
-    fout.open(_directory / "table.txt");
+    fout.open(_parent_path / "table.txt");
     fout << "keywords:    \n" << keywords;
     fout << "separators:  \n" << separators;
     fout << "identifiers: \n" << identifiers;

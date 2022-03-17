@@ -14,7 +14,7 @@ public:
     explicit place(size_t _i, size_t _j) : i(_i), j(_j) { }
 
     /// Индекс
-    enum class Pos {
+    enum class POS {
         ROW,        //< Строки
         COLLUMN     //< Столбца
     };
@@ -24,7 +24,7 @@ public:
      * @param _pos
      * @return size_t Индекс строки или столбца в зависимости от выбора _pos
      */
-    size_t operator() (Pos _pos) const noexcept;
+    size_t operator() (POS _pos) const noexcept;
 
     /**
      * @brief Перегрузка оператора `operator<<` для вывода индексов в поток
@@ -36,11 +36,12 @@ public:
     friend std::ostream& operator<< (std::ostream& out, const place& _plc);
 };
 
-size_t place::operator() (Pos _pos) const noexcept {
-    return _pos == Pos::ROW ? i : j ; }
+size_t place::operator() (POS _pos) const noexcept {
+    return _pos == POS::ROW ? i : j ; }
 
 std::ostream& operator<< (std::ostream& out, const place& _plc) {
+    using enum ::place::POS;
     return out
-            << _plc(place::Pos::ROW)     << ' '
-            << _plc(place::Pos::COLLUMN) << '\n'; }
+            << _plc(ROW)     << ' '
+            << _plc(COLLUMN) << '\n'; }
 #endif /// _PLACE_HPP

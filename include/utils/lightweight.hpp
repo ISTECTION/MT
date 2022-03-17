@@ -2,6 +2,7 @@
 #define _LIGHTWEIGHT_HPP
 #include <string_view>
 #include <sstream>
+#include <vector>
 #include <cctype>
 #include <string>
 
@@ -38,4 +39,15 @@ auto print_error (std::string_view filename) -> bool {
     return false;
 }
 
+/**
+ * @brief
+ *
+ * @param _in   - Вектор для поиска элемента
+ * @param _this - Искомый елемент
+ * @return std::vector<std::string>::const_iterator
+ */
+auto find (const std::vector<std::string>& _in, const std::string& _this)
+    -> std::vector<std::string>::const_iterator {
+        return std::find(_in.begin(), _in.end(), _this);
+}
 #endif /// _LIGHTWEIGHT_HPP
