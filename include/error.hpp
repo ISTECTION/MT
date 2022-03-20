@@ -99,6 +99,8 @@ enum class SYNTACTIC {
     UNEXPECTED_TERMINAL = 1,    ///< Неожиданный терминал
     UNDECLARED_TYPE,            ///< Необъявленный тип переменной
     REPEAT_ANNOUNCEMENT,        ///< Повторное объявление переменной
+    USE_UNINITIALIZED_VARIABLE, ///< Употребление неинициализированной переменной в выражении
+
     STACK_IS_EMPTY              ///< Пустой `_states` стэк
 };
 
@@ -109,13 +111,15 @@ auto stopper (_Stream& _stream, SYNTACTIC _ERR, const std::string& _terminal) ->
 
     switch (_ERR) {
     case SYNTACTIC::UNEXPECTED_TERMINAL:
-        _stream << "unexpected terminal: "      << _terminal; break;
+        _stream << "unexpected terminal: "          << _terminal; break;
     case SYNTACTIC::STACK_IS_EMPTY:
-        _stream << "stack is empty: "           << _terminal; break;
+        _stream << "stack is empty: "               << _terminal; break;
     case SYNTACTIC::UNDECLARED_TYPE:
-        _stream << "undeclared variable type: " << _terminal; break;
+        _stream << "undeclared variable type: "     << _terminal; break;
     case SYNTACTIC::REPEAT_ANNOUNCEMENT:
-        _stream << "identifier alredy exists: " << _terminal; break;
+        _stream << "identifier alredy exists: "     << _terminal; break;
+    case SYNTACTIC::USE_UNINITIALIZED_VARIABLE:
+        _stream << "using uninitialized variable: " << _terminal; break;
 
     /// --------------- DEFAULT --------------- ///
     default: _stream << "error: " << _terminal;

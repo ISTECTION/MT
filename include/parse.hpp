@@ -186,6 +186,7 @@ auto parse::LL_parse (std::ifstream& fin_token) -> bool {
     size_t current_row = 0;                 ///< Текущая строка таблицы parse_table
 
     token _token;                           ///< Исследуемый токен из файла
+    token _token_id;
     TYPE is_set_type = TYPE::UNDEFINED;     ///< Тип идентификатора (TYPE::UNDEFINED - если не задан)
 
     std::stack<size_t> _states;             ///< Стэк состояний (В нём хранятся индексы строк для перехода, после встречи _jump == -1)
@@ -215,8 +216,23 @@ auto parse::LL_parse (std::ifstream& fin_token) -> bool {
             /// Если это принимаемый токен (В конце разбора берем следующий токен)
             if (table_parse.at(current_row)._accept) {
 
-                /// Если `=`, то будет EXPR, включаем постфиксную запись
-                if (token_text == "var") { _postfix = true; }
+                /// Если `var`, то будет `=` и EXPR, включаем постфиксную запись
+                if (token_text == "var") {
+                    _postfix = true;
+                    ///< Запоминаем токен идентификатора, для установки поля init
+                    ///< Если после него последовует знак `=`
+                    _token_id = _token;
+                }
+
+                /// Если мы находимся на символе `=` и тип идентификатора не определен
+                if (token_text == "=" && _token_id.get_table() != TABLE::NOT_DEFINED) {
+                    place _pl = _token_id.get_place();
+                    std::optional<lexeme> _lexeme = this->identifiers.get_lexeme(_pl);
+                    /// Если поле init == false, устнавливаем ему значение
+                    if (_lexeme.value().get_init() == false) {
+                        this->identifiers.set_value(_pl, true);
+                    }
+                }
 
                 if (_postfix == true) {
                     /// Если это унарный минус
@@ -237,7 +253,20 @@ auto parse::LL_parse (std::ifstream& fin_token) -> bool {
                         _infix_token_arr.push_back(token { TABLE::OPERATION, _position, -1 });
                     }
                     /// Иначе добавляем токен в инфиксную запись
-                    else { _infix_token_arr.push_back(_token); }
+                    else {
+                        /// Если находимся на переменной в выражении (46 - иницализации, 69 - объявления)
+                        if (token_text == "var" && current_row != 46 && current_row != 69) {
+                            place _pl = _token_id.get_place();
+                            std::optional<lexeme> _lexeme = this->identifiers.get_lexeme(_pl);
+
+                            /// Если она не инициализирована, выбрасыем ошибку
+                            if (_lexeme.value().get_init() == false) {
+                                _count_error++;
+                                return stopper(os_error, SYNTACTIC::USE_UNINITIALIZED_VARIABLE, _lexeme.value().get_name());
+                            }
+                        }
+                        _infix_token_arr.push_back(_token);
+                    }
                 }
 
                 /// Если закончили разбор присваивания или части объявления
@@ -247,8 +276,9 @@ auto parse::LL_parse (std::ifstream& fin_token) -> bool {
                     /// Например: int a; | 1-ый токен: a | 2-ой токен: ; |
                     /// В этом случае не будем строить постфиксную запись выражения
                     if (_infix_token_arr.size() > 2) { make_postfix(_infix_token_arr); }
-                    _infix_token_arr.clear();           /// Очищаем вектор
-                    _postfix = false;                   /// Выключаем постфиксную запись
+                    _infix_token_arr.clear();                       /// Очищаем вектор
+                    _postfix = false;                               /// Выключаем постфиксную запись
+                    _token_id = token { TABLE::NOT_DEFINED, 0, 0 }; /// Стираем токен текущего идентификатора
                 }
 
                 /// Если закончили разбор строки, сбрасываем флаг объявления
@@ -262,12 +292,19 @@ auto parse::LL_parse (std::ifstream& fin_token) -> bool {
                     case "char"_hash: is_set_type = TYPE::CHAR; break;
                 }
 
+                /// Если это объявление переменной (69) и задан тип переменной
                 if (token_text == "var" && is_set_type != TYPE::UNDEFINED && current_row == 69) {
                     std::optional<lexeme> _lexeme = this->identifiers.get_lexeme(_token.get_place());
+
+                    /// Если у данного идентифкатора уже утсановлен тип
+                    /// То это повторное объявление идентификатора
+                    /// Или использование одинакового имени переменной
                     if (_lexeme.value().get_type() != TYPE::UNDEFINED) {
                         _count_error++;
                         return stopper(os_error, SYNTACTIC::REPEAT_ANNOUNCEMENT, _lexeme.value().get_name());
                     }
+
+                    /// В противном случае, все отлично, просто устанавливаем тип идентификатору
                     this->identifiers.set_type(_token.get_place(), is_set_type);
                 }
 
