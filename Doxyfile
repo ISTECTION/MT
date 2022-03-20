@@ -881,7 +881,7 @@ INPUT                  =    \
     include/token.hpp             \
     include/place.hpp             \
     include/error.hpp             \
-    include/parce.hpp             \
+    include/parse.hpp             \
     src/main.cpp                  \
 
 # This tag can be used to specify the character encoding of the source files
