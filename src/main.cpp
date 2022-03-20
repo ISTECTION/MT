@@ -34,10 +34,12 @@ int main(int argc, const char* argv[]) {
         path _inp = _prs.get<std::string>("-i");
 
         cxxtimer::Timer _timer(true);
-        parse _parser(_inp, _prs);
+        parse _parser(_inp);
         _timer.stop();
         std::cout << _timer;
 
+
+        _parser.print_table(_prs.get<bool>("--table"));
         if (_prs.get<bool>("--parse-table")) { std::cout << _parser; }
 
     } catch(const std::runtime_error& err) {

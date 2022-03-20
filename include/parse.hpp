@@ -50,9 +50,8 @@ private:
     std::ostringstream os_postfix;
 
 public:
-    explicit parse(const std::filesystem::path& _inp,
-        std::optional<argparse::ArgumentParser> _prs = std::nullopt)
-        : translator(_inp, _prs),
+    explicit parse(const std::filesystem::path& _inp)
+        : translator(_inp),
           _count_error(0) {
 
         if (this->syntax_fail()) {

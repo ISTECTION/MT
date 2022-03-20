@@ -38,19 +38,14 @@ private:
     /// Директория для генерации файлов: tokens && error
     std::filesystem::path _parent_path;
 
-    /// Класс хранит аргументы переданные программе
-    std::optional<argparse::ArgumentParser> _prs;
-
 public:
-    explicit translator (const std::filesystem::path& _src_path,
-        std::optional<argparse::ArgumentParser> _prs = std::nullopt)
+    explicit translator (const std::filesystem::path& _src_path)
         : operations(path_const_table::operations),
           keywords(path_const_table::keywords),
           separators(path_const_table::separators),
           _parent_path(_src_path.parent_path()),
           _current_lines(1),
-          _count_error(0),
-          _prs(_prs) {
+          _count_error(0) {
 
         auto print_error =
             [](std::string_view filename) -> bool {
@@ -81,6 +76,8 @@ public:
         } else
             throw std::runtime_error("not table: (TABLE::IDENTIFIERS || TABLE::CONSTANTS)");
     }
+
+    void print_table (bool _prs_table) const;
 
 private:
     /// Лексический анализ
@@ -329,7 +326,7 @@ void translator::analyse (std::ifstream& _ifstream) {
             InfoError iErr { err_deccoment.value(), _current_lines, _current_str };
 
             os_error << iErr;
-            _count_error++; 
+            _count_error++;
         }
 
         if (iit != eos) {
@@ -339,7 +336,7 @@ void translator::analyse (std::ifstream& _ifstream) {
 
                 os_error << iErr;
                 _count_error++;
-            } 
+            }
         }
 
         skip_spaces(iit);
@@ -364,8 +361,11 @@ void translator::analyse (std::ifstream& _ifstream) {
     fout.open(_parent_path / "clearcode.cpp");
     fout << trim(nocomment_code);
     fout.close();
+}
 
-    fout.open(_parent_path / "table.txt");
+void translator::print_table (bool _prs_table) const {
+
+    std::ofstream fout(_parent_path / "table.txt");
     fout << "keywords:    \n" << keywords;
     fout << "separators:  \n" << separators;
     fout << "identifiers: \n" << identifiers;
@@ -373,7 +373,7 @@ void translator::analyse (std::ifstream& _ifstream) {
     fout << "operations:  \n" << operations;
     fout.close();
 
-    if (_prs != std::nullopt && _prs.value().get<bool>("--table")) {
+    if (_prs_table) {
         std::cout << trim(nocomment_code) << std::endl;
 
         std::cout << "keywords:    \n" << keywords;
@@ -386,4 +386,5 @@ void translator::analyse (std::ifstream& _ifstream) {
         std::cout << "error: \n" << os_error.str() << std::endl;
     }
 }
+
 #endif /// _TRANSLATOR_HPP
