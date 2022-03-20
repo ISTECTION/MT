@@ -167,9 +167,16 @@ auto parse::read_parse_table (std::ifstream& fin) -> void {
 
 auto parse::base (std::ifstream& fin) -> void {
     bool _error = LL_parse(fin);
+    if (_error == false) {
+        std::cerr << "lexical analyzer has detected error" << '\n';
+    }
+    std::ofstream fout(this->get_parrent_path() / "postfix.txt");
+    fout << os_postfix.str();
+    fout.close();
 
-    std::cout << "postfix: \n" << os_postfix.str() << std::endl;
-    std::cout << "error: \n"   << os_error.str()   << std::endl;
+    fout.open(this->get_parrent_path() / "syntactic_error.txt");
+    fout << os_error.str();
+    fout.close();
 }
 
 auto parse::LL_parse (std::ifstream& fin_token) -> bool {
@@ -287,10 +294,8 @@ auto parse::LL_parse (std::ifstream& fin_token) -> bool {
                     _states.pop();
                 }
             /// Если поле _return != 1, то перемешаемся на строку _jump таблицы table_parse
-            } else {
-                current_row = table_parse.at(current_row)._jump;
-                std::cout << "_jump: " << ' ' << current_row << '\n';
-            }
+            } else { current_row = table_parse.at(current_row)._jump; }
+
         }
 
     /// Пока не конец файла

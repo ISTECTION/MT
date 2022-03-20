@@ -411,7 +411,7 @@ void translator::analyse (std::ifstream& _ifstream) {
     fout << os_token.str();
     fout.close();
 
-    fout.open(_parent_path / "error.txt");
+    fout.open(_parent_path / "lexical_error.txt");
     fout << os_error.str();
     fout.close();
 
@@ -431,16 +431,11 @@ void translator::print_table (bool _prs_table) const {
     fout.close();
 
     if (_prs_table) {
-        std::cout << trim(nocomment_code) << std::endl;
-
         std::cout << "keywords:    \n" << keywords;
         std::cout << "separators:  \n" << separators;
         std::cout << "identifiers: \n" << identifiers;
         std::cout << "constants:   \n" << constants;
         std::cout << "operations:  \n" << operations;
-
-        std::cout << "token: \n" << os_token.str() << std::endl;
-        std::cout << "error: \n" << os_error.str() << std::endl;
     }
 }
 
