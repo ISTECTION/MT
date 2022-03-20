@@ -1,7 +1,5 @@
 #include "argparse/argparse.hpp"
-
-#include "translator.hpp"
-#include "parse.hpp"
+#include "cxxtimer/cxxtimer.hpp"
 
 #include <filesystem>
 #include <iostream>
@@ -10,6 +8,7 @@
 #include <sstream>
 #include <string>
 
+#include "parse.hpp"
 
 int main(int argc, const char* argv[]) {
     std::ios_base::sync_with_stdio(false);
@@ -18,7 +17,13 @@ int main(int argc, const char* argv[]) {
         .help( "path to input files" )
         .required();
 
-    _prs.add_argument("-p", "--print")
+    _prs.add_argument("-t", "--table")
+        .help("Print table to console")
+        .default_value(false)
+        .implicit_value(true);
+
+
+    _prs.add_argument("--parse-table")
         .help("Print table to console")
         .default_value(false)
         .implicit_value(true);
@@ -26,15 +31,17 @@ int main(int argc, const char* argv[]) {
     try {
         using ::std::filesystem::path;
         _prs.parse_args(argc, argv);
-
         path _inp = _prs.get<std::string>("-i");
-        parse _parser(_inp, _prs);
 
-        // if (_prs.get<bool>("-p"))
-        //     std::cout << _parser;
+        cxxtimer::Timer _timer(true);
+        parse _parser(_inp, _prs);
+        _timer.stop();
+        std::cout << _timer;
+
+        if (_prs.get<bool>("--parse-table")) { std::cout << _parser; }
 
     } catch(const std::runtime_error& err) {
-        constexpr size_t args_no_received = 2;
+        constexpr std::size_t args_no_received { 2 };
         std::cerr << err.what() << std::endl;
         std::cerr <<    _prs    << std::endl;
         std::exit(args_no_received);

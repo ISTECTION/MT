@@ -9,27 +9,84 @@
 #include <fstream>
 #include <string>
 #include <set>
+#include <map>
 
 namespace path_const_table {
-    const std::filesystem::path
+///     letters     = "file/const/table_letters.txt",
+///     digits      = "file/const/table_digits.txt",
 
-    ///    letters     = "file/const/table_letters.txt",
-    ///    digits     = "file/const/table_digits.txt",
+    const std::filesystem::path
         keywords    = "file/const/table_keywords.txt",
         operations  = "file/const/table_operations.txt",
         separators  = "file/const/table_separators.txt";
 }
 
+template <class _Type> class const_table;
+
+
+template <class _Type>
+class const_table_operation : public const_table<_Type>
+{
+private:
+    std::map<_Type, std::size_t> _priority_oper;
+
+public:
+    explicit const_table_operation (const std::filesystem::path& _path) : const_table<_Type>() {
+        std::ifstream fin(_path);
+        bool is_open = read_file(fin);
+
+        if (is_open == false)
+            std::cerr
+                << "file not open: "
+                << _path.string().c_str()
+                << '\n';
+    }
+
+    std::size_t get_priority (_Type _operation) const {
+        auto it = _priority_oper.find(_operation);
+
+        return it == _priority_oper.end()
+            ? throw std::runtime_error("priority operation not found: " + _operation)
+            : it->second ;
+    }
+
+private:
+    /**
+     * @brief Функция чтения файла
+     */
+    bool read_file (std::ifstream& _istream) override {
+        auto _read = [this](std::ifstream& _istream) -> bool {
+            std::size_t _priority_count;
+            for (_Type elem; _istream >> elem >> _priority_count;
+            this->add(elem), add_priority(elem, _priority_count));
+            return true; };
+        return _istream.is_open() ? _read(_istream) : false;
+    }
+
+    /**
+     * @brief Добавляет элемент в таблицу
+     * @param elem Элемент, который нужно добавить
+     */
+    inline void add_priority (_Type elem, std::size_t _count_p);
+};
+
+template <class _Type>
+inline void const_table_operation<_Type>::add_priority (_Type elem, std::size_t _count_p) {
+    _priority_oper.insert(std::pair<_Type, std::size_t>(elem, _count_p));
+}
+
 /**
  * @brief Шаблонный класс хранящий константные таблицы
  */
-template <typename _Type>
+template <class _Type>
 class const_table
 {
 private:
     std::set<_Type> table;
 
 public:
+    const_table () { }
+
     explicit const_table (const std::filesystem::path& _path) {
         std::ifstream fin(_path);
         bool is_open = read_file(fin);
@@ -90,12 +147,12 @@ public:
      */
     typename std::set<_Type>::const_iterator end () const;
 
-private:
+protected:
 
     /**
      * @brief Функция чтения файла
      */
-    bool read_file (std::ifstream& );
+    virtual bool read_file (std::ifstream& );
 
     /**
      * @brief Добавляет элемент в таблицу
@@ -145,10 +202,10 @@ std::optional<_Type> const_table<_Type>::get_elem (size_t num) const {
 
 template <typename _Type>
 bool const_table<_Type>::read_file (std::ifstream& _istream) {
-    auto read = [this](std::ifstream& _istream) -> bool {
+    auto _read = [this](std::ifstream& _istream) -> bool {
         for (_Type elem; _istream >> elem; add(elem));
         return true; };
-    return _istream.is_open() ? read(_istream) : false;
+    return _istream.is_open() ? _read(_istream) : false;
 }
 
 template <typename _Type>

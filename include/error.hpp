@@ -6,7 +6,7 @@
 /// ------- Лексические ошибки ------- ///
 
 enum class LEXICAL {
-    UNEXPECTED_SYMBOL,      ///< Неожиданный символ
+    UNEXPECTED_SYMBOL = 1,  ///< Неожиданный символ
     EOF_FILE,               ///< Неожиданный конец файла
     UNCLOSED_COMMENT,       ///< Незакрытый комментарий
     OPERATION_NOT_EXIST,    ///< Несуществующая операция
@@ -67,7 +67,7 @@ public:
 
 template <typename _Stream>
 _Stream& operator<< (_Stream& _stream, const InfoError _info) {
-    _stream << std::setw(4) << _info.get_line() << " | Error: ";
+    _stream << std::setw(4) << _info.get_line() << " | lexical error: ";
 
     switch (_info.get_error()) {
     case LEXICAL::UNEXPECTED_SYMBOL:
@@ -98,26 +98,31 @@ _Stream& operator<< (_Stream& _stream, const InfoError _info) {
 
 /// Заглушка (Возвращает номер ошибки)
 enum class SYNTACTIC {
-    UNEXPECTED_TERMINAL,        ///< Неожиданный терминал
-    STACK_IS_EMPTY
-
+    UNEXPECTED_TERMINAL = 1,    ///< Неожиданный терминал
+    UNDECLARED_TYPE,            ///< Необъявленный тип переменной
+    REPEAT_ANNOUNCEMENT,        ///< Повторное объявление переменной
+    STACK_IS_EMPTY              ///< Пустой `_states` стэк
 };
-
 
 template <typename _Stream>
 auto stopper (_Stream& _stream, SYNTACTIC _ERR, const std::string& _terminal) -> size_t {
-    _stream << "syntax error: ";
+    _stream << "syntax error: | ";
 
     switch (_ERR) {
     case SYNTACTIC::UNEXPECTED_TERMINAL:
-        _stream << "unexpected terminal" << ' ' << _terminal;   break;
+        _stream << "unexpected terminal: "       << _terminal; break;
 
     case SYNTACTIC::STACK_IS_EMPTY:
-        _stream << "stack is empty"      << ' ' << _terminal;   break;
+        _stream << "stack is empty: "           << _terminal; break;
 
+    case SYNTACTIC::UNDECLARED_TYPE:
+        _stream << "undeclared variable type: " << _terminal; break;
+
+    case SYNTACTIC::REPEAT_ANNOUNCEMENT:
+        _stream << "identifier alredy exists: " << _terminal; break;
 
     /// --------------- DEFAULT --------------- ///
-    default: _stream << "error" << ' ' << _terminal;
+    default: _stream << "error: " << _terminal;
     /// --------------- DEFAULT --------------- ///
     }
     return to_underlying(_ERR);

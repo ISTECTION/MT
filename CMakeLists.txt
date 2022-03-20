@@ -2,13 +2,16 @@ cmake_minimum_required(VERSION 3.14 FATAL_ERROR)
 
 project(mt VERSION 1.0 LANGUAGES CXX)
 
-set(EXECUTABLE_OUTPUT_PATH "bin")
+set(CMAKE_CXX_FLAGS_RELEASE "-O1")
+set(EXECUTABLE_OUTPUT_PATH  "bin")
 set(SOURCES src/main.cpp)
 
 set(HEADERS
     include/argparse/argparse.hpp
+    include/cxxtimer/cxxtimer.hpp
     include/tabulate/tabulate.hpp
     include/const_table.hpp
+    include/translator.hpp
     include/var_table.hpp
     include/lexeme.hpp
     include/token.hpp

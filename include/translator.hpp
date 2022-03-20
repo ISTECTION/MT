@@ -24,22 +24,13 @@ private:
     /// Стэк для хранения скобок
     std::stack<InfoBracket> _bracket;
 
-    /// Постоянные таблицы
-    const_table<std::string> operations;    /// 1
-    const_table<std::string> keywords;      /// 2
-    const_table<std::string> separators;    /// 3
-
-    /// Переменные таблицы
-    var_table identifiers;                  /// 4
-    var_table constants;                    /// 5
-
     /// Поток для записи токенов и ошибок
     std::ostringstream os_token, os_error;
     size_t _count_error;
 
     /// Текущий номер линии
     std::string _current_str;
-    size_t _current_lines;
+    size_t      _current_lines;
 
     /// Поток для записи анализируемого кода без комментариев
     std::ostringstream nocomment_code;
@@ -70,8 +61,8 @@ public:
 
         std::ifstream fin(_src_path);
         fin.is_open()
-            ? analyse(fin)
-            : assert(print_error(std::filesystem::canonical(_src_path.filename()).string()));
+          ? analyse(fin)
+          : assert(print_error(std::filesystem::canonical(_src_path.filename()).string()));
         fin.close();
     }
 
@@ -80,6 +71,16 @@ public:
     std::filesystem::path get_parrent_path () const { return _parent_path; }
 
     std::string get_token_text (const token& _tkn) const;
+
+    var_table& get_var_table(TABLE _table) {
+
+        if (_table == TABLE::IDENTIFIERS || _table == TABLE::CONSTANTS) {
+            return _table == TABLE::IDENTIFIERS
+                ? identifiers
+                : constants ;
+        } else
+            throw std::runtime_error("not table: (TABLE::IDENTIFIERS || TABLE::CONSTANTS)");
+    }
 
 private:
     /// Лексический анализ
@@ -94,6 +95,16 @@ private:
 
     /// Пропустить ['\n', '\t', ' ']
     void skip_spaces (std::istreambuf_iterator<char>& );
+
+protected:
+    /// Постоянные таблицы
+    const_table_operation<std::string> operations;  /// 1
+    const_table<std::string> keywords;              /// 2
+    const_table<std::string> separators;            /// 3
+
+    /// Переменные таблицы
+    var_table identifiers;                          /// 4
+    var_table constants;                            /// 5
 };
 
 std::string
@@ -128,8 +139,14 @@ translator::balanced (std::istreambuf_iterator<char>& iit) {
     return std::nullopt;
 }
 
+
 void translator::skip_spaces (std::istreambuf_iterator<char>& iit) {
-    for (; *iit == '\n' || *iit == '\t' || *iit == ' '; ++iit) {
+    using _eos_buf = ::std::istreambuf_iterator<char>;
+
+    if (iit == _eos_buf())
+        return;
+
+    for ( ; *iit == '\n' || *iit == '\t' || *iit == ' '; ++iit) {
 
         _current_str   += *iit;         /// Текущая строка
         nocomment_code << *iit;
@@ -309,23 +326,21 @@ void translator::analyse (std::ifstream& _ifstream) {
     while (iit != eos) {
         std::optional<LEXICAL> err_deccoment = decomment(iit);
         if (err_deccoment != std::nullopt)  {
-            InfoError iErr {
-                err_deccoment.value(),
-                _current_lines,
-                _current_str };
+            InfoError iErr { err_deccoment.value(), _current_lines, _current_str };
+
             os_error << iErr;
-            _count_error++; }
+            _count_error++; 
+        }
 
         if (iit != eos) {
             std::optional<LEXICAL> err_lexical = lexical(iit);
             if (err_lexical != std::nullopt) {
-                InfoError iErr {
-                    err_lexical.value(),
-                    _current_lines,
-                    _current_str };
-                    os_error << iErr;
+                InfoError iErr { err_lexical.value(), _current_lines, _current_str };
+
+                os_error << iErr;
                 _count_error++;
-            } }
+            } 
+        }
 
         skip_spaces(iit);
     }
@@ -358,7 +373,7 @@ void translator::analyse (std::ifstream& _ifstream) {
     fout << "operations:  \n" << operations;
     fout.close();
 
-    if (_prs != std::nullopt && _prs.value().get<bool>("-p")) {
+    if (_prs != std::nullopt && _prs.value().get<bool>("--table")) {
         std::cout << trim(nocomment_code) << std::endl;
 
         std::cout << "keywords:    \n" << keywords;

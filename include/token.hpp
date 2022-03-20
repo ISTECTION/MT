@@ -1,7 +1,11 @@
 #ifndef _TOKEN_HPP
 #define _TOKEN_HPP
-#include <iostream>
-#include <type_traits>
+#include "place.hpp"
+
+#include <iostream>         /// std::ostream
+#include <stdexcept>        /// std::runtime_error
+#include <type_traits>      /// std::underlying_type_t
+
 
 template <typename E>
 constexpr auto to_underlying(E e) noexcept {
@@ -37,6 +41,17 @@ public:
     TABLE  get_table   () const { return table; }
     size_t get_row     () const { return i;     }
     int    get_column  () const { return j;     }
+
+    /**
+     * @brief Возвращает класс place содержащий значение строки и колонки лексемы
+     *
+     * @return place
+     */
+    place get_place () const {
+        if (table == TABLE::IDENTIFIERS || table == TABLE::CONSTANTS)
+            return place { i, static_cast<std::size_t>(j) };
+        else throw std::runtime_error("table != (TABLE::IDENTIFIERS | TABLE::CONSTANTS)");
+    }
 
     /**
      * @brief Перегрузка оператора `operator<<` для вывода токена в поток
