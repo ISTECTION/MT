@@ -38,14 +38,31 @@ public:
     explicit token()
         : table(TABLE::NOT_DEFINED), i(0), j(0) { }
 
-    TABLE  get_table   () const { return table; }
-    size_t get_row     () const { return i;     }
-    int    get_column  () const { return j;     }
+    /**
+     * @brief Возвращает номер таблицы
+     *
+     * @return TABLE Enum с названиями таблиц
+     */
+    TABLE get_table   () const { return table; }
+
+    /**
+     * @brief Возвращает номер строки
+     *
+     * @return size_t Исключительно положительное число
+     */
+    size_t get_row () const { return i; }
+
+    /**
+     * @brief Возвращает номер колонки
+     *
+     * @return int Может принимать значени -1, для постоянных таблиц
+     */
+    int get_column () const { return j; }
 
     /**
      * @brief Возвращает класс place содержащий значение строки и колонки лексемы
      *
-     * @return place
+     * @return place Класс хранящий 2 значения
      */
     place get_place () const {
         if (table == TABLE::IDENTIFIERS || table == TABLE::CONSTANTS)
@@ -63,6 +80,13 @@ public:
     friend std::ostream& operator<< (std::ostream& out, const token& _tkn);
 
 
+    /**
+     * @brief Перешрузка оператора `operator>>` для ввода токена из потока
+     *
+     * @param in   Поток (Например: std::cin, std::ifstream)
+     * @param _tkn Екземляр класса, в который будем записывать токен
+     * @return std::istream&
+     */
     friend std::istream& operator>> (std::istream& in, token& _tkn);
 };
 
@@ -83,5 +107,4 @@ std::istream& operator>> (std::istream& in, token& _tkn) {
     _tkn.table = static_cast<TABLE>(table);
     return in;
 }
-
 #endif /// _TOKEN_HPP

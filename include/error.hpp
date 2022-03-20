@@ -4,7 +4,7 @@
 #include <iomanip>
 
 /// ------- Лексические ошибки ------- ///
-
+/// ENUM: Возможные лексические ошибки
 enum class LEXICAL {
     UNEXPECTED_SYMBOL = 1,  ///< Неожиданный символ
     EOF_FILE,               ///< Неожиданный конец файла
@@ -90,13 +90,11 @@ _Stream& operator<< (_Stream& _stream, const InfoError _info) {
     _stream << std::setw(4) << "" << " | " << _info.get_str() << '\n';
     return _stream;
 }
-
 /// ------- Лексические ошибки ------- ///
 
 
 /// ----- Синтаксические ошибки ----- ///
-
-/// Заглушка (Возвращает номер ошибки)
+/// ENUM: Возможные синтаксические ошибки
 enum class SYNTACTIC {
     UNEXPECTED_TERMINAL = 1,    ///< Неожиданный терминал
     UNDECLARED_TYPE,            ///< Необъявленный тип переменной
@@ -104,20 +102,18 @@ enum class SYNTACTIC {
     STACK_IS_EMPTY              ///< Пустой `_states` стэк
 };
 
+/// Заглушка (Возвращает номер ошибки)
 template <typename _Stream>
 auto stopper (_Stream& _stream, SYNTACTIC _ERR, const std::string& _terminal) -> size_t {
     _stream << "syntax error: | ";
 
     switch (_ERR) {
     case SYNTACTIC::UNEXPECTED_TERMINAL:
-        _stream << "unexpected terminal: "       << _terminal; break;
-
+        _stream << "unexpected terminal: "      << _terminal; break;
     case SYNTACTIC::STACK_IS_EMPTY:
         _stream << "stack is empty: "           << _terminal; break;
-
     case SYNTACTIC::UNDECLARED_TYPE:
         _stream << "undeclared variable type: " << _terminal; break;
-
     case SYNTACTIC::REPEAT_ANNOUNCEMENT:
         _stream << "identifier alredy exists: " << _terminal; break;
 
@@ -127,7 +123,6 @@ auto stopper (_Stream& _stream, SYNTACTIC _ERR, const std::string& _terminal) ->
     }
     return to_underlying(_ERR);
 }
-
 /// ----- Синтаксические ошибки ----- ///
 
 #endif /// _ERROR_HPP

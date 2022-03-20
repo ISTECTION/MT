@@ -61,12 +61,43 @@ public:
         fin.close();
     }
 
+    /**
+     * @brief Функция возвращает true, если не было обнаружено ошибок при лексическом анализе
+     *
+     * @return true  Успех
+     * @return false Неудача
+     */
     bool syntax_success () const { return _count_error ? false : true; }
+
+    /**
+     * @brief Функция возвращает true, если была обнаружена хотя бы одна ошибка при лексическом анализе
+     *
+     * @return true  Одна и более ошибок
+     * @return false Лексический анализатор не обнаружил ошибок
+     */
     bool syntax_fail    () const { return not syntax_success(); }
+
+    /**
+     * @brief Возвращает родительскую дирректорию файла, который был отправлен на анализ
+     *
+     * @return std::filesystem::path Путь
+     */
     std::filesystem::path get_parrent_path () const { return _parent_path; }
 
+    /**
+     * @brief Возвращает строкове значение имени токена
+     *
+     * @param _tkn Токен в виде (TABLE, I, J)
+     * @return std::string Строкове значение константной таблицы или var - в случае индентификатора и const - константы
+     */
     std::string get_token_text (const token& _tkn) const;
 
+    /**
+     * @brief Возвращает ссылку на одну из переменных таблицу
+     *
+     * @param _table Номер таблицы (TABLE::IDENTIFIERS или TABLE::CONSTANTS)
+     * @return var_table& Ссылка
+     */
     var_table& get_var_table(TABLE _table) {
 
         if (_table == TABLE::IDENTIFIERS || _table == TABLE::CONSTANTS) {
@@ -77,31 +108,57 @@ public:
             throw std::runtime_error("not table: (TABLE::IDENTIFIERS || TABLE::CONSTANTS)");
     }
 
+    /**
+     * @brief Распечать таблицу
+     *
+     * @param _prs_table true - на консоль и в файл, false - только в файл
+     */
     void print_table (bool _prs_table) const;
 
 private:
-    /// Лексический анализ
+
+    /**
+     * @brief Лексический анализатор
+     *
+     */
     void analyse(std::ifstream& );
 
-    /// Очистка от комментариев
+    /**
+     * @brief Функция очистки кода от комментариев (от текущего положения и до конца комментария)
+     *
+     * @return std::optional<LEXICAL> Ошибка. Например: открытый комментарий в случае конца файла
+     */
     std::optional<LEXICAL> decomment (std::istreambuf_iterator<char>& );
+
+    /**
+     * @brief Обработка всех возможных цепочек языка, таких как идентификаторы, константы, ключевые слова, операции и разделители
+     *
+     * @return std::optional<LEXICAL> Ошибка. Например: внезапная буква в цепочке цифр `int size = 123a;`
+     */
     std::optional<LEXICAL> lexical (std::istreambuf_iterator<char>& );
 
-    /// РГЗ : Вариант 7
+    /**
+     * @brief РГЗ : Вариант 7 (Ошибки в употреблении скобок)
+     *
+     * @return std::optional<LEXICAL> Ошибка в случае неравного количеста открывающих и закрывающих скобок
+     */
     std::optional<LEXICAL> balanced (std::istreambuf_iterator<char>& );
 
-    /// Пропустить ['\n', '\t', ' ']
+    ///
+
+    /**
+     * @brief Функция пропускает все виды пробелов, такие как - ['\n', '\t', ' ']
+     *
+     */
     void skip_spaces (std::istreambuf_iterator<char>& );
 
 protected:
-    /// Постоянные таблицы
-    const_table_operation<std::string> operations;  /// 1
-    const_table<std::string> keywords;              /// 2
-    const_table<std::string> separators;            /// 3
+    const_table_operation<std::string> operations;  ///< Постоянная таблица #1 (Таблица операций и приоритетов)
+    const_table<std::string> keywords;              ///< Постоянная таблица #2 (Таблица ключевых слов)
+    const_table<std::string> separators;            ///< Постоянная таблица #3 (Таблица разделителей)
 
-    /// Переменные таблицы
-    var_table identifiers;                          /// 4
-    var_table constants;                            /// 5
+    var_table identifiers;                          ///< Переменная таблица #4 (Таблица идентификаторов)
+    var_table constants;                            ///< Переменная таблица #5 (Таблица констант)
 };
 
 std::string

@@ -38,16 +38,13 @@ public:
 class parse : public translator
 {
 private:
-    std::vector<table_parse_elem> table_parse;
+    std::vector<table_parse_elem> table_parse;  ///< Постоянная таблица для переходов
 
-    /// Количество ошибок
-    size_t _count_error;
+    size_t _count_error;            ///< Количество ошибок
 
-    /// Поток для записи ошибок
-    std::ostringstream os_error;
+    std::ostringstream os_error;    ///< Поток для записи ошибок
 
-    /// Поток для записи постфиксной записи выражений
-    std::ostringstream os_postfix;
+    std::ostringstream os_postfix;  ///< Поток для записи постфиксной записи выражений
 
 public:
     explicit parse(const std::filesystem::path& _inp)
@@ -75,18 +72,65 @@ public:
         fin.close();
     }
 
+    /**
+     * @brief Перегрузка оператора `operator<<` для вывода постоянно таблицы в поток
+     *
+     * @param out  Поток (Например: std::cout, std::ofstream)
+     * @param _prs Екземпляр класса parse
+     * @return std::ostream&
+     */
     friend std::ostream& operator<< (std::ostream& out, const parse& _prs);
 
+    /**
+     * @brief Функция возвращает константный указатель на начало постоянной таблицы синтаксического анализатора
+     *
+     * @return std::vector<table_parse_elem>::const_iterator
+     */
     std::vector<table_parse_elem>::const_iterator begin () const { return table_parse.begin(); };
-    std::vector<table_parse_elem>::const_iterator end   () const { return table_parse.end();   };
 
+    /**
+     * @brief Функция возвращает константный указатель на конец постоянной таблицы синтаксического анализатора
+     *
+     * @return std::vector<table_parse_elem>::const_iterator
+     */
+    std::vector<table_parse_elem>::const_iterator end () const { return table_parse.end(); };
 
 private:
+
+    /**
+     * @brief Функция читает постоянную таблицу `file/const/parsing_table.txt` в вектор структур 'table_parse'
+     *
+     */
     auto read_parse_table (std::ifstream& ) -> void;
 
+    /**
+     * @brief Базовая функция синтаксического анализатора с которой начинается запуск процесса
+     *
+     */
     auto base (std::ifstream& ) -> void;
+
+    /**
+     * @brief LL-анализатор (LL-parser)
+     *
+     * @return true  Если не было выявлено синтаксических ошибок
+     * @return false Если была замечена ошибка
+     */
     auto LL_parse (std::ifstream& ) -> bool;
+
+    /**
+     * @brief Функция преобразует инфиксную форму записи выражения в постфиксную
+     *
+     */
     auto make_postfix (const std::vector<token>& ) -> void;
+
+    /**
+     * @brief Функция сравнивает приоритеты операций
+     *
+     * @param _left  Левая операция  (Находящаяся на вершине стэка при построении постфиксной формы)
+     * @param _right Правая операция (Текущая)
+     * @return true  Если приоритет правой оперции >= левой
+     * @return false Если приоритет правой оперции <  левой
+     */
     auto priority (const std::string& _left, const std::string& _right) -> bool;
 };
 

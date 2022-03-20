@@ -2,11 +2,11 @@
 #define _LEXEME_HPP
 #include <string>
 
-/// Возможные типы идентификаторов
+/// ENUM: Возможные типы идентификаторов
 enum class TYPE {
-    UNDEFINED,  //< Не установленно
-    INT,        //< int
-    CHAR        //< char
+    UNDEFINED,  ///< Не установленно
+    INT,        ///< int
+    CHAR        ///< char
 };
 
 /**
@@ -17,10 +17,10 @@ class lexeme
 private:
     std::string name;
 
-    /// Тип идентификатора
-    /// 0 - Не определён
-    /// 1 - int
-    /// 2 - char
+    ///< Тип идентификатора
+    ///< 0 - Не определён
+    ///< 1 - int
+    ///< 2 - char
     TYPE type;
 
     /// Параметр отвечающий за инициализацию идентификатора
