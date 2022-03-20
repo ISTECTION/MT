@@ -54,7 +54,7 @@ public:
         if (this->syntax_fail()) {
             std::cerr
                 << "generate error file: "
-                << (_inp.parent_path() / "error.txt").string()
+                << (_inp.parent_path() / "lexical_error.txt").string()
                 << '\n';
             assert(false);
         }

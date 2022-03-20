@@ -377,6 +377,7 @@ translator::lexical (std::istreambuf_iterator<char>& iit) {
 void translator::analyse (std::ifstream& _ifstream) {
     _Iter_buf eos, iit(_ifstream);
 
+    skip_spaces(iit);
     while (iit != eos) {
         std::optional<LEXICAL> err_deccoment = decomment(iit);
         if (err_deccoment != std::nullopt)  {
@@ -395,7 +396,6 @@ void translator::analyse (std::ifstream& _ifstream) {
                 _count_error++;
             }
         }
-
         skip_spaces(iit);
     }
 

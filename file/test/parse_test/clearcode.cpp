@@ -6,4 +6,6 @@ int main () {
     int t, g = 222;
     char w = 2;
     int v = w >> 5;
+    int test_, test_2 = 22, test_3;
+    return;
 }
