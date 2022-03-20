@@ -20,7 +20,7 @@ TEST(Lexeme, operator) {
 
 /// ~~~~~ CONST_TABLE ~~~~~ ///
 TEST(ConstTable, contains) {
-    const_table<string> key_table(Path_Const_Table::keywords);
+    const_table<string> key_table(path_const_table::keywords);
 
     ASSERT_EQ(key_table.contains("int"),  true);
     ASSERT_EQ(key_table.contains("char"), true);
@@ -30,7 +30,7 @@ TEST(ConstTable, contains) {
 }
 
 TEST(ConstTable, get_num) {
-    const_table<string> key_table(Path_Const_Table::keywords);
+    const_table<string> key_table(path_const_table::keywords);
 
     ASSERT_EQ(key_table.get_num("char"),   0);
     ASSERT_EQ(key_table.get_num("int"),    1);
@@ -40,7 +40,7 @@ TEST(ConstTable, get_num) {
 }
 
 TEST(ConstTable, get_elem) {
-    const_table<string> key_table(Path_Const_Table::keywords);
+    const_table<string> key_table(path_const_table::keywords);
 
     std::optional<std::string> _opt = key_table.get_elem(3);
     ASSERT_EQ(_opt.value(), "return");
@@ -77,7 +77,7 @@ TEST(VarTable, find_in_table) {
     std::optional<place> _plc1 = var_tab.add("name");
     std::optional<place> _plc2 = var_tab.find_in_table("name");
 
-    using Pos = ::place::Pos;
+    using Pos = ::place::POS;
     ASSERT_EQ(_plc1.value()(Pos::ROW), _plc2.value()(Pos::ROW));
     ASSERT_EQ(_plc1.value()(Pos::COLLUMN), _plc2.value()(Pos::COLLUMN));
 }

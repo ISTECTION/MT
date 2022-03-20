@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.14 FATAL_ERROR)
 
-project(MT_test)
+project(mt_test)
 
 include(FetchContent)
 FetchContent_Declare(
@@ -11,15 +11,17 @@ FetchContent_Declare(
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
-set(SOURCE_TEST
-
-    src/test.cpp
-)
+set(SOURCE_TEST src/table.cpp)
 
 add_executable(${PROJECT_NAME} ${SOURCE_TEST})
 
+set_target_properties(
+    ${PROJECT_NAME} PROPERTIES
+    CXX_STANDARD          20
+    CXX_STANDARD_REQUIRED ON)
+
 target_include_directories(
-    ${PROJECT_NAME}  PRIVATE
+    ${PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/../include)
 
 target_link_libraries(${PROJECT_NAME} gtest_main)

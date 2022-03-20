@@ -1,6 +1,5 @@
-build
-build_m
-googletest/build
+build_mingw
+build_msvc
 doxygen
 rapport/src
 rapport/main.sta

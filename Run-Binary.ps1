@@ -1,0 +1,1 @@
+.\build_mingw\bin\mt.exe -i .\file\test\parse_test\code.cpp

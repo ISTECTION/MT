@@ -131,7 +131,7 @@ private:
      * @return true  Если приоритет правой оперции >= левой
      * @return false Если приоритет правой оперции <  левой
      */
-    auto priority (const std::string& _left, const std::string& _right) -> bool;
+    auto priority (const std::string& _left, const std::string& _right) const -> bool;
 };
 
 auto parse::read_parse_table (std::ifstream& fin) -> void {
@@ -364,7 +364,7 @@ auto parse::make_postfix (const std::vector<token>& _infix_token_arr) -> void {
     }
 }
 
-auto parse::priority (const std::string& _left, const std::string& _right) -> bool {
+auto parse::priority (const std::string& _left, const std::string& _right) const -> bool {
     std::size_t _left_priority = this->operations.get_priority(_left);
     std::size_t _right_priority = this->operations.get_priority(_right);
     return _right >= _left;
