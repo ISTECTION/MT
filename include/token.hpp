@@ -9,7 +9,8 @@
 
 template <typename E>
 constexpr auto to_underlying(E e) noexcept {
-    return static_cast<std::underlying_type_t<E>>(e); }
+    return static_cast<std::underlying_type_t<E>>(e);
+}
 
 enum class TABLE {
     OPERATION = 1,      ///< Таблицы операций

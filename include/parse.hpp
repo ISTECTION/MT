@@ -204,7 +204,11 @@ auto parse::LL_parse (std::ifstream& fin_token) -> bool {
             /// Если это безальтернативная ошибка
             table_parse[current_row]._error
                 /// Обрабатываем ошибку
-                ? _err = stopper(os_error, SYNTACTIC::UNEXPECTED_TERMINAL, token_text)
+                ? _err = stopper(
+                    os_error,                               ///< Поток для записи ошибок
+                    SYNTACTIC::UNEXPECTED_TERMINAL,         ///< Тип ошибки
+                    token_text,                             ///< Терминал вызвавший ошибку
+                    table_parse[current_row]._terminal)     ///< Предполагаемые пути решения
                 : current_row++;    /// Иначе выполняем поиск следующего варианта ветвления
             if (_err != 0) break;
 
@@ -262,7 +266,11 @@ auto parse::LL_parse (std::ifstream& fin_token) -> bool {
                             /// Если она не инициализирована, выбрасыем ошибку
                             if (_lexeme.value().get_init() == false) {
                                 _count_error++;
-                                return stopper(os_error, SYNTACTIC::USE_UNINITIALIZED_VARIABLE, _lexeme.value().get_name());
+                                return stopper(
+                                    os_error,                               ///< Поток для записи ошибок
+                                    SYNTACTIC::USE_UNINITIALIZED_VARIABLE,  ///< Тип ошибки
+                                    _lexeme.value().get_name(),             ///< Терминал вызвавший ошибку
+                                    table_parse[current_row]._terminal);    ///< Предполагаемые пути решения
                             }
                         }
                         _infix_token_arr.push_back(_token);
@@ -301,7 +309,11 @@ auto parse::LL_parse (std::ifstream& fin_token) -> bool {
                     /// Или использование одинакового имени переменной
                     if (_lexeme.value().get_type() != TYPE::UNDEFINED) {
                         _count_error++;
-                        return stopper(os_error, SYNTACTIC::REPEAT_ANNOUNCEMENT, _lexeme.value().get_name());
+                        return stopper(
+                            os_error,                               ///< Поток для записи ошибок
+                            SYNTACTIC::REPEAT_ANNOUNCEMENT,         ///< Тип ошибки
+                            _lexeme.value().get_name(),             ///< Терминал вызвавший ошибку
+                            table_parse[current_row]._terminal);    ///< Предполагаемые пути решения
                     }
 
                     /// В противном случае, все отлично, просто устанавливаем тип идентификатору
@@ -314,7 +326,11 @@ auto parse::LL_parse (std::ifstream& fin_token) -> bool {
 
                     if (_lexeme.value().get_type() == TYPE::UNDEFINED) {
                         _count_error++;
-                        return stopper(os_error, SYNTACTIC::UNDECLARED_TYPE, _lexeme.value().get_name());
+                        return stopper(
+                            os_error,                               ///< Поток для записи ошибок
+                            SYNTACTIC::UNDECLARED_TYPE,             ///< Тип ошибки
+                            _lexeme.value().get_name(),             ///< Терминал вызвавший ошибку
+                            table_parse[current_row]._terminal);    ///< Предполагаемые пути решения
                     }
                 }
 
@@ -325,7 +341,11 @@ auto parse::LL_parse (std::ifstream& fin_token) -> bool {
 
                 if (_states.empty()) {
                     _count_error++;
-                    return stopper(os_error, SYNTACTIC::STACK_IS_EMPTY, token_text);
+                    return stopper(
+                        os_error,                               ///< Поток для записи ошибок
+                        SYNTACTIC::STACK_IS_EMPTY,              ///< Тип ошибки
+                        token_text,                             ///< Терминал вызвавший ошибку
+                        table_parse[current_row]._terminal);    ///< Предполагаемые пути решения
                 } else {
                     current_row = _states.top();
                     _states.pop();

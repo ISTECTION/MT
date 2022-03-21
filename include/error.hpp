@@ -106,25 +106,29 @@ enum class SYNTACTIC {
 
 /// Заглушка (Возвращает номер ошибки)
 template <typename _Stream>
-auto stopper (_Stream& _stream, SYNTACTIC _ERR, const std::string& _terminal) -> size_t {
-    _stream << "syntax error: | ";
+auto stopper (_Stream& _stream, SYNTACTIC _ERR, const std::string& _terminal, std::vector<std::string> _maybe) -> size_t {
+    _stream << "syntax error" << std::setw(5) << '|' << ' ';
 
     switch (_ERR) {
     case SYNTACTIC::UNEXPECTED_TERMINAL:
-        _stream << "unexpected terminal: "          << _terminal; break;
+        _stream << "unexpected terminal: "          << _terminal << '\n'; break;
     case SYNTACTIC::STACK_IS_EMPTY:
-        _stream << "stack is empty: "               << _terminal; break;
+        _stream << "stack is empty: "               << _terminal << '\n'; break;
     case SYNTACTIC::UNDECLARED_TYPE:
-        _stream << "undeclared variable type: "     << _terminal; break;
+        _stream << "undeclared variable type: "     << _terminal << '\n'; break;
     case SYNTACTIC::REPEAT_ANNOUNCEMENT:
-        _stream << "identifier alredy exists: "     << _terminal; break;
+        _stream << "identifier alredy exists: "     << _terminal << '\n'; break;
     case SYNTACTIC::USE_UNINITIALIZED_VARIABLE:
-        _stream << "using uninitialized variable: " << _terminal; break;
+        _stream << "using uninitialized variable: " << _terminal << '\n'; break;
 
     /// --------------- DEFAULT --------------- ///
-    default: _stream << "error: " << _terminal;
+    default: _stream << "error: " << _terminal << '\n';
     /// --------------- DEFAULT --------------- ///
     }
+
+    _stream << "maybe you meant" << std::setw(2) << '|' << ' ';
+    for (const auto& _term : _maybe) _stream << '"' << _term << '"' << ", ";
+
     return to_underlying(_ERR);
 }
 /// ----- Синтаксические ошибки ----- ///

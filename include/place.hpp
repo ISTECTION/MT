@@ -15,7 +15,7 @@ public:
 
     /// Индекс
     enum class POS {
-        ROW,        //< Строки
+        ROW,        //< Строка
         COLLUMN     //< Столбца
     };
     /**
