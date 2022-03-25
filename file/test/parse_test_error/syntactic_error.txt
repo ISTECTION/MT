@@ -1,2 +1,2 @@
-syntax error<3>  | using uninitialized variable: c
-maybe you meant|   "var", 
+syntax error<6>  | identifier alredy exists: c
+maybe you meant  | "var", 

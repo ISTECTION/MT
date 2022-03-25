@@ -128,7 +128,7 @@ auto stopper (_Stream& _stream, SYNTACTIC _ERR, std::size_t _current_line, const
     /// --------------- DEFAULT --------------- ///
     }
 
-    _stream << "maybe you meant" << std::setw(3) << '|' << ' ';
+    _stream << "maybe you meant  |" << ' ';
     for (const auto& _term : _maybe) _stream << '"' << _term << '"' << ", ";
 
     return to_underlying(_ERR);
