@@ -236,10 +236,6 @@ auto parse::LL_parse () -> bool {
     std::stack<size_t> _states;                     ///< Стэк состояний (В нём хранятся индексы строк для перехода, после встречи _jump == -1)
     std::vector<token> _infix_token_arr;            ///< Вектор токенов выражения в инфиксной форме
 
-    // std::getline(fin_token, _line_tokens);               ///< Берем одну строку из файла
-    // _istream = std::istringstream { _line_tokens };      ///< Записываем строку в поток
-    // run_until_get_token(fin_token);                      ///< Беги пока не токен
-
 
     /// Записываем первый токен
     if (_toml_array_iterator->is_value()) {
@@ -283,15 +279,6 @@ auto parse::LL_parse () -> bool {
                     _token_id = _token;
                 }
 
-                /// Если мы находимся на символе `=` и тип идентификатора не определен
-                if (token_text == "=" && _token_id.get_table() != TABLE::NOT_DEFINED) {
-                    place _pl = _token_id.get_place();
-                    std::optional<lexeme> _lexeme = this->identifiers.get_lexeme(_pl);
-                    /// Если поле init == false, устнавливаем ему значение
-                    if (_lexeme.value().get_init() == false) {
-                        this->identifiers.set_value(_pl, true);
-                    }
-                }
 
                 if (_postfix == true) {
                     /// Если это унарный минус
@@ -318,6 +305,7 @@ auto parse::LL_parse () -> bool {
                             place _pl = _token_id.get_place();
                             std::optional<lexeme> _lexeme = this->identifiers.get_lexeme(_pl);
 
+
                             /// Если она не инициализирована, выбрасыем ошибку
                             if (_lexeme.value().get_init() == false) {
                                 _count_error++;
@@ -339,7 +327,17 @@ auto parse::LL_parse () -> bool {
                     /// 2 токена будет в случае обычного объявления переменной
                     /// Например: int a; | 1-ый токен: a | 2-ой токен: ; |
                     /// В этом случае не будем строить постфиксную запись выражения
-                    if (_infix_token_arr.size() > 2) { make_postfix(_infix_token_arr); }
+                    if (_infix_token_arr.size() > 2) {
+
+                        place _pl = _token_id.get_place();
+                        std::optional<lexeme> _lexeme = this->identifiers.get_lexeme(_pl);
+                        /// Если поле init == false, устанавливаем ему значение
+                        if (_lexeme.value().get_init() == false) {
+                            this->identifiers.set_value(_pl, true);
+                        }
+
+                        make_postfix(_infix_token_arr);
+                    }
                     _infix_token_arr.clear();                       /// Очищаем вектор
                     _postfix = false;                               /// Выключаем постфиксную запись
                     _token_id = token { TABLE::NOT_DEFINED, 0, 0 }; /// Стираем токен текущего идентификатора
@@ -360,7 +358,7 @@ auto parse::LL_parse () -> bool {
                 if (token_text == "var" && is_set_type != TYPE::UNDEFINED && current_row == 69) {
                     std::optional<lexeme> _lexeme = this->identifiers.get_lexeme(_token.get_place());
 
-                    /// Если у данного идентифкатора уже утсановлен тип
+                    /// Если у данного идентифкатора уже установлен тип
                     /// То это повторное объявление идентификатора
                     /// Или использование одинакового имени переменной
                     if (_lexeme.value().get_type() != TYPE::UNDEFINED) {
@@ -392,6 +390,7 @@ auto parse::LL_parse () -> bool {
                     }
                 }
 
+                /// ~~~~~~~~~~~~~~~~~~ TOKEN++ ~~~~~~~~~~~~~~~~~~ ///
                 if (_toml_array_iterator == _toml_table_iterator->second.as_array()->end()) {
                     _toml_table_iterator++;
                     _current_line = std::stoi(_toml_table_iterator->first.data());

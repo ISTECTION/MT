@@ -1,2 +1,2 @@
-syntax error<6>  | identifier alredy exists: c
+syntax error<8>  | identifier alredy exists: c
 maybe you meant  | "var", 
