@@ -8,7 +8,7 @@
 #include <sstream>
 #include <string>
 
-#include "parse.hpp"
+#include "assembler.hpp"
 
 int main(int argc, const char* argv[]) {
     std::ios_base::sync_with_stdio(false);
@@ -33,12 +33,14 @@ int main(int argc, const char* argv[]) {
         path _inp = _prs.get<std::string>("-i");
 
         cxxtimer::Timer _timer(true);
-        parse _parser(_inp);
+        assembler _assembler(_inp);
+
         _timer.stop();
         std::cout << _timer;
 
-        _parser.print_table(_prs.get<bool>("--table"));
-        if (_prs.get<bool>("--parse-table")) { std::cout << _parser; }
+        _assembler.print_table(_prs.get<bool>("--table"));
+        if (_prs.get<bool>("--parse-table")) {
+            _assembler.print_parse_table(_prs.get<bool>("--parse-table")); }
 
     } catch(const std::runtime_error& err) {
         constexpr std::size_t args_no_received { 2 };

@@ -43,12 +43,11 @@ private:
     std::vector<table_parse_elem> table_parse;  ///< Постоянная таблица для переходов
 
     std::size_t _count_error;                   ///< Количество ошибок
-    std::size_t _current_line;                 ///< Текущая строка разбора
+    std::size_t _current_line;                  ///< Текущая строка разбора
 
     std::ostringstream os_error;                ///< Поток для записи ошибок
 
     std::ostringstream os_postfix;              ///< Поток для записи постфиксной записи выражений
-
 
     toml::table _toml_table;                            ///< TOML
     toml::const_table_iterator _toml_table_iterator;    ///< TOML table iterator
@@ -60,7 +59,7 @@ public:
           _count_error(0),
           _current_line(1) {
 
-        if (this->syntax_fail()) {
+        if (translator::syntax_fail()) {
             std::cerr
                 << "generate error file: "
                 << (_inp.parent_path() / "lexical_error.txt").string()
@@ -87,6 +86,7 @@ public:
      * @return std::ostream&
      */
     friend std::ostream& operator<< (std::ostream& out, const parse& _prs);
+    void print_parse_table (bool print_table = false);
 
     /**
      * @brief Функция возвращает константный указатель на начало постоянной таблицы синтаксического анализатора
@@ -101,6 +101,23 @@ public:
      * @return std::vector<table_parse_elem>::const_iterator
      */
     std::vector<table_parse_elem>::const_iterator end () const { return table_parse.end(); };
+
+
+    /**
+     * @brief Функция возвращает true, если не было обнаружено ошибок при синтаксическом анализе
+     *
+     * @return true  Успех
+     * @return false Неудача
+     */
+    bool syntax_success () const { return _count_error ? false : true; }
+
+    /**
+     * @brief Функция возвращает true, если была обнаружена хотя бы одна ошибка при синтаксическом анализе
+     *
+     * @return true  Одна и более ошибок
+     * @return false Лексический анализатор не обнаружил ошибок
+     */
+    bool syntax_fail () const { return not syntax_success(); }
 
 private:
 
@@ -219,9 +236,7 @@ auto parse::parse_token (const std::string& _token) const -> token {
         static_cast<std::size_t>(std::stoi(i)),
         std::stoi(j)
     };
-
 }
-
 
 auto parse::LL_parse () -> bool {
     using iterator_vec = std::vector<std::string>::const_iterator;
@@ -276,7 +291,8 @@ auto parse::LL_parse () -> bool {
                     _postfix = true;
                     ///< Запоминаем токен идентификатора, для установки поля init
                     ///< Если после него последовует знак `=`
-                    _token_id = _token;
+                    ///< Только если находимся в объявлении или иницализации, до операции =
+                    if (current_row == 69 || current_row == 46) { _token_id = _token; }
                 }
 
 
@@ -301,10 +317,10 @@ auto parse::LL_parse () -> bool {
                     /// Иначе добавляем токен в инфиксную запись
                     else {
                         /// Если находимся на переменной в выражении (46 - иницализации, 69 - объявления)
+                        /// Все остальное (а точннее всего 1 случай) - идентификаторы в математических выражениях
                         if (token_text == "var" && current_row != 46 && current_row != 69) {
-                            place _pl = _token_id.get_place();
+                            place _pl = _token.get_place();
                             std::optional<lexeme> _lexeme = this->identifiers.get_lexeme(_pl);
-
 
                             /// Если она не инициализирована, выбрасыем ошибку
                             if (_lexeme.value().get_init() == false) {
@@ -393,9 +409,9 @@ auto parse::LL_parse () -> bool {
                 /// ~~~~~~~~~~~~~~~~~~ TOKEN++ ~~~~~~~~~~~~~~~~~~ ///
                 if (_toml_array_iterator == _toml_table_iterator->second.as_array()->end()) {
                     _toml_table_iterator++;
-                    _current_line = std::stoi(_toml_table_iterator->first.data());
 
                     if (_toml_table_iterator != _toml_table.end()) {
+                        _current_line = std::stoi(_toml_table_iterator->first.data());
                         _toml_array_iterator = _toml_table_iterator->second.as_array()->begin();
                     }
                 }
@@ -530,4 +546,7 @@ std::ostream& operator<< (std::ostream& out, const parse& _prs) {
     movies.column(6).format().font_align(FontAlign::center).width(8);
     return out << movies << '\n';
 }
+
+void parse::print_parse_table (bool print_table) { if (print_table) std::cout << *this; }
+
 #endif /// _PARSE_HPP

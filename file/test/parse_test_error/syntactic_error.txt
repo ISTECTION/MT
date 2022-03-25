@@ -1,2 +1,2 @@
-syntax error<8>  | identifier alredy exists: c
+syntax error<2>  | using uninitialized variable: b
 maybe you meant  | "var", 

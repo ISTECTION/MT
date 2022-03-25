@@ -79,7 +79,7 @@ public:
      * @return true  Одна и более ошибок
      * @return false Лексический анализатор не обнаружил ошибок
      */
-    bool syntax_fail    () const { return not syntax_success(); }
+    bool syntax_fail () const { return not syntax_success(); }
 
     /**
      * @brief Возвращает родительскую дирректорию файла, который был отправлен на анализ

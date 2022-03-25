@@ -13,6 +13,7 @@ set(HEADERS
     include/const_table.hpp
     include/translator.hpp
     include/var_table.hpp
+    include/assembler.hpp
     include/toml++/toml.h
     include/lexeme.hpp
     include/token.hpp
