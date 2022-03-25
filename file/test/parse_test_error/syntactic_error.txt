@@ -1,2 +1,2 @@
-syntax error    | unexpected terminal: var
-maybe you meant | "=", ",", ";", 
+syntax error<3>  | using uninitialized variable: c
+maybe you meant|   "var", 

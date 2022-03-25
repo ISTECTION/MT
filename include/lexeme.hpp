@@ -76,7 +76,5 @@ public:
 };
 
 bool operator== (const lexeme& _lhs, const lexeme& _rhs) {
-    return
-        _lhs.name == _rhs.name;
-}
+    return _lhs.name == _rhs.name; }
 #endif /// _LEXEME_HPP

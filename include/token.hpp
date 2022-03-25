@@ -71,6 +71,7 @@ public:
         else throw std::runtime_error("table != (TABLE::IDENTIFIERS | TABLE::CONSTANTS)");
     }
 
+
     /**
      * @brief Перегрузка оператора `operator<<` для вывода токена в поток
      *
@@ -92,12 +93,8 @@ public:
 };
 
 std::ostream& operator<< (std::ostream& out, const token& _tkn) {
-    return out
-            << to_underlying(_tkn.table) << ' '
-            << _tkn.i                    << ' '
-            << _tkn.j                    << '\n';
+    return out << '(' << to_underlying(_tkn.table) << ", " << _tkn.i << ", " << _tkn.j << ')';
 }
-
 
 std::istream& operator>> (std::istream& in, token& _tkn) {
     size_t table;

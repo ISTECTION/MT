@@ -4,6 +4,7 @@
 #include "utils/brackets.hpp"
 #include "const_table.hpp"
 #include "var_table.hpp"
+#include "toml++/toml.h"
 #include "error.hpp"
 #include "token.hpp"
 
@@ -38,6 +39,9 @@ private:
     /// Директория для генерации файлов: tokens && error
     std::filesystem::path _parent_path;
 
+    /// Массив токенов текущей строки, для записи TOML файла
+    toml::array toml_array;
+
 public:
     explicit translator (const std::filesystem::path& _src_path)
         : operations(path_const_table::operations),
@@ -56,8 +60,8 @@ public:
 
         std::ifstream fin(_src_path);
         fin.is_open()
-          ? analyse(fin)
-          : assert(print_error(std::filesystem::canonical(_src_path.filename()).string()));
+            ? analyse(fin)
+            : assert(print_error(std::filesystem::canonical(_src_path.filename()).string()));
         fin.close();
     }
 
@@ -197,17 +201,15 @@ translator::balanced (std::istreambuf_iterator<char>& iit) {
 void translator::skip_spaces (std::istreambuf_iterator<char>& iit) {
     using _eos_buf = ::std::istreambuf_iterator<char>;
 
-    if (iit == _eos_buf())
-        return;
-
+    if (iit == _eos_buf()) return;
     for ( ; *iit == '\n' || *iit == '\t' || *iit == ' '; ++iit) {
-
         _current_str   += *iit;         /// Текущая строка
         nocomment_code << *iit;
 
         if (*iit == '\n') {
             _current_str.clear();
-            _current_lines++; }
+            _current_lines++;
+        }
     }
 }
 
@@ -251,6 +253,12 @@ translator::decomment (std::istreambuf_iterator<char>& iit) {
         } else
             return std::optional { LEXICAL::UNEXPECTED_SYMBOL };
 
+        if (toml_array.size() > 0) {
+            os_token << std::setw(4) << std::setfill('0')
+                << _current_lines << " = " << toml_array << '\n';
+            toml_array.clear();
+        }
+
         skip_spaces(iit);
     } while (*iit == '/');
 
@@ -260,6 +268,7 @@ translator::decomment (std::istreambuf_iterator<char>& iit) {
 std::optional<LEXICAL>
 translator::lexical (std::istreambuf_iterator<char>& iit) {
     using _eos_buf = ::std::istreambuf_iterator<char>;
+    std::ostringstream _token_text; ///< Токен в виде (_, _, _)
 
     /// BEGIN: Если символ является буквой или '_'
     if (std::isalpha(*iit) || *iit == '_') {
@@ -275,7 +284,8 @@ translator::lexical (std::istreambuf_iterator<char>& iit) {
 
         int _flag = keywords.get_num(_str.str());
         if (_flag != -1) {
-            os_token << token(TABLE::KEYWORDS, _flag, -1);
+            _token_text << token(TABLE::KEYWORDS, _flag, -1);
+            toml_array.insert(toml_array.end(), _token_text.str());
         }
         else {
             std::optional<place> _pl = identifiers.find_in_table(_str.str());
@@ -284,9 +294,10 @@ translator::lexical (std::istreambuf_iterator<char>& iit) {
 
             using enum ::place::POS;
             place _pl_value = _pl.value();
-            os_token << token(TABLE::IDENTIFIERS,
-                    _pl_value(ROW),
-                    _pl_value(COLLUMN));
+
+            _token_text << token(TABLE::IDENTIFIERS, _pl_value(ROW), _pl_value(COLLUMN));
+            toml_array.insert(toml_array.end(), _token_text.str());
+
         }
     }
     /// END:   Если символ является буквой или '_'
@@ -315,9 +326,9 @@ translator::lexical (std::istreambuf_iterator<char>& iit) {
 
         using enum ::place::POS;
         place _pl_value = _pl.value();
-        os_token << token(TABLE::CONSTANTS,
-                _pl_value(ROW),
-                _pl_value(COLLUMN));
+
+        _token_text << token(TABLE::CONSTANTS, _pl_value(ROW), _pl_value(COLLUMN));
+        toml_array.insert(toml_array.end(), _token_text.str());
     }
     /// END: Если символ является цифрой
     /// BEGIN: Если символ является разделителем
@@ -327,7 +338,9 @@ translator::lexical (std::istreambuf_iterator<char>& iit) {
         std::optional<LEXICAL> err_bracket = balanced(iit);
 
         int flag = separators.get_num(std::string { *iit } );
-        os_token << token(TABLE::SEPARATORS, flag, -1);
+
+        _token_text << token(TABLE::SEPARATORS, flag, -1);
+        toml_array.insert(toml_array.end(), _token_text.str());
         nocomment_code << *iit;
         _current_str   += *iit;         /// Текущая строка
 
@@ -359,7 +372,9 @@ translator::lexical (std::istreambuf_iterator<char>& iit) {
         if (flag == -1)
             return std::optional { LEXICAL::OPERATION_NOT_EXIST };
 
-        os_token << token(TABLE::OPERATION, flag, -1);
+        _token_text << token(TABLE::OPERATION, flag, -1);
+        toml_array.insert(toml_array.end(), _token_text.str());
+
         return std::nullopt;
     }
     /// END: Если символ является операцией
@@ -376,6 +391,7 @@ translator::lexical (std::istreambuf_iterator<char>& iit) {
 
 void translator::analyse (std::ifstream& _ifstream) {
     _Iter_buf eos, iit(_ifstream);
+
 
     skip_spaces(iit);
     while (iit != eos) {
@@ -396,8 +412,18 @@ void translator::analyse (std::ifstream& _ifstream) {
                 _count_error++;
             }
         }
+
+        if (iit != eos && *iit == '\n') {
+            os_token << std::setw(4) << std::setfill('0')
+                << _current_lines << " = " << toml_array << '\n';
+            toml_array.clear();
+        }
+
         skip_spaces(iit);
     }
+
+    if (toml_array.size() > 0) {
+        os_token << std::setw(4) << std::setfill('0') << _current_lines << " = " << toml_array; }
 
     if (_bracket.size() != 0) {
         os_error << InfoError {
@@ -407,7 +433,7 @@ void translator::analyse (std::ifstream& _ifstream) {
         _count_error++;
     }
 
-    std::ofstream fout(_parent_path / "token.txt");
+    std::ofstream fout(_parent_path / "token.toml");
     fout << os_token.str();
     fout.close();
 

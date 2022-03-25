@@ -12,7 +12,7 @@
 
 int main(int argc, const char* argv[]) {
     std::ios_base::sync_with_stdio(false);
-    argparse::ArgumentParser _prs("MT", "0.0.1");
+    argparse::ArgumentParser _prs("MT", "1.0.0");
     _prs.add_argument("-i", "--input")
         .help( "path to input files" )
         .required();
@@ -21,7 +21,6 @@ int main(int argc, const char* argv[]) {
         .help("Print table to console")
         .default_value(false)
         .implicit_value(true);
-
 
     _prs.add_argument("--parse-table")
         .help("Print table to console")
@@ -37,7 +36,6 @@ int main(int argc, const char* argv[]) {
         parse _parser(_inp);
         _timer.stop();
         std::cout << _timer;
-
 
         _parser.print_table(_prs.get<bool>("--table"));
         if (_prs.get<bool>("--parse-table")) { std::cout << _parser; }

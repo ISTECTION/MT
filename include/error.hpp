@@ -95,7 +95,7 @@ _Stream& operator<< (_Stream& _stream, const InfoError _info) {
 
 /// ----- Синтаксические ошибки ----- ///
 /// ENUM: Возможные синтаксические ошибки
-enum class SYNTACTIC {
+enum class SYNTACTIC : uint8_t {
     UNEXPECTED_TERMINAL = 1,    ///< Неожиданный терминал
     UNDECLARED_TYPE,            ///< Необъявленный тип переменной
     REPEAT_ANNOUNCEMENT,        ///< Повторное объявление переменной
@@ -106,8 +106,10 @@ enum class SYNTACTIC {
 
 /// Заглушка (Возвращает номер ошибки)
 template <typename _Stream>
-auto stopper (_Stream& _stream, SYNTACTIC _ERR, const std::string& _terminal, std::vector<std::string> _maybe) -> size_t {
-    _stream << "syntax error" << std::setw(5) << '|' << ' ';
+auto stopper (_Stream& _stream, SYNTACTIC _ERR, std::size_t _current_line, const std::string& _terminal, std::vector<std::string> _maybe) -> size_t {
+
+    std::string _LINE_ = '<' + std::to_string(_current_line) + '>';
+    _stream << "syntax error" << std::setw(5) << std::left << _LINE_ << '|' << ' ';
 
     switch (_ERR) {
     case SYNTACTIC::UNEXPECTED_TERMINAL:
@@ -126,7 +128,7 @@ auto stopper (_Stream& _stream, SYNTACTIC _ERR, const std::string& _terminal, st
     /// --------------- DEFAULT --------------- ///
     }
 
-    _stream << "maybe you meant" << std::setw(2) << '|' << ' ';
+    _stream << "maybe you meant" << std::setw(3) << '|' << ' ';
     for (const auto& _term : _maybe) _stream << '"' << _term << '"' << ", ";
 
     return to_underlying(_ERR);
