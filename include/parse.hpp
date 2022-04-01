@@ -5,7 +5,11 @@
 #include "utils/lightweight.hpp"
 #include "argparse/argparse.hpp"
 #include "translator.hpp"
+
+
+#include "config/config.h"          /// Конфигурационный файл
 #include "toml++/toml.h"
+
 
 #include <string_view>
 #include <filesystem>       /// std::filesystem::path
@@ -23,7 +27,7 @@
 
 
 namespace parsing_table {
-    std::filesystem::path parse_table = "file/const/parsing_table.txt";
+    const std::filesystem::path parse_table = std::string { PROJECT_DIR } + "/file/const/parsing_table.txt";
 }
 
 class table_parse_elem {

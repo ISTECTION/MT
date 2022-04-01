@@ -1,6 +1,7 @@
 #ifndef _CONST_TABLE_HPP
 #define _CONST_TABLE_HPP
 #include "tabulate/tabulate.hpp"
+#include "config/config.h"          /// Конфигурационный файл
 
 #include <type_traits>
 #include <filesystem>
@@ -12,13 +13,9 @@
 #include <map>
 
 namespace path_const_table {
-///     letters     = "file/const/table_letters.txt",
-///     digits      = "file/const/table_digits.txt",
-
-    const std::filesystem::path
-        keywords    = "file/const/table_keywords.txt",
-        operations  = "file/const/table_operations.txt",
-        separators  = "file/const/table_separators.txt";
+    const std::filesystem::path keywords   = std::string { PROJECT_DIR } + "/file/const/table_keywords.txt";
+    const std::filesystem::path operations = std::string { PROJECT_DIR } + "/file/const/table_operations.txt";
+    const std::filesystem::path separators = std::string { PROJECT_DIR } + "/file/const/table_separators.txt";
 }
 
 template <class _Type> class const_table;

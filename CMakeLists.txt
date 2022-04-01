@@ -2,6 +2,9 @@ cmake_minimum_required(VERSION 3.14 FATAL_ERROR)
 
 project(mt VERSION 1.0 LANGUAGES CXX)
 
+# Указываем конфигурационный файл, из которого будет сгенерирован заголовочный файл
+configure_file(config.h.in ${CMAKE_CURRENT_SOURCE_DIR}/include/config/config.h @ONLY)
+
 set(CMAKE_CXX_FLAGS_RELEASE "-O1")
 set(EXECUTABLE_OUTPUT_PATH  "bin")
 set(SOURCES src/main.cpp)
@@ -33,7 +36,10 @@ target_include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 if(MSVC)
-    target_compile_options(${PROJECT_NAME} PRIVATE /W4 /WX)
+    target_compile_options(${PROJECT_NAME} PRIVATE
+        # /W4
+        # /WX
+        )
 else()
     target_compile_options(${PROJECT_NAME} PRIVATE
         # -Wall
