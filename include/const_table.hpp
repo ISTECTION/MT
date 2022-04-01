@@ -20,7 +20,6 @@ namespace path_const_table {
 
 template <class _Type> class const_table;
 
-
 template <class _Type>
 class const_table_operation : public const_table<_Type>
 {
