@@ -1,2 +1,0 @@
-syntax error<2>  | using uninitialized variable: b
-maybe you meant  | "var", 

@@ -34,17 +34,35 @@ private:
 
 public:
     explicit token(TABLE _table, size_t _i, int _j)
-        : table(_table), i(_i), j(_j) { }
+        : table(_table),
+          i(_i),
+          j(_j) { }
 
     explicit token()
-        : table(TABLE::NOT_DEFINED), i(0), j(0) { }
+        : table(TABLE::NOT_DEFINED),
+          i(0),
+          j(0) { }
+
+    explicit token(const std::string& text_token) {
+        std::istringstream _istream { text_token };
+        std::string _table, _i, _j;
+
+        _istream.seekg(1);
+        std::getline(_istream, _table, ',');
+        std::getline(_istream, _i,     ',');
+        std::getline(_istream, _j,     ')');
+
+        table = static_cast<TABLE>(std::stoi(_table));
+        i = static_cast<std::size_t>(std::stoi(_i));
+        j = std::stoi(_j);
+    }
 
     /**
      * @brief Возвращает номер таблицы
      *
      * @return TABLE Enum с названиями таблиц
      */
-    TABLE get_table   () const { return table; }
+    TABLE get_table () const { return table; }
 
     /**
      * @brief Возвращает номер строки
@@ -71,7 +89,6 @@ public:
         else throw std::runtime_error("table != (TABLE::IDENTIFIERS | TABLE::CONSTANTS)");
     }
 
-
     /**
      * @brief Перегрузка оператора `operator<<` для вывода токена в поток
      *
@@ -80,7 +97,6 @@ public:
      * @return std::ostream&
      */
     friend std::ostream& operator<< (std::ostream& out, const token& _tkn);
-
 
     /**
      * @brief Перешрузка оператора `operator>>` для ввода токена из потока

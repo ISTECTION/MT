@@ -23,8 +23,7 @@
 
 
 namespace parsing_table {
-    std::filesystem::path
-        parse_table = "file/const/parsing_table.txt";
+    std::filesystem::path parse_table = "file/const/parsing_table.txt";
 }
 
 class table_parse_elem {
@@ -156,9 +155,6 @@ private:
      * @return false Если приоритет правой оперции <  левой
      */
     auto priority (const std::string& _left, const std::string& _right) const -> bool;
-
-
-    auto parse_token (const std::string& _token) const -> token;
 };
 
 auto parse::read_parse_table (std::ifstream& fin) -> void {
@@ -193,50 +189,36 @@ auto parse::read_parse_table (std::ifstream& fin) -> void {
 }
 
 auto parse::base (const std::string& _filename_token) -> void {
-
     try {
         _toml_table = toml::parse_file(_filename_token);
 
-        _toml_table_iterator = _toml_table.begin();
-        _current_line = std::stoi(_toml_table_iterator->first.data());
-        _toml_array_iterator = _toml_table_iterator->second.as_array()->begin();
+        if (_toml_table.size() > 0) {
+            _toml_table_iterator = _toml_table.begin();
+            _current_line = std::stoi(_toml_table_iterator->first.data());
+            _toml_array_iterator = _toml_table_iterator->second.as_array()->begin();
+
+            if (LL_parse() == false) {
+                std::cerr
+                    << "lexical analyzer has detected error"
+                    << '\n';
+            }
+
+            std::ofstream fout(this->get_parrent_path() / "postfix.txt");
+            fout << os_postfix.str();
+            fout.close();
+
+            fout.open(this->get_parrent_path() / "syntactic_error.txt");
+            fout << os_error.str();
+            fout.close();
+        }
 
     } catch (const toml::parse_error& err) {
         constexpr std::size_t toml_parser_error = 4;
         std::cerr << "parsing failed:\n" << err << '\n';
         std::exit(toml_parser_error);
     }
-
-    bool _error = LL_parse();
-    if (_error == false) {
-        std::cerr << "lexical analyzer has detected error" << '\n';
-    }
-    std::ofstream fout(this->get_parrent_path() / "postfix.txt");
-    fout << os_postfix.str();
-    fout.close();
-
-    fout.open(this->get_parrent_path() / "syntactic_error.txt");
-    fout << os_error.str();
-    fout.close();
 }
 
-
-auto parse::parse_token (const std::string& _token) const -> token {
-
-    std::istringstream _istream { _toml_array_iterator->value<std::string>().value() };
-    std::string _table, i, j;
-    _istream.seekg(1);
-
-    std::getline(_istream, _table, ',');
-    std::getline(_istream, i, ',');
-    std::getline(_istream, j, ')');
-
-    return token {
-        static_cast<TABLE>(std::stoi(_table)),
-        static_cast<std::size_t>(std::stoi(i)),
-        std::stoi(j)
-    };
-}
 
 auto parse::LL_parse () -> bool {
     using iterator_vec = std::vector<std::string>::const_iterator;
@@ -254,7 +236,7 @@ auto parse::LL_parse () -> bool {
 
     /// Записываем первый токен
     if (_toml_array_iterator->is_value()) {
-        _token = parse_token(_toml_array_iterator->value<std::string>().value()); }
+        _token = token(_toml_array_iterator->value<std::string>().value());}
     else { return true; }
     _toml_array_iterator++;
 
@@ -316,9 +298,8 @@ auto parse::LL_parse () -> bool {
                     }
                     /// Иначе добавляем токен в инфиксную запись
                     else {
-                        /// Если находимся на переменной в выражении (46 - иницализации, 69 - объявления)
-                        /// Все остальное (а точннее всего 1 случай) - идентификаторы в математических выражениях
-                        if (token_text == "var" && current_row != 46 && current_row != 69) {
+                        /// Если находимся на переменной в выражении (97 - выражения) (46 - иницализации, 69 - объявления)
+                        if (token_text == "var" && current_row == 97) {
                             place _pl = _token.get_place();
                             std::optional<lexeme> _lexeme = this->identifiers.get_lexeme(_pl);
 
@@ -417,7 +398,7 @@ auto parse::LL_parse () -> bool {
                 }
 
                 if (_toml_table_iterator != _toml_table.end()) {
-                    _token = parse_token(_toml_array_iterator->value<std::string>().value());
+                    _token = token(_toml_array_iterator->value<std::string>().value());;
                     _toml_array_iterator++;
                 }
             }
@@ -488,24 +469,20 @@ auto parse::make_postfix (const std::vector<token>& _infix_token_arr) -> void {
             _stack_postfix.pop();
         }
     }
-
     /// Выгружаем стэк в очередь
     while (not _stack_postfix.empty()) {
         _queue_postfix.push(_stack_postfix.top());
         _stack_postfix.pop();
     }
 
-    /// Последним токен в инфиксном векторе будет разделитель `;` или `,`
-    std::string back_token_text = this->get_token_text(_infix_token_arr.back());
-    _queue_postfix.push(back_token_text);
-
     /// Перенос постфиксной очереди в поток
     while (not _queue_postfix.empty()) {
         os_postfix << _queue_postfix.front() << ' ';
         _queue_postfix.pop();
     }
-}
+    os_postfix << '\n';
 
+}
 
 auto parse::priority (const std::string& _left, const std::string& _right) const -> bool {
     std::size_t _left_priority  = this->operations.get_priority(_left);
