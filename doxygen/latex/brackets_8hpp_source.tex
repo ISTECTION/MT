@@ -1,0 +1,46 @@
+\hypertarget{brackets_8hpp_source}{}\doxysection{brackets.\+hpp}
+\label{brackets_8hpp_source}\index{include/utils/brackets.hpp@{include/utils/brackets.hpp}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{preprocessor}{\#ifndef \_BRACKETS\_HPP}}
+\DoxyCodeLine{2 \textcolor{preprocessor}{\#define \_BRACKETS\_HPP}}
+\DoxyCodeLine{3 \textcolor{preprocessor}{\#include <map>}}
+\DoxyCodeLine{4 }
+\DoxyCodeLine{5 \textcolor{keyword}{class }\mbox{\hyperlink{class_info_bracket}{InfoBracket}}}
+\DoxyCodeLine{6 \{}
+\DoxyCodeLine{7 \textcolor{keyword}{private}:}
+\DoxyCodeLine{8     \textcolor{keywordtype}{char} bracket;}
+\DoxyCodeLine{9     \textcolor{keywordtype}{size\_t} line;}
+\DoxyCodeLine{10 }
+\DoxyCodeLine{11 \textcolor{keyword}{public}:}
+\DoxyCodeLine{12     \textcolor{keyword}{explicit} \mbox{\hyperlink{class_info_bracket}{InfoBracket}}(\textcolor{keywordtype}{char} \_bracket, \textcolor{keywordtype}{size\_t} \_line)}
+\DoxyCodeLine{13         : bracket(\_bracket),}
+\DoxyCodeLine{14           line(\_line) \{ \}}
+\DoxyCodeLine{15 }
+\DoxyCodeLine{16     \textcolor{keywordtype}{char} get\_bracket ()\textcolor{keyword}{ const }\{ \textcolor{keywordflow}{return} bracket; \}}
+\DoxyCodeLine{17     \textcolor{keywordtype}{size\_t} get\_line ()\textcolor{keyword}{ const }\{ \textcolor{keywordflow}{return} line; \}}
+\DoxyCodeLine{18 \};}
+\DoxyCodeLine{19 }
+\DoxyCodeLine{20 std::map<char, char> \_map\_brackets = \{}
+\DoxyCodeLine{21         \{ \textcolor{charliteral}{'\{'}, \textcolor{charliteral}{'\}'} \},}
+\DoxyCodeLine{22         \{ \textcolor{charliteral}{'['}, \textcolor{charliteral}{']'} \},}
+\DoxyCodeLine{23         \{ \textcolor{charliteral}{'('}, \textcolor{charliteral}{')'} \},}
+\DoxyCodeLine{24         \{ \textcolor{charliteral}{'<'}, \textcolor{charliteral}{'>'} \} \};}
+\DoxyCodeLine{25 }
+\DoxyCodeLine{26 \textcolor{keyword}{inline} \textcolor{keywordtype}{bool} open\_brackets (\textcolor{keywordtype}{char} c) \{}
+\DoxyCodeLine{27     \textcolor{keywordflow}{return}}
+\DoxyCodeLine{28         c == \textcolor{charliteral}{'\{'} ||}
+\DoxyCodeLine{29         c == \textcolor{charliteral}{'['} ||}
+\DoxyCodeLine{30         c == \textcolor{charliteral}{'('} ||}
+\DoxyCodeLine{31         c == \textcolor{charliteral}{'<'} ;\}}
+\DoxyCodeLine{32 }
+\DoxyCodeLine{33 \textcolor{keyword}{inline} \textcolor{keywordtype}{bool} close\_brackets (\textcolor{keywordtype}{char} c) \{}
+\DoxyCodeLine{34     \textcolor{keywordflow}{return}}
+\DoxyCodeLine{35         c == \textcolor{charliteral}{'\}'} ||}
+\DoxyCodeLine{36         c == \textcolor{charliteral}{']'} ||}
+\DoxyCodeLine{37         c == \textcolor{charliteral}{')'} ||}
+\DoxyCodeLine{38         c == \textcolor{charliteral}{'>'} ;\}}
+\DoxyCodeLine{39 }
+\DoxyCodeLine{40 \textcolor{preprocessor}{\#endif }}
+
+\end{DoxyCode}

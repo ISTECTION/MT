@@ -1,0 +1,158 @@
+\hypertarget{classconst__table}{}\doxysection{Шаблон класса const\+\_\+table\texorpdfstring{$<$}{<} \+\_\+\+Type \texorpdfstring{$>$}{>}}
+\label{classconst__table}\index{const\_table$<$ \_Type $>$@{const\_table$<$ \_Type $>$}}
+
+
+Шаблонный класс хранящий константные таблицы  
+
+
+
+
+{\ttfamily \#include $<$const\+\_\+table.\+hpp$>$}
+
+Граф наследования\+:const\+\_\+table\texorpdfstring{$<$}{<} \+\_\+\+Type \texorpdfstring{$>$}{>}\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classconst__table}
+\end{center}
+\end{figure}
+\doxysubsection*{Открытые члены}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classconst__table_ab4fca2c6e018acde991b9d182acd0880}\label{classconst__table_ab4fca2c6e018acde991b9d182acd0880}} 
+{\bfseries const\+\_\+table} (const std\+::filesystem\+::path \&\+\_\+path)
+\item 
+int \mbox{\hyperlink{classconst__table_a39cbb8ada1d5148dc9ed12b75c9add3f}{get\+\_\+num}} (\+\_\+\+Type elem) const
+\begin{DoxyCompactList}\small\item\em Получить индекс элемента \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classconst__table_ab9aa191fb8e4fad29d3e6e66e588f5e3}{contains}} (\+\_\+\+Type elem) const
+\begin{DoxyCompactList}\small\item\em Проверка существования элемента \end{DoxyCompactList}\item 
+std\+::optional$<$ \+\_\+\+Type $>$ \mbox{\hyperlink{classconst__table_a6d3061b4af4980d395ec1b2123645db9}{get\+\_\+elem}} (size\+\_\+t num) const
+\begin{DoxyCompactList}\small\item\em Получить элемент по его индексу \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{classconst__table_a660bc4276a3ec7c7d628826fe0578619}{operator\mbox{[}$\,$\mbox{]}}} (\+\_\+\+Type elem) const noexcept
+\begin{DoxyCompactList}\small\item\em Оператор возвращает индекс элемента \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classconst__table_a1ef2e968c2d73ed858206e6dbf8bb5fb}\label{classconst__table_a1ef2e968c2d73ed858206e6dbf8bb5fb}} 
+std\+::set$<$ \+\_\+\+Type $>$\+::const\+\_\+iterator {\bfseries begin} () const
+\begin{DoxyCompactList}\small\item\em Возвращает константный итератор на начало таблицы \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classconst__table_ada335a7e8a5b792b6e7dfc7259c7966c}\label{classconst__table_ada335a7e8a5b792b6e7dfc7259c7966c}} 
+std\+::set$<$ \+\_\+\+Type $>$\+::const\+\_\+iterator {\bfseries end} () const
+\begin{DoxyCompactList}\small\item\em Возвращает константный итератор на конец таблицы \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Защищенные члены}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classconst__table_a5e0e0037ce3fdd4440ac12e64663fd7b}\label{classconst__table_a5e0e0037ce3fdd4440ac12e64663fd7b}} 
+virtual bool {\bfseries read\+\_\+file} (std\+::ifstream \&)
+\begin{DoxyCompactList}\small\item\em Функция чтения файла \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classconst__table_a94469eeb7d11725c76b0c5fe586d1a60}{add}} (\+\_\+\+Type elem)
+\begin{DoxyCompactList}\small\item\em Добавляет элемент в таблицу \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Друзья}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classconst__table_a42be9765ba45ca44e2ec928871d4a75d}\label{classconst__table_a42be9765ba45ca44e2ec928871d4a75d}} 
+{\footnotesize template$<$typename V $>$ }\\std\+::ostream \& {\bfseries operator$<$$<$} (std\+::ostream \&out, const \mbox{\hyperlink{classconst__table}{const\+\_\+table}}$<$ V $>$ \&\+\_\+tbl)
+\begin{DoxyCompactList}\small\item\em Выводит таблицу в поток \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Подробное описание}
+\subsubsection*{template$<$class \+\_\+\+Type$>$\newline
+class const\+\_\+table$<$ \+\_\+\+Type $>$}
+Шаблонный класс хранящий константные таблицы 
+
+\doxysubsection{Методы}
+\mbox{\Hypertarget{classconst__table_a94469eeb7d11725c76b0c5fe586d1a60}\label{classconst__table_a94469eeb7d11725c76b0c5fe586d1a60}} 
+\index{const\_table$<$ \_Type $>$@{const\_table$<$ \_Type $>$}!add@{add}}
+\index{add@{add}!const\_table$<$ \_Type $>$@{const\_table$<$ \_Type $>$}}
+\doxysubsubsection{\texorpdfstring{add()}{add()}}
+{\footnotesize\ttfamily template$<$typename \+\_\+\+Type $>$ \\
+void \mbox{\hyperlink{classconst__table}{const\+\_\+table}}$<$ \+\_\+\+Type $>$\+::add (\begin{DoxyParamCaption}\item[{\+\_\+\+Type}]{elem }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [protected]}}
+
+
+
+Добавляет элемент в таблицу 
+
+
+\begin{DoxyParams}{Аргументы}
+{\em elem} & Элемент, который нужно добавить \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classconst__table_ab9aa191fb8e4fad29d3e6e66e588f5e3}\label{classconst__table_ab9aa191fb8e4fad29d3e6e66e588f5e3}} 
+\index{const\_table$<$ \_Type $>$@{const\_table$<$ \_Type $>$}!contains@{contains}}
+\index{contains@{contains}!const\_table$<$ \_Type $>$@{const\_table$<$ \_Type $>$}}
+\doxysubsubsection{\texorpdfstring{contains()}{contains()}}
+{\footnotesize\ttfamily template$<$typename \+\_\+\+Type $>$ \\
+bool \mbox{\hyperlink{classconst__table}{const\+\_\+table}}$<$ \+\_\+\+Type $>$\+::contains (\begin{DoxyParamCaption}\item[{\+\_\+\+Type}]{elem }\end{DoxyParamCaption}) const}
+
+
+
+Проверка существования элемента 
+
+
+\begin{DoxyParams}{Аргументы}
+{\em elem} & Элемент для поиска \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Возвращает}
+true Если элемент найден 
+
+false Если элемент не найден 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classconst__table_a6d3061b4af4980d395ec1b2123645db9}\label{classconst__table_a6d3061b4af4980d395ec1b2123645db9}} 
+\index{const\_table$<$ \_Type $>$@{const\_table$<$ \_Type $>$}!get\_elem@{get\_elem}}
+\index{get\_elem@{get\_elem}!const\_table$<$ \_Type $>$@{const\_table$<$ \_Type $>$}}
+\doxysubsubsection{\texorpdfstring{get\_elem()}{get\_elem()}}
+{\footnotesize\ttfamily template$<$typename \+\_\+\+Type $>$ \\
+std\+::optional$<$ \+\_\+\+Type $>$ \mbox{\hyperlink{classconst__table}{const\+\_\+table}}$<$ \+\_\+\+Type $>$\+::get\+\_\+elem (\begin{DoxyParamCaption}\item[{size\+\_\+t}]{num }\end{DoxyParamCaption}) const}
+
+
+
+Получить элемент по его индексу 
+
+
+\begin{DoxyParams}{Аргументы}
+{\em num} & Индекс элемента \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Возвращает}
+std\+::optional$<$\+\_\+\+Type$>$ Будет иметь значение std\+::nullopt, если элемент не найден 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classconst__table_a39cbb8ada1d5148dc9ed12b75c9add3f}\label{classconst__table_a39cbb8ada1d5148dc9ed12b75c9add3f}} 
+\index{const\_table$<$ \_Type $>$@{const\_table$<$ \_Type $>$}!get\_num@{get\_num}}
+\index{get\_num@{get\_num}!const\_table$<$ \_Type $>$@{const\_table$<$ \_Type $>$}}
+\doxysubsubsection{\texorpdfstring{get\_num()}{get\_num()}}
+{\footnotesize\ttfamily template$<$typename \+\_\+\+Type $>$ \\
+int \mbox{\hyperlink{classconst__table}{const\+\_\+table}}$<$ \+\_\+\+Type $>$\+::get\+\_\+num (\begin{DoxyParamCaption}\item[{\+\_\+\+Type}]{elem }\end{DoxyParamCaption}) const}
+
+
+
+Получить индекс элемента 
+
+
+\begin{DoxyParams}{Аргументы}
+{\em elem} & Элемент для поиска \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Возвращает}
+int Индекс элемента (-\/1 если элемент не был найден) 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classconst__table_a660bc4276a3ec7c7d628826fe0578619}\label{classconst__table_a660bc4276a3ec7c7d628826fe0578619}} 
+\index{const\_table$<$ \_Type $>$@{const\_table$<$ \_Type $>$}!operator\mbox{[}\mbox{]}@{operator[]}}
+\index{operator\mbox{[}\mbox{]}@{operator[]}!const\_table$<$ \_Type $>$@{const\_table$<$ \_Type $>$}}
+\doxysubsubsection{\texorpdfstring{operator[]()}{operator[]()}}
+{\footnotesize\ttfamily template$<$typename \+\_\+\+Type $>$ \\
+int \mbox{\hyperlink{classconst__table}{const\+\_\+table}}$<$ \+\_\+\+Type $>$\+::operator\mbox{[}$\,$\mbox{]} (\begin{DoxyParamCaption}\item[{\+\_\+\+Type}]{elem }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [noexcept]}}
+
+
+
+Оператор возвращает индекс элемента 
+
+
+\begin{DoxyParams}{Аргументы}
+{\em elem} & Элемент для поиска \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Возвращает}
+int Индекс элемента (-\/1 если элемент не был найден) 
+\end{DoxyReturn}
+
+
+Объявления и описания членов класса находятся в файле\+:\begin{DoxyCompactItemize}
+\item 
+include/const\+\_\+table.\+hpp\end{DoxyCompactItemize}

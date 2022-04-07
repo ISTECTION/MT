@@ -1,0 +1,81 @@
+\hypertarget{classparse}{}\doxysection{Класс parse}
+\label{classparse}\index{parse@{parse}}
+Граф наследования\+:parse\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classparse}
+\end{center}
+\end{figure}
+\doxysubsection*{Открытые члены}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classparse_ad9503a51cec0379c52a4c3bb6842f207}\label{classparse_ad9503a51cec0379c52a4c3bb6842f207}} 
+{\bfseries parse} (const std\+::filesystem\+::path \&\+\_\+inp)
+\item 
+std\+::vector$<$ \mbox{\hyperlink{classtable__parse__elem}{table\+\_\+parse\+\_\+elem}} $>$\+::const\+\_\+iterator \mbox{\hyperlink{classparse_ae62e456bcf0c1ba3060378b1ea02016b}{begin}} () const
+\begin{DoxyCompactList}\small\item\em Функция возвращает константный указатель на начало постоянной таблицы синтаксического анализатора \end{DoxyCompactList}\item 
+std\+::vector$<$ \mbox{\hyperlink{classtable__parse__elem}{table\+\_\+parse\+\_\+elem}} $>$\+::const\+\_\+iterator \mbox{\hyperlink{classparse_acbdd3763bfa16851a33bc3014195e2cb}{end}} () const
+\begin{DoxyCompactList}\small\item\em Функция возвращает константный указатель на конец постоянной таблицы синтаксического анализатора \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Друзья}
+\begin{DoxyCompactItemize}
+\item 
+std\+::ostream \& \mbox{\hyperlink{classparse_a57c61f71d6d6cf8071d5e28f6d1acc16}{operator$<$$<$}} (std\+::ostream \&out, const \mbox{\hyperlink{classparse}{parse}} \&\+\_\+prs)
+\begin{DoxyCompactList}\small\item\em Перегрузка оператора {\ttfamily operator\texorpdfstring{$<$}{<}\texorpdfstring{$<$}{<}} для вывода постоянно таблицы в поток \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Дополнительные унаследованные члены}
+
+
+\doxysubsection{Методы}
+\mbox{\Hypertarget{classparse_ae62e456bcf0c1ba3060378b1ea02016b}\label{classparse_ae62e456bcf0c1ba3060378b1ea02016b}} 
+\index{parse@{parse}!begin@{begin}}
+\index{begin@{begin}!parse@{parse}}
+\doxysubsubsection{\texorpdfstring{begin()}{begin()}}
+{\footnotesize\ttfamily std\+::vector$<$ \mbox{\hyperlink{classtable__parse__elem}{table\+\_\+parse\+\_\+elem}} $>$\+::const\+\_\+iterator parse\+::begin (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Функция возвращает константный указатель на начало постоянной таблицы синтаксического анализатора 
+
+\begin{DoxyReturn}{Возвращает}
+std\+::vector$<$table\+\_\+parse\+\_\+elem$>$\+::const\+\_\+iterator 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classparse_acbdd3763bfa16851a33bc3014195e2cb}\label{classparse_acbdd3763bfa16851a33bc3014195e2cb}} 
+\index{parse@{parse}!end@{end}}
+\index{end@{end}!parse@{parse}}
+\doxysubsubsection{\texorpdfstring{end()}{end()}}
+{\footnotesize\ttfamily std\+::vector$<$ \mbox{\hyperlink{classtable__parse__elem}{table\+\_\+parse\+\_\+elem}} $>$\+::const\+\_\+iterator parse\+::end (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Функция возвращает константный указатель на конец постоянной таблицы синтаксического анализатора 
+
+\begin{DoxyReturn}{Возвращает}
+std\+::vector$<$table\+\_\+parse\+\_\+elem$>$\+::const\+\_\+iterator 
+\end{DoxyReturn}
+
+
+\doxysubsection{Документация по друзьям класса и функциям, относящимся к классу}
+\mbox{\Hypertarget{classparse_a57c61f71d6d6cf8071d5e28f6d1acc16}\label{classparse_a57c61f71d6d6cf8071d5e28f6d1acc16}} 
+\index{parse@{parse}!operator$<$$<$@{operator$<$$<$}}
+\index{operator$<$$<$@{operator$<$$<$}!parse@{parse}}
+\doxysubsubsection{\texorpdfstring{operator$<$$<$}{operator<<}}
+{\footnotesize\ttfamily std\+::ostream \& operator$<$$<$ (\begin{DoxyParamCaption}\item[{std\+::ostream \&}]{out,  }\item[{const \mbox{\hyperlink{classparse}{parse}} \&}]{\+\_\+prs }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [friend]}}
+
+
+
+Перегрузка оператора {\ttfamily operator\texorpdfstring{$<$}{<}\texorpdfstring{$<$}{<}} для вывода постоянно таблицы в поток 
+
+
+\begin{DoxyParams}{Аргументы}
+{\em out} & Поток (Например\+: std\+::cout, std\+::ofstream) \\
+\hline
+{\em \+\_\+prs} & Екземпляр класса parse \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Возвращает}
+std\+::ostream\& 
+\end{DoxyReturn}
+
+
+Объявления и описания членов класса находятся в файле\+:\begin{DoxyCompactItemize}
+\item 
+include/parse.\+hpp\end{DoxyCompactItemize}

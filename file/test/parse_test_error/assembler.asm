@@ -4,6 +4,7 @@
 EXTRN ExitProcess@4:PROC                                                         ; выход
 
 .DATA                                                                            ; сегмент данных
+a        dd ?
 
 
 .CODE                                                                            ; сегмент кода

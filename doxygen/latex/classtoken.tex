@@ -1,0 +1,138 @@
+\hypertarget{classtoken}{}\doxysection{Класс token}
+\label{classtoken}\index{token@{token}}
+
+
+Класс для хранения номера таблицы и позиции ключевого слова в ней  
+
+
+
+
+{\ttfamily \#include $<$token.\+hpp$>$}
+
+\doxysubsection*{Открытые члены}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classtoken_aeac288523f5c021ae4434983493fe4f8}\label{classtoken_aeac288523f5c021ae4434983493fe4f8}} 
+{\bfseries token} (TABLE \+\_\+table, size\+\_\+t \+\_\+i, int \+\_\+j)
+\item 
+TABLE \mbox{\hyperlink{classtoken_ace12699704b9f602ae646ef321287072}{get\+\_\+table}} () const
+\begin{DoxyCompactList}\small\item\em Возвращает номер таблицы \end{DoxyCompactList}\item 
+size\+\_\+t \mbox{\hyperlink{classtoken_a1d07378e77c5af02eecbe0fd6202401d}{get\+\_\+row}} () const
+\begin{DoxyCompactList}\small\item\em Возвращает номер строки \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{classtoken_ae5f96a754c3feda5edb0530fea786afe}{get\+\_\+column}} () const
+\begin{DoxyCompactList}\small\item\em Возвращает номер колонки \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classplace}{place}} \mbox{\hyperlink{classtoken_a258cc49eb12cbf24550da6db72d54757}{get\+\_\+place}} () const
+\begin{DoxyCompactList}\small\item\em Возвращает класс place содержащий значение строки и колонки лексемы \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Друзья}
+\begin{DoxyCompactItemize}
+\item 
+std\+::ostream \& \mbox{\hyperlink{classtoken_a97f8633f538da3aa5f7e3d8bc97f2372}{operator$<$$<$}} (std\+::ostream \&out, const \mbox{\hyperlink{classtoken}{token}} \&\+\_\+tkn)
+\begin{DoxyCompactList}\small\item\em Перегрузка оператора {\ttfamily operator\texorpdfstring{$<$}{<}\texorpdfstring{$<$}{<}} для вывода токена в поток \end{DoxyCompactList}\item 
+std\+::istream \& \mbox{\hyperlink{classtoken_a803f3e4c7caa879c8219e476410cb0ab}{operator$>$$>$}} (std\+::istream \&in, \mbox{\hyperlink{classtoken}{token}} \&\+\_\+tkn)
+\begin{DoxyCompactList}\small\item\em Перешрузка оператора {\ttfamily operator\texorpdfstring{$>$}{>}\texorpdfstring{$>$}{>}} для ввода токена из потока \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Подробное описание}
+Класс для хранения номера таблицы и позиции ключевого слова в ней 
+
+\doxysubsection{Методы}
+\mbox{\Hypertarget{classtoken_ae5f96a754c3feda5edb0530fea786afe}\label{classtoken_ae5f96a754c3feda5edb0530fea786afe}} 
+\index{token@{token}!get\_column@{get\_column}}
+\index{get\_column@{get\_column}!token@{token}}
+\doxysubsubsection{\texorpdfstring{get\_column()}{get\_column()}}
+{\footnotesize\ttfamily int token\+::get\+\_\+column (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Возвращает номер колонки 
+
+\begin{DoxyReturn}{Возвращает}
+int Может принимать значени -\/1, для постоянных таблиц 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classtoken_a258cc49eb12cbf24550da6db72d54757}\label{classtoken_a258cc49eb12cbf24550da6db72d54757}} 
+\index{token@{token}!get\_place@{get\_place}}
+\index{get\_place@{get\_place}!token@{token}}
+\doxysubsubsection{\texorpdfstring{get\_place()}{get\_place()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classplace}{place}} token\+::get\+\_\+place (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Возвращает класс place содержащий значение строки и колонки лексемы 
+
+\begin{DoxyReturn}{Возвращает}
+place Класс хранящий 2 значения 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classtoken_a1d07378e77c5af02eecbe0fd6202401d}\label{classtoken_a1d07378e77c5af02eecbe0fd6202401d}} 
+\index{token@{token}!get\_row@{get\_row}}
+\index{get\_row@{get\_row}!token@{token}}
+\doxysubsubsection{\texorpdfstring{get\_row()}{get\_row()}}
+{\footnotesize\ttfamily size\+\_\+t token\+::get\+\_\+row (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Возвращает номер строки 
+
+\begin{DoxyReturn}{Возвращает}
+size\+\_\+t Исключительно положительное число 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classtoken_ace12699704b9f602ae646ef321287072}\label{classtoken_ace12699704b9f602ae646ef321287072}} 
+\index{token@{token}!get\_table@{get\_table}}
+\index{get\_table@{get\_table}!token@{token}}
+\doxysubsubsection{\texorpdfstring{get\_table()}{get\_table()}}
+{\footnotesize\ttfamily TABLE token\+::get\+\_\+table (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Возвращает номер таблицы 
+
+\begin{DoxyReturn}{Возвращает}
+TABLE Enum с названиями таблиц 
+\end{DoxyReturn}
+
+
+\doxysubsection{Документация по друзьям класса и функциям, относящимся к классу}
+\mbox{\Hypertarget{classtoken_a97f8633f538da3aa5f7e3d8bc97f2372}\label{classtoken_a97f8633f538da3aa5f7e3d8bc97f2372}} 
+\index{token@{token}!operator$<$$<$@{operator$<$$<$}}
+\index{operator$<$$<$@{operator$<$$<$}!token@{token}}
+\doxysubsubsection{\texorpdfstring{operator$<$$<$}{operator<<}}
+{\footnotesize\ttfamily std\+::ostream \& operator$<$$<$ (\begin{DoxyParamCaption}\item[{std\+::ostream \&}]{out,  }\item[{const \mbox{\hyperlink{classtoken}{token}} \&}]{\+\_\+tkn }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [friend]}}
+
+
+
+Перегрузка оператора {\ttfamily operator\texorpdfstring{$<$}{<}\texorpdfstring{$<$}{<}} для вывода токена в поток 
+
+
+\begin{DoxyParams}{Аргументы}
+{\em out} & Поток (Например\+: std\+::cout, std\+::ofstream) \\
+\hline
+{\em \+\_\+tkn} & Екземляр класса, который будем выводить \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Возвращает}
+std\+::ostream\& 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classtoken_a803f3e4c7caa879c8219e476410cb0ab}\label{classtoken_a803f3e4c7caa879c8219e476410cb0ab}} 
+\index{token@{token}!operator$>$$>$@{operator$>$$>$}}
+\index{operator$>$$>$@{operator$>$$>$}!token@{token}}
+\doxysubsubsection{\texorpdfstring{operator$>$$>$}{operator>>}}
+{\footnotesize\ttfamily std\+::istream \& operator$>$$>$ (\begin{DoxyParamCaption}\item[{std\+::istream \&}]{in,  }\item[{\mbox{\hyperlink{classtoken}{token}} \&}]{\+\_\+tkn }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [friend]}}
+
+
+
+Перешрузка оператора {\ttfamily operator\texorpdfstring{$>$}{>}\texorpdfstring{$>$}{>}} для ввода токена из потока 
+
+
+\begin{DoxyParams}{Аргументы}
+{\em in} & Поток (Например\+: std\+::cin, std\+::ifstream) \\
+\hline
+{\em \+\_\+tkn} & Екземляр класса, в который будем записывать токен \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Возвращает}
+std\+::istream\& 
+\end{DoxyReturn}
+
+
+Объявления и описания членов класса находятся в файле\+:\begin{DoxyCompactItemize}
+\item 
+include/token.\+hpp\end{DoxyCompactItemize}

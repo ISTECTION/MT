@@ -1,0 +1,377 @@
+\hypertarget{translator_8hpp_source}{}\doxysection{translator.\+hpp}
+\label{translator_8hpp_source}\index{include/translator.hpp@{include/translator.hpp}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{preprocessor}{\#ifndef \_TRANSLATOR\_HPP}}
+\DoxyCodeLine{2 \textcolor{preprocessor}{\#define \_TRANSLATOR\_HPP}}
+\DoxyCodeLine{3 \textcolor{preprocessor}{\#include "{}utils/lightweight.hpp"{}}}
+\DoxyCodeLine{4 \textcolor{preprocessor}{\#include "{}utils/brackets.hpp"{}}}
+\DoxyCodeLine{5 \textcolor{preprocessor}{\#include "{}const\_table.hpp"{}}}
+\DoxyCodeLine{6 \textcolor{preprocessor}{\#include "{}var\_table.hpp"{}}}
+\DoxyCodeLine{7 \textcolor{preprocessor}{\#include "{}error.hpp"{}}}
+\DoxyCodeLine{8 \textcolor{preprocessor}{\#include "{}token.hpp"{}}}
+\DoxyCodeLine{9 }
+\DoxyCodeLine{10 \textcolor{preprocessor}{\#include <filesystem>}}
+\DoxyCodeLine{11 \textcolor{preprocessor}{\#include <iterator>}}
+\DoxyCodeLine{12 \textcolor{preprocessor}{\#include <sstream>}}
+\DoxyCodeLine{13 \textcolor{preprocessor}{\#include <fstream>}}
+\DoxyCodeLine{14 \textcolor{preprocessor}{\#include <cassert>}}
+\DoxyCodeLine{15 \textcolor{preprocessor}{\#include <string>}}
+\DoxyCodeLine{16 \textcolor{preprocessor}{\#include <cctype>}               }
+\DoxyCodeLine{17 \textcolor{preprocessor}{\#include <stack>}}
+\DoxyCodeLine{18 }
+\DoxyCodeLine{19 \textcolor{keyword}{using} \_Iter\_buf = ::std::istreambuf\_iterator<char>;}
+\DoxyCodeLine{20 }
+\DoxyCodeLine{21 \textcolor{keyword}{class }\mbox{\hyperlink{classtranslator}{translator}}}
+\DoxyCodeLine{22 \{}
+\DoxyCodeLine{23 \textcolor{keyword}{private}:}
+\DoxyCodeLine{25     std::stack<InfoBracket> \_bracket;}
+\DoxyCodeLine{26 }
+\DoxyCodeLine{28     std::ostringstream os\_token, os\_error;}
+\DoxyCodeLine{29     \textcolor{keywordtype}{size\_t} \_count\_error;}
+\DoxyCodeLine{30 }
+\DoxyCodeLine{32     std::string \_current\_str;}
+\DoxyCodeLine{33     \textcolor{keywordtype}{size\_t}      \_current\_lines;}
+\DoxyCodeLine{34 }
+\DoxyCodeLine{36     std::ostringstream nocomment\_code;}
+\DoxyCodeLine{37 }
+\DoxyCodeLine{39     std::filesystem::path \_parent\_path;}
+\DoxyCodeLine{40 }
+\DoxyCodeLine{41 \textcolor{keyword}{public}:}
+\DoxyCodeLine{42     \textcolor{keyword}{explicit} \mbox{\hyperlink{classtranslator}{translator}} (\textcolor{keyword}{const} std::filesystem::path\& \_src\_path)}
+\DoxyCodeLine{43         : \mbox{\hyperlink{classtranslator_acf55331c44ba4a84d4fe91782b46e696}{operations}}(path\_const\_table::operations),}
+\DoxyCodeLine{44           \mbox{\hyperlink{classtranslator_aa0d4223540ed7764811c5bcfab721691}{keywords}}(path\_const\_table::keywords),}
+\DoxyCodeLine{45           \mbox{\hyperlink{classtranslator_a6d11b3fdbdf107bbe7673948e9e25968}{separators}}(path\_const\_table::separators),}
+\DoxyCodeLine{46           \_parent\_path(\_src\_path.parent\_path()),}
+\DoxyCodeLine{47           \_current\_lines(1),}
+\DoxyCodeLine{48           \_count\_error(0) \{}
+\DoxyCodeLine{49 }
+\DoxyCodeLine{50         \textcolor{keyword}{auto} print\_error =}
+\DoxyCodeLine{51             [](std::string\_view filename) -\/> \textcolor{keywordtype}{bool} \{}
+\DoxyCodeLine{52                 std::cerr}
+\DoxyCodeLine{53                     << \textcolor{stringliteral}{"{}file not open: "{}}}
+\DoxyCodeLine{54                     << filename << \textcolor{charliteral}{'\(\backslash\)n'};}
+\DoxyCodeLine{55                 \textcolor{keywordflow}{return} \textcolor{keyword}{false}; \};}
+\DoxyCodeLine{56 }
+\DoxyCodeLine{57         std::ifstream fin(\_src\_path);}
+\DoxyCodeLine{58         fin.is\_open()}
+\DoxyCodeLine{59           ? analyse(fin)}
+\DoxyCodeLine{60           : assert(print\_error(std::filesystem::canonical(\_src\_path.filename()).string()));}
+\DoxyCodeLine{61         fin.close();}
+\DoxyCodeLine{62     \}}
+\DoxyCodeLine{63 }
+\DoxyCodeLine{70     \textcolor{keywordtype}{bool} \mbox{\hyperlink{classtranslator_a147815ae0bdcdf096139fe5432f46a44}{syntax\_success}} ()\textcolor{keyword}{ const }\{ \textcolor{keywordflow}{return} \_count\_error ? false : \textcolor{keyword}{true}; \}}
+\DoxyCodeLine{71 }
+\DoxyCodeLine{78     \textcolor{keywordtype}{bool} \mbox{\hyperlink{classtranslator_abe7553b185c5d7a983e4d42b43ef18b6}{syntax\_fail}}    ()\textcolor{keyword}{ const }\{ \textcolor{keywordflow}{return} not \mbox{\hyperlink{classtranslator_a147815ae0bdcdf096139fe5432f46a44}{syntax\_success}}(); \}}
+\DoxyCodeLine{79 }
+\DoxyCodeLine{85     std::filesystem::path \mbox{\hyperlink{classtranslator_a8102462c88fd2897084007bd1e094e40}{get\_parrent\_path}} ()\textcolor{keyword}{ const }\{ \textcolor{keywordflow}{return} \_parent\_path; \}}
+\DoxyCodeLine{86 }
+\DoxyCodeLine{93     std::string \mbox{\hyperlink{classtranslator_af863a16b1aac7ef39ff36a8c0e4fa502}{get\_token\_text}} (\textcolor{keyword}{const} \mbox{\hyperlink{classtoken}{token}}\& \_tkn) \textcolor{keyword}{const};}
+\DoxyCodeLine{94 }
+\DoxyCodeLine{101     \mbox{\hyperlink{classvar__table}{var\_table}}\& \mbox{\hyperlink{classtranslator_a1cbf495455bde14efece79122ab96e61}{get\_var\_table}}(TABLE \_table) \{}
+\DoxyCodeLine{102 }
+\DoxyCodeLine{103         \textcolor{keywordflow}{if} (\_table == TABLE::IDENTIFIERS || \_table == TABLE::CONSTANTS) \{}
+\DoxyCodeLine{104             \textcolor{keywordflow}{return} \_table == TABLE::IDENTIFIERS}
+\DoxyCodeLine{105                 ? \mbox{\hyperlink{classtranslator_af183397ec86669e694000855fa6a99f2}{identifiers}}}
+\DoxyCodeLine{106                 : \mbox{\hyperlink{classtranslator_ae5a3167f14b7481be492e7f72533450d}{constants}} ;}
+\DoxyCodeLine{107         \} \textcolor{keywordflow}{else}}
+\DoxyCodeLine{108             \textcolor{keywordflow}{throw} std::runtime\_error(\textcolor{stringliteral}{"{}not table: (TABLE::IDENTIFIERS || TABLE::CONSTANTS)"{}});}
+\DoxyCodeLine{109     \}}
+\DoxyCodeLine{110 }
+\DoxyCodeLine{116     \textcolor{keywordtype}{void} \mbox{\hyperlink{classtranslator_a333b5d925144fac2f073cb6322bc6587}{print\_table}} (\textcolor{keywordtype}{bool} \_prs\_table) \textcolor{keyword}{const};}
+\DoxyCodeLine{117 }
+\DoxyCodeLine{118 \textcolor{keyword}{private}:}
+\DoxyCodeLine{119 }
+\DoxyCodeLine{124     \textcolor{keywordtype}{void} analyse(std::ifstream\& );}
+\DoxyCodeLine{125 }
+\DoxyCodeLine{131     std::optional<LEXICAL> decomment (std::istreambuf\_iterator<char>\& );}
+\DoxyCodeLine{132 }
+\DoxyCodeLine{138     std::optional<LEXICAL> lexical (std::istreambuf\_iterator<char>\& );}
+\DoxyCodeLine{139 }
+\DoxyCodeLine{145     std::optional<LEXICAL> balanced (std::istreambuf\_iterator<char>\& );}
+\DoxyCodeLine{146 }
+\DoxyCodeLine{148 }
+\DoxyCodeLine{153     \textcolor{keywordtype}{void} skip\_spaces (std::istreambuf\_iterator<char>\& );}
+\DoxyCodeLine{154 }
+\DoxyCodeLine{155 \textcolor{keyword}{protected}:}
+\DoxyCodeLine{156     \mbox{\hyperlink{classconst__table__operation}{const\_table\_operation<std::string>}} \mbox{\hyperlink{classtranslator_acf55331c44ba4a84d4fe91782b46e696}{operations}};  }
+\DoxyCodeLine{157     \mbox{\hyperlink{classconst__table}{const\_table<std::string>}} \mbox{\hyperlink{classtranslator_aa0d4223540ed7764811c5bcfab721691}{keywords}};              }
+\DoxyCodeLine{158     \mbox{\hyperlink{classconst__table}{const\_table<std::string>}} \mbox{\hyperlink{classtranslator_a6d11b3fdbdf107bbe7673948e9e25968}{separators}};            }
+\DoxyCodeLine{159 }
+\DoxyCodeLine{160     \mbox{\hyperlink{classvar__table}{var\_table}} \mbox{\hyperlink{classtranslator_af183397ec86669e694000855fa6a99f2}{identifiers}};                          }
+\DoxyCodeLine{161     \mbox{\hyperlink{classvar__table}{var\_table}} \mbox{\hyperlink{classtranslator_ae5a3167f14b7481be492e7f72533450d}{constants}};                            }
+\DoxyCodeLine{162 \};}
+\DoxyCodeLine{163 }
+\DoxyCodeLine{164 std::string}
+\DoxyCodeLine{165 \mbox{\hyperlink{classtranslator_af863a16b1aac7ef39ff36a8c0e4fa502}{translator::get\_token\_text}} (\textcolor{keyword}{const} \mbox{\hyperlink{classtoken}{token}}\& \_tkn)\textcolor{keyword}{ const }\{}
+\DoxyCodeLine{166     \textcolor{keywordflow}{switch} (\_tkn.\mbox{\hyperlink{classtoken_ace12699704b9f602ae646ef321287072}{get\_table}}())}
+\DoxyCodeLine{167     \{}
+\DoxyCodeLine{168         \textcolor{keywordflow}{case} TABLE::OPERATION  : \textcolor{keywordflow}{return} \mbox{\hyperlink{classtranslator_acf55331c44ba4a84d4fe91782b46e696}{operations}}.get\_elem(\_tkn.\mbox{\hyperlink{classtoken_a1d07378e77c5af02eecbe0fd6202401d}{get\_row}}()).value(); \textcolor{keywordflow}{break};}
+\DoxyCodeLine{169         \textcolor{keywordflow}{case} TABLE::KEYWORDS   : \textcolor{keywordflow}{return} \mbox{\hyperlink{classtranslator_aa0d4223540ed7764811c5bcfab721691}{keywords}}  .get\_elem(\_tkn.\mbox{\hyperlink{classtoken_a1d07378e77c5af02eecbe0fd6202401d}{get\_row}}()).value(); \textcolor{keywordflow}{break};}
+\DoxyCodeLine{170         \textcolor{keywordflow}{case} TABLE::SEPARATORS : \textcolor{keywordflow}{return} \mbox{\hyperlink{classtranslator_a6d11b3fdbdf107bbe7673948e9e25968}{separators}}.get\_elem(\_tkn.\mbox{\hyperlink{classtoken_a1d07378e77c5af02eecbe0fd6202401d}{get\_row}}()).value(); \textcolor{keywordflow}{break};}
+\DoxyCodeLine{171         \textcolor{comment}{// case TABLE::IDENTIFIERS: return identifiers.get\_lexeme(place(\_tkn.get\_row(), \_tkn.get\_column())).value().get\_name(); break;}}
+\DoxyCodeLine{172         \textcolor{comment}{// case TABLE::CONSTANTS  : return constants  .get\_lexeme(place(\_tkn.get\_row(), \_tkn.get\_column())).value().get\_name(); break;}}
+\DoxyCodeLine{173         \textcolor{keywordflow}{case} TABLE::IDENTIFIERS: \textcolor{keywordflow}{return} std::string \{  \textcolor{stringliteral}{"{}var"{}}  \}; \textcolor{keywordflow}{break};}
+\DoxyCodeLine{174         \textcolor{keywordflow}{case} TABLE::CONSTANTS  : \textcolor{keywordflow}{return} std::string \{ \textcolor{stringliteral}{"{}const"{}} \}; \textcolor{keywordflow}{break};}
+\DoxyCodeLine{175 }
+\DoxyCodeLine{176         \textcolor{keywordflow}{default}: \textcolor{keywordflow}{return} std::string \{ \};}
+\DoxyCodeLine{177     \}}
+\DoxyCodeLine{178 \}}
+\DoxyCodeLine{179 }
+\DoxyCodeLine{180 }
+\DoxyCodeLine{181 std::optional<LEXICAL>}
+\DoxyCodeLine{182 translator::balanced (std::istreambuf\_iterator<char>\& iit) \{}
+\DoxyCodeLine{183     \textcolor{keywordflow}{if} (open\_brackets(*iit)) \{}
+\DoxyCodeLine{184         \_bracket.push(}
+\DoxyCodeLine{185             \mbox{\hyperlink{class_info_bracket}{InfoBracket}} \{ \_map\_brackets[*iit], \_current\_lines \});}
+\DoxyCodeLine{186         \textcolor{keywordflow}{return} std::nullopt;}
+\DoxyCodeLine{187     \} \textcolor{keywordflow}{else} \textcolor{keywordflow}{if} (close\_brackets(*iit)) \{}
+\DoxyCodeLine{188         \textcolor{keywordflow}{if} (\_bracket.empty() ||}
+\DoxyCodeLine{189             \_bracket.top().get\_bracket() != *iit)}
+\DoxyCodeLine{190             \textcolor{keywordflow}{return} std::optional \{ LEXICAL::BRACKET\_MISTAKE \};}
+\DoxyCodeLine{191         \textcolor{keywordflow}{else} \_bracket.pop();}
+\DoxyCodeLine{192     \}}
+\DoxyCodeLine{193     \textcolor{keywordflow}{return} std::nullopt;}
+\DoxyCodeLine{194 \}}
+\DoxyCodeLine{195 }
+\DoxyCodeLine{196 }
+\DoxyCodeLine{197 \textcolor{keywordtype}{void} translator::skip\_spaces (std::istreambuf\_iterator<char>\& iit) \{}
+\DoxyCodeLine{198     \textcolor{keyword}{using} \_eos\_buf = ::std::istreambuf\_iterator<char>;}
+\DoxyCodeLine{199 }
+\DoxyCodeLine{200     \textcolor{keywordflow}{if} (iit == \_eos\_buf())}
+\DoxyCodeLine{201         \textcolor{keywordflow}{return};}
+\DoxyCodeLine{202 }
+\DoxyCodeLine{203     \textcolor{keywordflow}{for} ( ; *iit == \textcolor{charliteral}{'\(\backslash\)n'} || *iit == \textcolor{charliteral}{'\(\backslash\)t'} || *iit == \textcolor{charliteral}{' '}; ++iit) \{}
+\DoxyCodeLine{204 }
+\DoxyCodeLine{205         \_current\_str   += *iit;         }
+\DoxyCodeLine{206         nocomment\_code << *iit;}
+\DoxyCodeLine{207 }
+\DoxyCodeLine{208         \textcolor{keywordflow}{if} (*iit == \textcolor{charliteral}{'\(\backslash\)n'}) \{}
+\DoxyCodeLine{209             \_current\_str.clear();}
+\DoxyCodeLine{210             \_current\_lines++; \}}
+\DoxyCodeLine{211     \}}
+\DoxyCodeLine{212 \}}
+\DoxyCodeLine{213 }
+\DoxyCodeLine{214 std::optional<LEXICAL>}
+\DoxyCodeLine{215 translator::decomment (std::istreambuf\_iterator<char>\& iit) \{}
+\DoxyCodeLine{216     \textcolor{keyword}{using} \_eos\_buf = ::std::istreambuf\_iterator<char>;}
+\DoxyCodeLine{217 }
+\DoxyCodeLine{218     \textcolor{keywordflow}{do} \{}
+\DoxyCodeLine{219         \textcolor{keywordflow}{if} (*iit != \textcolor{charliteral}{'/'}) \textcolor{keywordflow}{return} std::nullopt;}
+\DoxyCodeLine{220         \textcolor{keywordflow}{if} (++iit == \_eos\_buf())}
+\DoxyCodeLine{221             \textcolor{keywordflow}{return} std::optional \{ LEXICAL::EOF\_FILE \};}
+\DoxyCodeLine{222 }
+\DoxyCodeLine{223         \textcolor{keywordflow}{if} (*iit == \textcolor{charliteral}{'/'})}
+\DoxyCodeLine{224             \textcolor{keywordflow}{do} \{}
+\DoxyCodeLine{225                 \textcolor{keywordflow}{if} (++iit == \_eos\_buf())}
+\DoxyCodeLine{226                     \textcolor{keywordflow}{return} std::nullopt;}
+\DoxyCodeLine{227             \} \textcolor{keywordflow}{while} (*iit != \textcolor{charliteral}{'\(\backslash\)n'});}
+\DoxyCodeLine{228         \textcolor{keywordflow}{else} \textcolor{keywordflow}{if} (*iit == \textcolor{charliteral}{'*'}) \{}
+\DoxyCodeLine{229             \textcolor{keywordtype}{char} \_preview,          }
+\DoxyCodeLine{230                  \_current;          }
+\DoxyCodeLine{231 }
+\DoxyCodeLine{232             \textcolor{keywordflow}{if} (++iit == \_eos\_buf())}
+\DoxyCodeLine{233                 \textcolor{keywordflow}{return} std::optional \{ LEXICAL::UNCLOSED\_COMMENT \};}
+\DoxyCodeLine{234             \_current = *iit;}
+\DoxyCodeLine{235 }
+\DoxyCodeLine{236             \textcolor{keywordflow}{do} \{}
+\DoxyCodeLine{238                 \textcolor{keywordflow}{if} (*iit == \textcolor{charliteral}{'\(\backslash\)n'}) \_current\_lines++;}
+\DoxyCodeLine{239 }
+\DoxyCodeLine{240                 std::swap(\_preview, \_current);}
+\DoxyCodeLine{241                 \textcolor{keywordflow}{if} (++iit == \_eos\_buf()) \{}
+\DoxyCodeLine{242                     \_current\_str = \textcolor{stringliteral}{"{}/*"{}};}
+\DoxyCodeLine{243                     \textcolor{keywordflow}{return} std::optional \{ LEXICAL::UNCLOSED\_COMMENT \}; \}}
+\DoxyCodeLine{244                 \_current = *iit;}
+\DoxyCodeLine{245             \} \textcolor{keywordflow}{while} (\_preview != \textcolor{charliteral}{'*'} || \_current != \textcolor{charliteral}{'/'});}
+\DoxyCodeLine{247             ++iit;  }
+\DoxyCodeLine{248             \textcolor{keywordflow}{if} (iit == \_eos\_buf())}
+\DoxyCodeLine{249                 \textcolor{keywordflow}{return} std::nullopt;}
+\DoxyCodeLine{250 }
+\DoxyCodeLine{251         \} \textcolor{keywordflow}{else}}
+\DoxyCodeLine{252             \textcolor{keywordflow}{return} std::optional \{ LEXICAL::UNEXPECTED\_SYMBOL \};}
+\DoxyCodeLine{253 }
+\DoxyCodeLine{254         skip\_spaces(iit);}
+\DoxyCodeLine{255     \} \textcolor{keywordflow}{while} (*iit == \textcolor{charliteral}{'/'});}
+\DoxyCodeLine{256 }
+\DoxyCodeLine{257     \textcolor{keywordflow}{return} std::nullopt;}
+\DoxyCodeLine{258 \}}
+\DoxyCodeLine{259 }
+\DoxyCodeLine{260 std::optional<LEXICAL>}
+\DoxyCodeLine{261 translator::lexical (std::istreambuf\_iterator<char>\& iit) \{}
+\DoxyCodeLine{262     \textcolor{keyword}{using} \_eos\_buf = ::std::istreambuf\_iterator<char>;}
+\DoxyCodeLine{263 }
+\DoxyCodeLine{265     \textcolor{keywordflow}{if} (std::isalpha(*iit) || *iit == \textcolor{charliteral}{'\_'}) \{}
+\DoxyCodeLine{266         std::ostringstream \_str;}
+\DoxyCodeLine{267         \textcolor{keywordflow}{do} \{}
+\DoxyCodeLine{268             nocomment\_code << *iit;         }
+\DoxyCodeLine{269             \_str           << *iit;         }
+\DoxyCodeLine{270             \_current\_str   += *iit;         }
+\DoxyCodeLine{271             \textcolor{keywordflow}{if} (++iit == \_eos\_buf())}
+\DoxyCodeLine{272                 \textcolor{keywordflow}{return} std::optional \{ LEXICAL::EOF\_FILE \};}
+\DoxyCodeLine{273 }
+\DoxyCodeLine{274         \} \textcolor{keywordflow}{while} (std::isalnum(*iit) || *iit == \textcolor{charliteral}{'\_'});}
+\DoxyCodeLine{275 }
+\DoxyCodeLine{276         \textcolor{keywordtype}{int} \_flag = \mbox{\hyperlink{classtranslator_aa0d4223540ed7764811c5bcfab721691}{keywords}}.get\_num(\_str.str());}
+\DoxyCodeLine{277         \textcolor{keywordflow}{if} (\_flag != -\/1) \{}
+\DoxyCodeLine{278             os\_token << \mbox{\hyperlink{classtoken}{token}}(TABLE::KEYWORDS, \_flag, -\/1);}
+\DoxyCodeLine{279         \}}
+\DoxyCodeLine{280         \textcolor{keywordflow}{else} \{}
+\DoxyCodeLine{281             std::optional<place> \_pl = \mbox{\hyperlink{classtranslator_af183397ec86669e694000855fa6a99f2}{identifiers}}.\mbox{\hyperlink{classvar__table_a6d84a7ef59dcbe2a9970d5a24eeb5614}{find\_in\_table}}(\_str.str());}
+\DoxyCodeLine{282             \textcolor{keywordflow}{if} (\_pl == std::nullopt)}
+\DoxyCodeLine{283                 \_pl = \mbox{\hyperlink{classtranslator_af183397ec86669e694000855fa6a99f2}{identifiers}}.\mbox{\hyperlink{classvar__table_a6354ba6befad57eada3e5e5906a5a40b}{add}}(\_str.str());}
+\DoxyCodeLine{284 }
+\DoxyCodeLine{285             \textcolor{keyword}{using} enum ::place::POS;}
+\DoxyCodeLine{286             \mbox{\hyperlink{classplace}{place}} \_pl\_value = \_pl.value();}
+\DoxyCodeLine{287             os\_token << \mbox{\hyperlink{classtoken}{token}}(TABLE::IDENTIFIERS,}
+\DoxyCodeLine{288                     \_pl\_value(ROW),}
+\DoxyCodeLine{289                     \_pl\_value(COLLUMN));}
+\DoxyCodeLine{290         \}}
+\DoxyCodeLine{291     \}}
+\DoxyCodeLine{294     \textcolor{keywordflow}{else} \textcolor{keywordflow}{if} (std::isdigit(*iit)) \{}
+\DoxyCodeLine{295         std::ostringstream \_digit;}
+\DoxyCodeLine{296         \textcolor{keywordflow}{do} \{}
+\DoxyCodeLine{297             nocomment\_code << *iit;}
+\DoxyCodeLine{298             \_digit         << *iit;}
+\DoxyCodeLine{299             \_current\_str   += *iit;}
+\DoxyCodeLine{300             \textcolor{keywordflow}{if} (++iit == \_eos\_buf())}
+\DoxyCodeLine{301                 \textcolor{keywordflow}{return} std::optional \{ LEXICAL::EOF\_FILE \};}
+\DoxyCodeLine{302 }
+\DoxyCodeLine{303         \} \textcolor{keywordflow}{while} (std::isdigit(*iit));}
+\DoxyCodeLine{304 }
+\DoxyCodeLine{305         \textcolor{keywordflow}{if} (std::isalpha(*iit) || *iit == \textcolor{charliteral}{'\_'}) \{}
+\DoxyCodeLine{306             \_current\_str   += *iit;}
+\DoxyCodeLine{307             \textcolor{keywordflow}{return} std::optional \{ LEXICAL::UNEXPECTED\_SYMBOL \};}
+\DoxyCodeLine{308         \}}
+\DoxyCodeLine{309 }
+\DoxyCodeLine{310         std::optional<place> \_pl =}
+\DoxyCodeLine{311             \mbox{\hyperlink{classtranslator_ae5a3167f14b7481be492e7f72533450d}{constants}}.\mbox{\hyperlink{classvar__table_a6d84a7ef59dcbe2a9970d5a24eeb5614}{find\_in\_table}}(\_digit.str());}
+\DoxyCodeLine{312 }
+\DoxyCodeLine{313         \textcolor{keywordflow}{if} (\_pl == std::nullopt)}
+\DoxyCodeLine{314             \_pl = \mbox{\hyperlink{classtranslator_ae5a3167f14b7481be492e7f72533450d}{constants}}.\mbox{\hyperlink{classvar__table_a6354ba6befad57eada3e5e5906a5a40b}{add}}(\_digit.str());}
+\DoxyCodeLine{315 }
+\DoxyCodeLine{316         \textcolor{keyword}{using} enum ::place::POS;}
+\DoxyCodeLine{317         \mbox{\hyperlink{classplace}{place}} \_pl\_value = \_pl.value();}
+\DoxyCodeLine{318         os\_token << \mbox{\hyperlink{classtoken}{token}}(TABLE::CONSTANTS,}
+\DoxyCodeLine{319                 \_pl\_value(ROW),}
+\DoxyCodeLine{320                 \_pl\_value(COLLUMN));}
+\DoxyCodeLine{321     \}}
+\DoxyCodeLine{324     \textcolor{keywordflow}{else} \textcolor{keywordflow}{if} (\mbox{\hyperlink{classtranslator_a6d11b3fdbdf107bbe7673948e9e25968}{separators}}.contains(std::string \{ *iit \} )) \{}
+\DoxyCodeLine{325 }
+\DoxyCodeLine{327         std::optional<LEXICAL> err\_bracket = balanced(iit);}
+\DoxyCodeLine{328 }
+\DoxyCodeLine{329         \textcolor{keywordtype}{int} flag = \mbox{\hyperlink{classtranslator_a6d11b3fdbdf107bbe7673948e9e25968}{separators}}.get\_num(std::string \{ *iit \} );}
+\DoxyCodeLine{330         os\_token << \mbox{\hyperlink{classtoken}{token}}(TABLE::SEPARATORS, flag, -\/1);}
+\DoxyCodeLine{331         nocomment\_code << *iit;}
+\DoxyCodeLine{332         \_current\_str   += *iit;         }
+\DoxyCodeLine{333 }
+\DoxyCodeLine{334         ++iit;}
+\DoxyCodeLine{335         \textcolor{keywordflow}{if} (err\_bracket != std::nullopt)}
+\DoxyCodeLine{336             \textcolor{keywordflow}{return} err\_bracket;}
+\DoxyCodeLine{337     \}}
+\DoxyCodeLine{340     \textcolor{keywordflow}{else} \textcolor{keywordflow}{if} (\mbox{\hyperlink{classtranslator_acf55331c44ba4a84d4fe91782b46e696}{operations}}.contains(std::string \{ *iit \} )) \{}
+\DoxyCodeLine{341 }
+\DoxyCodeLine{342         std::string \_operation \{ *iit \};}
+\DoxyCodeLine{343         nocomment\_code << *iit;}
+\DoxyCodeLine{344         \_current\_str   += *iit;         }
+\DoxyCodeLine{345         \textcolor{keywordflow}{if} (++iit == \_eos\_buf())}
+\DoxyCodeLine{346             \textcolor{keywordflow}{return} std::optional \{ LEXICAL::EOF\_FILE \};}
+\DoxyCodeLine{347 }
+\DoxyCodeLine{348         \textcolor{keywordflow}{if} (*iit == \textcolor{charliteral}{'+'} || *iit == \textcolor{charliteral}{'-\/'} ||}
+\DoxyCodeLine{349             *iit == \textcolor{charliteral}{'<'} || *iit == \textcolor{charliteral}{'>'}) \{}
+\DoxyCodeLine{350 }
+\DoxyCodeLine{351             nocomment\_code << *iit;}
+\DoxyCodeLine{352             \_operation     += *iit;}
+\DoxyCodeLine{353             \_current\_str   += *iit;         }
+\DoxyCodeLine{354             \textcolor{keywordflow}{if} (++iit == \_eos\_buf())}
+\DoxyCodeLine{355                 \textcolor{keywordflow}{return} std::optional \{ LEXICAL::EOF\_FILE \};}
+\DoxyCodeLine{356         \}}
+\DoxyCodeLine{357 }
+\DoxyCodeLine{358         \textcolor{keywordtype}{int} flag = \mbox{\hyperlink{classtranslator_acf55331c44ba4a84d4fe91782b46e696}{operations}}.get\_num(\_operation);}
+\DoxyCodeLine{359         \textcolor{keywordflow}{if} (flag == -\/1)}
+\DoxyCodeLine{360             \textcolor{keywordflow}{return} std::optional \{ LEXICAL::OPERATION\_NOT\_EXIST \};}
+\DoxyCodeLine{361 }
+\DoxyCodeLine{362         os\_token << \mbox{\hyperlink{classtoken}{token}}(TABLE::OPERATION, flag, -\/1);}
+\DoxyCodeLine{363         \textcolor{keywordflow}{return} std::nullopt;}
+\DoxyCodeLine{364     \}}
+\DoxyCodeLine{367     \textcolor{keywordflow}{else} \{}
+\DoxyCodeLine{368         \_current\_str += *iit;         }
+\DoxyCodeLine{369 }
+\DoxyCodeLine{370         ++iit;}
+\DoxyCodeLine{371         \textcolor{keywordflow}{return} std::optional \{ LEXICAL::UNEXPECTED\_SYMBOL \};}
+\DoxyCodeLine{372     \}}
+\DoxyCodeLine{374     \textcolor{keywordflow}{return} std::nullopt;}
+\DoxyCodeLine{375 \}}
+\DoxyCodeLine{376 }
+\DoxyCodeLine{377 \textcolor{keywordtype}{void} translator::analyse (std::ifstream\& \_ifstream) \{}
+\DoxyCodeLine{378     \_Iter\_buf eos, iit(\_ifstream);}
+\DoxyCodeLine{379 }
+\DoxyCodeLine{380     \textcolor{keywordflow}{while} (iit != eos) \{}
+\DoxyCodeLine{381         std::optional<LEXICAL> err\_deccoment = decomment(iit);}
+\DoxyCodeLine{382         \textcolor{keywordflow}{if} (err\_deccoment != std::nullopt)  \{}
+\DoxyCodeLine{383             \mbox{\hyperlink{class_info_error}{InfoError}} iErr \{ err\_deccoment.value(), \_current\_lines, \_current\_str \};}
+\DoxyCodeLine{384 }
+\DoxyCodeLine{385             os\_error << iErr;}
+\DoxyCodeLine{386             \_count\_error++;}
+\DoxyCodeLine{387         \}}
+\DoxyCodeLine{388 }
+\DoxyCodeLine{389         \textcolor{keywordflow}{if} (iit != eos) \{}
+\DoxyCodeLine{390             std::optional<LEXICAL> err\_lexical = lexical(iit);}
+\DoxyCodeLine{391             \textcolor{keywordflow}{if} (err\_lexical != std::nullopt) \{}
+\DoxyCodeLine{392                 \mbox{\hyperlink{class_info_error}{InfoError}} iErr \{ err\_lexical.value(), \_current\_lines, \_current\_str \};}
+\DoxyCodeLine{393 }
+\DoxyCodeLine{394                 os\_error << iErr;}
+\DoxyCodeLine{395                 \_count\_error++;}
+\DoxyCodeLine{396             \}}
+\DoxyCodeLine{397         \}}
+\DoxyCodeLine{398 }
+\DoxyCodeLine{399         skip\_spaces(iit);}
+\DoxyCodeLine{400     \}}
+\DoxyCodeLine{401 }
+\DoxyCodeLine{402     \textcolor{keywordflow}{if} (\_bracket.size() != 0) \{}
+\DoxyCodeLine{403         os\_error << \mbox{\hyperlink{class_info_error}{InfoError}} \{}
+\DoxyCodeLine{404             LEXICAL::BRACKET\_MISTAKE,}
+\DoxyCodeLine{405             \_current\_lines,}
+\DoxyCodeLine{406             \textcolor{stringliteral}{"{}lack: "{}} + std::string \{ \_bracket.top().get\_bracket() \} \};}
+\DoxyCodeLine{407         \_count\_error++;}
+\DoxyCodeLine{408     \}}
+\DoxyCodeLine{409 }
+\DoxyCodeLine{410     std::ofstream fout(\_parent\_path / \textcolor{stringliteral}{"{}token.txt"{}});}
+\DoxyCodeLine{411     fout << os\_token.str();}
+\DoxyCodeLine{412     fout.close();}
+\DoxyCodeLine{413 }
+\DoxyCodeLine{414     fout.open(\_parent\_path / \textcolor{stringliteral}{"{}error.txt"{}});}
+\DoxyCodeLine{415     fout << os\_error.str();}
+\DoxyCodeLine{416     fout.close();}
+\DoxyCodeLine{417 }
+\DoxyCodeLine{418     fout.open(\_parent\_path / \textcolor{stringliteral}{"{}clearcode.cpp"{}});}
+\DoxyCodeLine{419     fout << trim(nocomment\_code);}
+\DoxyCodeLine{420     fout.close();}
+\DoxyCodeLine{421 \}}
+\DoxyCodeLine{422 }
+\DoxyCodeLine{423 \textcolor{keywordtype}{void} \mbox{\hyperlink{classtranslator_a333b5d925144fac2f073cb6322bc6587}{translator::print\_table}} (\textcolor{keywordtype}{bool} \_prs\_table)\textcolor{keyword}{ const }\{}
+\DoxyCodeLine{424 }
+\DoxyCodeLine{425     std::ofstream fout(\_parent\_path / \textcolor{stringliteral}{"{}table.txt"{}});}
+\DoxyCodeLine{426     fout << \textcolor{stringliteral}{"{}keywords:    \(\backslash\)n"{}} << \mbox{\hyperlink{classtranslator_aa0d4223540ed7764811c5bcfab721691}{keywords}};}
+\DoxyCodeLine{427     fout << \textcolor{stringliteral}{"{}separators:  \(\backslash\)n"{}} << \mbox{\hyperlink{classtranslator_a6d11b3fdbdf107bbe7673948e9e25968}{separators}};}
+\DoxyCodeLine{428     fout << \textcolor{stringliteral}{"{}identifiers: \(\backslash\)n"{}} << \mbox{\hyperlink{classtranslator_af183397ec86669e694000855fa6a99f2}{identifiers}};}
+\DoxyCodeLine{429     fout << \textcolor{stringliteral}{"{}constants:   \(\backslash\)n"{}} << \mbox{\hyperlink{classtranslator_ae5a3167f14b7481be492e7f72533450d}{constants}};}
+\DoxyCodeLine{430     fout << \textcolor{stringliteral}{"{}operations:  \(\backslash\)n"{}} << \mbox{\hyperlink{classtranslator_acf55331c44ba4a84d4fe91782b46e696}{operations}};}
+\DoxyCodeLine{431     fout.close();}
+\DoxyCodeLine{432 }
+\DoxyCodeLine{433     \textcolor{keywordflow}{if} (\_prs\_table) \{}
+\DoxyCodeLine{434         std::cout << trim(nocomment\_code) << std::endl;}
+\DoxyCodeLine{435 }
+\DoxyCodeLine{436         std::cout << \textcolor{stringliteral}{"{}keywords:    \(\backslash\)n"{}} << \mbox{\hyperlink{classtranslator_aa0d4223540ed7764811c5bcfab721691}{keywords}};}
+\DoxyCodeLine{437         std::cout << \textcolor{stringliteral}{"{}separators:  \(\backslash\)n"{}} << \mbox{\hyperlink{classtranslator_a6d11b3fdbdf107bbe7673948e9e25968}{separators}};}
+\DoxyCodeLine{438         std::cout << \textcolor{stringliteral}{"{}identifiers: \(\backslash\)n"{}} << \mbox{\hyperlink{classtranslator_af183397ec86669e694000855fa6a99f2}{identifiers}};}
+\DoxyCodeLine{439         std::cout << \textcolor{stringliteral}{"{}constants:   \(\backslash\)n"{}} << \mbox{\hyperlink{classtranslator_ae5a3167f14b7481be492e7f72533450d}{constants}};}
+\DoxyCodeLine{440         std::cout << \textcolor{stringliteral}{"{}operations:  \(\backslash\)n"{}} << \mbox{\hyperlink{classtranslator_acf55331c44ba4a84d4fe91782b46e696}{operations}};}
+\DoxyCodeLine{441 }
+\DoxyCodeLine{442         std::cout << \textcolor{stringliteral}{"{}token: \(\backslash\)n"{}} << os\_token.str() << std::endl;}
+\DoxyCodeLine{443         std::cout << \textcolor{stringliteral}{"{}error: \(\backslash\)n"{}} << os\_error.str() << std::endl;}
+\DoxyCodeLine{444     \}}
+\DoxyCodeLine{445 \}}
+\DoxyCodeLine{446 }
+\DoxyCodeLine{447 \textcolor{preprocessor}{\#endif }}
+
+\end{DoxyCode}

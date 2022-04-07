@@ -1,0 +1,80 @@
+\hypertarget{classplace}{}\doxysection{Класс place}
+\label{classplace}\index{place@{place}}
+
+
+Класс для хранения позиции элемента в двумерном массиве  
+
+
+
+
+{\ttfamily \#include $<$place.\+hpp$>$}
+
+\doxysubsection*{Открытые типы}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classplace_a75c8970dc506659b7083c17beb943290}\label{classplace_a75c8970dc506659b7083c17beb943290}} 
+enum class \mbox{\hyperlink{classplace_a75c8970dc506659b7083c17beb943290}{POS}} \{ {\bfseries ROW}
+, {\bfseries COLLUMN}
+ \}
+\begin{DoxyCompactList}\small\item\em Индекс \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Открытые члены}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classplace_afd80c273c065eca283578a2586fefb39}\label{classplace_afd80c273c065eca283578a2586fefb39}} 
+{\bfseries place} (size\+\_\+t \+\_\+i, size\+\_\+t \+\_\+j)
+\item 
+size\+\_\+t \mbox{\hyperlink{classplace_a241e317b015a5be9dd8ef809b26e9a9b}{operator()}} (\mbox{\hyperlink{classplace_a75c8970dc506659b7083c17beb943290}{POS}} \+\_\+pos) const noexcept
+\end{DoxyCompactItemize}
+\doxysubsection*{Друзья}
+\begin{DoxyCompactItemize}
+\item 
+std\+::ostream \& \mbox{\hyperlink{classplace_aeb1db8870ef8ed3b89c0394291c0cacf}{operator$<$$<$}} (std\+::ostream \&out, const \mbox{\hyperlink{classplace}{place}} \&\+\_\+plc)
+\begin{DoxyCompactList}\small\item\em Перегрузка оператора {\ttfamily operator\texorpdfstring{$<$}{<}\texorpdfstring{$<$}{<}} для вывода индексов в поток \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Подробное описание}
+Класс для хранения позиции элемента в двумерном массиве 
+
+\doxysubsection{Методы}
+\mbox{\Hypertarget{classplace_a241e317b015a5be9dd8ef809b26e9a9b}\label{classplace_a241e317b015a5be9dd8ef809b26e9a9b}} 
+\index{place@{place}!operator()@{operator()}}
+\index{operator()@{operator()}!place@{place}}
+\doxysubsubsection{\texorpdfstring{operator()()}{operator()()}}
+{\footnotesize\ttfamily size\+\_\+t place\+::operator() (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classplace_a75c8970dc506659b7083c17beb943290}{POS}}}]{\+\_\+pos }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [noexcept]}}
+
+
+\begin{DoxyParams}{Аргументы}
+{\em \+\_\+pos} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Возвращает}
+size\+\_\+t Индекс строки или столбца в зависимости от выбора \+\_\+pos 
+\end{DoxyReturn}
+
+
+\doxysubsection{Документация по друзьям класса и функциям, относящимся к классу}
+\mbox{\Hypertarget{classplace_aeb1db8870ef8ed3b89c0394291c0cacf}\label{classplace_aeb1db8870ef8ed3b89c0394291c0cacf}} 
+\index{place@{place}!operator$<$$<$@{operator$<$$<$}}
+\index{operator$<$$<$@{operator$<$$<$}!place@{place}}
+\doxysubsubsection{\texorpdfstring{operator$<$$<$}{operator<<}}
+{\footnotesize\ttfamily std\+::ostream \& operator$<$$<$ (\begin{DoxyParamCaption}\item[{std\+::ostream \&}]{out,  }\item[{const \mbox{\hyperlink{classplace}{place}} \&}]{\+\_\+plc }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [friend]}}
+
+
+
+Перегрузка оператора {\ttfamily operator\texorpdfstring{$<$}{<}\texorpdfstring{$<$}{<}} для вывода индексов в поток 
+
+
+\begin{DoxyParams}{Аргументы}
+{\em out} & Поток (Например\+: std\+::cout, std\+::ofstream) \\
+\hline
+{\em \+\_\+plc} & Екземляр класса, который будем выводить \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Возвращает}
+std\+::ostream\& 
+\end{DoxyReturn}
+
+
+Объявления и описания членов класса находятся в файле\+:\begin{DoxyCompactItemize}
+\item 
+include/place.\+hpp\end{DoxyCompactItemize}

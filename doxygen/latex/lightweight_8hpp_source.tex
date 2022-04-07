@@ -1,0 +1,52 @@
+\hypertarget{lightweight_8hpp_source}{}\doxysection{lightweight.\+hpp}
+\label{lightweight_8hpp_source}\index{include/utils/lightweight.hpp@{include/utils/lightweight.hpp}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{preprocessor}{\#ifndef \_LIGHTWEIGHT\_HPP}}
+\DoxyCodeLine{2 \textcolor{preprocessor}{\#define \_LIGHTWEIGHT\_HPP}}
+\DoxyCodeLine{3 \textcolor{preprocessor}{\#include <string\_view>}}
+\DoxyCodeLine{4 \textcolor{preprocessor}{\#include <sstream>}}
+\DoxyCodeLine{5 \textcolor{preprocessor}{\#include <vector>}}
+\DoxyCodeLine{6 \textcolor{preprocessor}{\#include <cctype>}}
+\DoxyCodeLine{7 \textcolor{preprocessor}{\#include <string>}}
+\DoxyCodeLine{8 }
+\DoxyCodeLine{9 \textcolor{keyword}{inline} \textcolor{keywordtype}{void} ltrim(std::string\& \_out) \{ \_out.erase(0, \_out.find\_first\_not\_of(\textcolor{stringliteral}{"{} \(\backslash\)t\(\backslash\)n"{}})); \}}
+\DoxyCodeLine{10 \textcolor{keyword}{inline} \textcolor{keywordtype}{void} rtrim(std::string\& \_out) \{ \_out.erase(\_out.find\_last\_not\_of(\textcolor{stringliteral}{"{} \(\backslash\)t\(\backslash\)n"{}}) + 1); \}}
+\DoxyCodeLine{11 }
+\DoxyCodeLine{12 }
+\DoxyCodeLine{13 \textcolor{keywordtype}{bool} not\_spaces (\textcolor{keyword}{const} std::string\& \_line) \{}
+\DoxyCodeLine{14     \textcolor{keywordflow}{for} (\textcolor{keyword}{const} \textcolor{keyword}{auto}\& \_elem : \_line)}
+\DoxyCodeLine{15         \textcolor{keywordflow}{if} (\_elem != \textcolor{charliteral}{' '})}
+\DoxyCodeLine{16             \textcolor{keywordflow}{return} \textcolor{keyword}{true};}
+\DoxyCodeLine{17     \textcolor{keywordflow}{return} \textcolor{keyword}{false};}
+\DoxyCodeLine{18 \}}
+\DoxyCodeLine{19 }
+\DoxyCodeLine{20 \textcolor{keyword}{inline} std::string trim(\textcolor{keyword}{const} std::ostringstream\& \_out) \{}
+\DoxyCodeLine{21     std::string \_trim;}
+\DoxyCodeLine{22     std::string \_line;}
+\DoxyCodeLine{23 }
+\DoxyCodeLine{24     std::istringstream \_input;}
+\DoxyCodeLine{25     \_input.str(\_out.str());}
+\DoxyCodeLine{26 }
+\DoxyCodeLine{27     \textcolor{keywordflow}{while} ( std::getline(\_input, \_line) )}
+\DoxyCodeLine{28         \textcolor{keywordflow}{if} (\_line.size() != 0 \&\& not\_spaces(\_line)) \{}
+\DoxyCodeLine{29             \_trim += \_line;}
+\DoxyCodeLine{30             \_trim += \textcolor{charliteral}{'\(\backslash\)n'}; \}}
+\DoxyCodeLine{31 }
+\DoxyCodeLine{32     ltrim(\_trim);}
+\DoxyCodeLine{33     rtrim(\_trim);}
+\DoxyCodeLine{34     \textcolor{keywordflow}{return} \_trim;}
+\DoxyCodeLine{35 \}}
+\DoxyCodeLine{36 }
+\DoxyCodeLine{37 \textcolor{keyword}{auto} print\_error (std::string\_view filename) -\/> \textcolor{keywordtype}{bool} \{}
+\DoxyCodeLine{38     std::cerr << \textcolor{stringliteral}{"{}file not open: "{}} << filename << \textcolor{charliteral}{'\(\backslash\)n'};}
+\DoxyCodeLine{39     \textcolor{keywordflow}{return} \textcolor{keyword}{false};}
+\DoxyCodeLine{40 \}}
+\DoxyCodeLine{41 }
+\DoxyCodeLine{49 \textcolor{keyword}{auto} find (\textcolor{keyword}{const} std::vector<std::string>\& \_in, \textcolor{keyword}{const} std::string\& \_this)}
+\DoxyCodeLine{50     -\/> std::vector<std::string>::const\_iterator \{}
+\DoxyCodeLine{51         \textcolor{keywordflow}{return} std::find(\_in.begin(), \_in.end(), \_this);}
+\DoxyCodeLine{52 \}}
+\DoxyCodeLine{53 \textcolor{preprocessor}{\#endif }}
+
+\end{DoxyCode}

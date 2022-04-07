@@ -1,0 +1,62 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{c+cp}{\PYGZsh{}ifndef \PYGZus{}ERROR\PYGZus{}HPP}
+\PYG{c+cp}{\PYGZsh{}define \PYGZus{}ERROR\PYGZus{}HPP}
+\PYG{c+cp}{\PYGZsh{}include}\PYG{+w}{ }\PYG{c+cpf}{\PYGZlt{}iomanip\PYGZgt{}}
+
+\PYG{k}{enum}\PYG{+w}{ }\PYG{k}{class}\PYG{+w}{ }\PYG{n+nc}{\PYGZus{}ERROR}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{n}{UNEXPECTED\PYGZus{}SYMBOL}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{EOF\PYGZus{}FILE}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{UNCLOSED\PYGZus{}COMMENT}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{OPERATION\PYGZus{}NOT\PYGZus{}EXIST}\PYG{p}{,}
+
+
+\PYG{+w}{    }\PYG{n}{BRACKET\PYGZus{}MISTAKE}
+\PYG{p}{\PYGZcb{};}
+
+\PYG{k}{class}\PYG{+w}{ }\PYG{n+nc}{InfoError}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{k}{private}\PYG{o}{:}
+\PYG{+w}{    }\PYG{n}{\PYGZus{}ERROR}\PYG{+w}{ }\PYG{n}{error}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k+kt}{size\PYGZus{}t}\PYG{+w}{ }\PYG{n}{line}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{n}{std}\PYG{o}{::}\PYG{n}{string}\PYG{+w}{ }\PYG{n}{str}\PYG{p}{;}
+
+\PYG{k}{public}\PYG{o}{:}
+\PYG{+w}{    }\PYG{k}{explicit}\PYG{+w}{ }\PYG{n}{InfoError}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{\PYGZus{}ERROR}\PYG{+w}{ }\PYG{n}{\PYGZus{}error}\PYG{p}{,}\PYG{+w}{ }\PYG{k+kt}{size\PYGZus{}t}\PYG{+w}{ }\PYG{n}{\PYGZus{}line}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{std}\PYG{o}{::}\PYG{n}{string}\PYG{+w}{ }\PYG{n}{\PYGZus{}str}\PYG{p}{)}
+\PYG{+w}{      }\PYG{o}{:}\PYG{+w}{ }\PYG{n}{error}\PYG{p}{(}\PYG{n}{\PYGZus{}error}\PYG{p}{),}
+\PYG{+w}{        }\PYG{n}{line}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{\PYGZus{}line}\PYG{p}{),}
+\PYG{+w}{        }\PYG{n}{str}\PYG{p}{(}\PYG{n}{\PYGZus{}str}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}
+
+
+\PYG{+w}{    }\PYG{n}{\PYGZus{}ERROR}\PYG{+w}{      }\PYG{n}{get\PYGZus{}error}\PYG{+w}{ }\PYG{p}{()}\PYG{+w}{ }\PYG{k}{const}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{k}{return}\PYG{+w}{ }\PYG{n}{error}\PYG{p}{;}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{    }\PYG{k+kt}{size\PYGZus{}t}\PYG{+w}{      }\PYG{n}{get\PYGZus{}line}\PYG{+w}{  }\PYG{p}{()}\PYG{+w}{ }\PYG{k}{const}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{k}{return}\PYG{+w}{ }\PYG{n}{line}\PYG{p}{;}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{    }\PYG{n}{std}\PYG{o}{::}\PYG{n}{string}\PYG{+w}{ }\PYG{n}{get\PYGZus{}str}\PYG{+w}{   }\PYG{p}{()}\PYG{+w}{ }\PYG{k}{const}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{k}{return}\PYG{+w}{ }\PYG{n}{str}\PYG{p}{;}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}
+\PYG{p}{\PYGZcb{};}
+
+\PYG{k}{template}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{k}{typename}\PYG{+w}{ }\PYG{n+nc}{\PYGZus{}Stream}\PYG{o}{\PYGZgt{}}
+\PYG{n}{\PYGZus{}Stream}\PYG{o}{\PYGZam{}}\PYG{+w}{ }\PYG{k}{operator}\PYG{o}{\PYGZlt{}\PYGZlt{}}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{\PYGZus{}Stream}\PYG{o}{\PYGZam{}}\PYG{+w}{ }\PYG{n}{\PYGZus{}stream}\PYG{p}{,}\PYG{+w}{ }\PYG{k}{const}\PYG{+w}{ }\PYG{n}{InfoError}\PYG{+w}{ }\PYG{n}{\PYGZus{}info}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{n}{\PYGZus{}stream}\PYG{+w}{ }\PYG{o}{\PYGZlt{}\PYGZlt{}}\PYG{+w}{ }\PYG{n}{std}\PYG{o}{::}\PYG{n}{setw}\PYG{p}{(}\PYG{l+m+mi}{4}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{\PYGZlt{}\PYGZlt{}}\PYG{+w}{ }\PYG{n}{\PYGZus{}info}\PYG{p}{.}\PYG{n}{get\PYGZus{}line}\PYG{p}{()}\PYG{+w}{ }\PYG{o}{\PYGZlt{}\PYGZlt{}}\PYG{+w}{ }\PYG{l+s}{\PYGZdq{} | Error: \PYGZdq{}}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{k}{switch}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{\PYGZus{}info}\PYG{p}{.}\PYG{n}{get\PYGZus{}error}\PYG{p}{())}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k}{case}\PYG{+w}{ }\PYG{n}{\PYGZus{}ERROR}\PYG{o}{::}\PYG{n}{UNEXPECTED\PYGZus{}SYMBOL}\PYG{o}{:}
+\PYG{+w}{        }\PYG{n}{\PYGZus{}stream}\PYG{+w}{ }\PYG{o}{\PYGZlt{}\PYGZlt{}}\PYG{+w}{ }\PYG{l+s}{\PYGZdq{}unexpected symbol\PYGZdq{}}\PYG{+w}{      }\PYG{o}{\PYGZlt{}\PYGZlt{}}\PYG{+w}{ }\PYG{l+s+sc}{\PYGZsq{}\PYGZbs{}n\PYGZsq{}}\PYG{p}{;}\PYG{+w}{    }\PYG{k}{break}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k}{case}\PYG{+w}{ }\PYG{n}{\PYGZus{}ERROR}\PYG{o}{::}\PYG{n}{EOF\PYGZus{}FILE}\PYG{o}{:}
+\PYG{+w}{        }\PYG{n}{\PYGZus{}stream}\PYG{+w}{ }\PYG{o}{\PYGZlt{}\PYGZlt{}}\PYG{+w}{ }\PYG{l+s}{\PYGZdq{}unexpected end file\PYGZdq{}}\PYG{+w}{    }\PYG{o}{\PYGZlt{}\PYGZlt{}}\PYG{+w}{ }\PYG{l+s+sc}{\PYGZsq{}\PYGZbs{}n\PYGZsq{}}\PYG{p}{;}\PYG{+w}{    }\PYG{k}{break}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k}{case}\PYG{+w}{ }\PYG{n}{\PYGZus{}ERROR}\PYG{o}{::}\PYG{n}{UNCLOSED\PYGZus{}COMMENT}\PYG{o}{:}
+\PYG{+w}{        }\PYG{n}{\PYGZus{}stream}\PYG{+w}{ }\PYG{o}{\PYGZlt{}\PYGZlt{}}\PYG{+w}{ }\PYG{l+s}{\PYGZdq{}unclosed comment\PYGZdq{}}\PYG{+w}{       }\PYG{o}{\PYGZlt{}\PYGZlt{}}\PYG{+w}{ }\PYG{l+s+sc}{\PYGZsq{}\PYGZbs{}n\PYGZsq{}}\PYG{p}{;}\PYG{+w}{    }\PYG{k}{break}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k}{case}\PYG{+w}{ }\PYG{n}{\PYGZus{}ERROR}\PYG{o}{::}\PYG{n}{OPERATION\PYGZus{}NOT\PYGZus{}EXIST}\PYG{o}{:}
+\PYG{+w}{        }\PYG{n}{\PYGZus{}stream}\PYG{+w}{ }\PYG{o}{\PYGZlt{}\PYGZlt{}}\PYG{+w}{ }\PYG{l+s}{\PYGZdq{}non\PYGZhy{}existent operation\PYGZdq{}}\PYG{+w}{ }\PYG{o}{\PYGZlt{}\PYGZlt{}}\PYG{+w}{ }\PYG{l+s+sc}{\PYGZsq{}\PYGZbs{}n\PYGZsq{}}\PYG{p}{;}\PYG{+w}{    }\PYG{k}{break}\PYG{p}{;}
+
+
+\PYG{+w}{    }\PYG{k}{case}\PYG{+w}{ }\PYG{n}{\PYGZus{}ERROR}\PYG{o}{::}\PYG{n}{BRACKET\PYGZus{}MISTAKE}\PYG{o}{:}
+\PYG{+w}{        }\PYG{n}{\PYGZus{}stream}\PYG{+w}{ }\PYG{o}{\PYGZlt{}\PYGZlt{}}\PYG{+w}{ }\PYG{l+s}{\PYGZdq{}incorrect use of brackets\PYGZdq{}}\PYG{+w}{ }\PYG{o}{\PYGZlt{}\PYGZlt{}}\PYG{+w}{ }\PYG{l+s+sc}{\PYGZsq{}\PYGZbs{}n\PYGZsq{}}\PYG{p}{;}\PYG{+w}{ }\PYG{k}{break}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{c+c1}{/// \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{} DEFAULT \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{} ///}
+\PYG{+w}{    }\PYG{k}{default}\PYG{o}{:}\PYG{+w}{ }\PYG{n}{\PYGZus{}stream}\PYG{+w}{ }\PYG{o}{\PYGZlt{}\PYGZlt{}}\PYG{+w}{ }\PYG{l+s}{\PYGZdq{}unidentified error\PYGZdq{}}\PYG{+w}{ }\PYG{o}{\PYGZlt{}\PYGZlt{}}\PYG{+w}{ }\PYG{l+s+sc}{\PYGZsq{}\PYGZbs{}n\PYGZsq{}}\PYG{p}{;}
+\PYG{+w}{    }\PYG{c+c1}{/// \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{} DEFAULT \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{} ///}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{    }\PYG{n}{\PYGZus{}stream}\PYG{+w}{ }\PYG{o}{\PYGZlt{}\PYGZlt{}}\PYG{+w}{ }\PYG{n}{std}\PYG{o}{::}\PYG{n}{setw}\PYG{p}{(}\PYG{l+m+mi}{4}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{\PYGZlt{}\PYGZlt{}}\PYG{+w}{ }\PYG{l+s}{\PYGZdq{}\PYGZdq{}}\PYG{+w}{ }\PYG{o}{\PYGZlt{}\PYGZlt{}}\PYG{+w}{ }\PYG{l+s}{\PYGZdq{} | \PYGZdq{}}\PYG{+w}{ }\PYG{o}{\PYGZlt{}\PYGZlt{}}\PYG{+w}{ }\PYG{n}{\PYGZus{}info}\PYG{p}{.}\PYG{n}{get\PYGZus{}str}\PYG{p}{()}\PYG{+w}{ }\PYG{o}{\PYGZlt{}\PYGZlt{}}\PYG{+w}{ }\PYG{l+s+sc}{\PYGZsq{}\PYGZbs{}n\PYGZsq{}}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k}{return}\PYG{+w}{ }\PYG{n}{\PYGZus{}stream}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{c+cp}{\PYGZsh{}endif }\PYG{c+c1}{/// \PYGZus{}ERROR\PYGZus{}HPP}
+\end{Verbatim}

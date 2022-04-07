@@ -1,9 +1,0 @@
-build_mingw
-build_msvc
-doxygen
-rapport/src
-rapport/main.sta
-rapport/main.pdf
-rapport/main.log
-rapport/main.aux
-rapport/_minted-main

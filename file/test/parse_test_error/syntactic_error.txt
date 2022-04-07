@@ -1,0 +1,2 @@
+syntax error<3>  | unexpected terminal: ;
+maybe you meant  | "-", "(", "const", "var", 

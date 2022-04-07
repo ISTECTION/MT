@@ -1,0 +1,35 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{class}\PYG{+w}{ }\PYG{n+nc}{translator}
+\PYG{p}{\PYGZob{}}
+\PYG{k}{private}\PYG{o}{:}
+\PYG{+w}{    }\PYG{n}{std}\PYG{o}{::}\PYG{n}{stack}\PYG{o}{\PYGZlt{}}\PYG{n}{InfoBracket}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{n}{\PYGZus{}bracket}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{n}{std}\PYG{o}{::}\PYG{n}{optional}\PYG{o}{\PYGZlt{}}\PYG{n}{\PYGZus{}ERROR}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{n}{balanced}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{std}\PYG{o}{::}\PYG{n}{istreambuf\PYGZus{}iterator}\PYG{o}{\PYGZlt{}}\PYG{k+kt}{char}\PYG{o}{\PYGZgt{}\PYGZam{}}\PYG{+w}{ }\PYG{p}{);}
+\PYG{p}{\PYGZcb{};}
+
+
+\PYG{n}{std}\PYG{o}{::}\PYG{n}{optional}\PYG{o}{\PYGZlt{}}\PYG{n}{\PYGZus{}ERROR}\PYG{o}{\PYGZgt{}}
+\PYG{n}{translator}\PYG{o}{::}\PYG{n}{balanced}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{std}\PYG{o}{::}\PYG{n}{istreambuf\PYGZus{}iterator}\PYG{o}{\PYGZlt{}}\PYG{k+kt}{char}\PYG{o}{\PYGZgt{}\PYGZam{}}\PYG{+w}{ }\PYG{n}{iit}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+
+\PYG{+w}{    }\PYG{k}{if}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{open\PYGZus{}brackets}\PYG{p}{(}\PYG{o}{*}\PYG{n}{iit}\PYG{p}{))}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n}{\PYGZus{}bracket}\PYG{p}{.}\PYG{n}{push}\PYG{p}{(}\PYG{n}{InfoBracket}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{n}{\PYGZus{}map\PYGZus{}brackets}\PYG{p}{[}\PYG{o}{*}\PYG{n}{iit}\PYG{p}{],}\PYG{+w}{ }\PYG{n}{\PYGZus{}current\PYGZus{}lines}\PYG{+w}{ }\PYG{p}{\PYGZcb{});}
+\PYG{+w}{        }\PYG{k}{return}\PYG{+w}{ }\PYG{n}{std}\PYG{o}{::}\PYG{n}{nullopt}\PYG{p}{;}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{    }\PYG{k}{if}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{close\PYGZus{}brackets}\PYG{p}{(}\PYG{o}{*}\PYG{n}{iit}\PYG{p}{))}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{k}{if}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{\PYGZus{}bracket}\PYG{p}{.}\PYG{n}{empty}\PYG{p}{()}\PYG{+w}{ }\PYG{o}{||}
+\PYG{+w}{            }\PYG{n}{\PYGZus{}bracket}\PYG{p}{.}\PYG{n}{top}\PYG{p}{().}\PYG{n}{get\PYGZus{}bracket}\PYG{p}{()}\PYG{+w}{ }\PYG{o}{!=}\PYG{+w}{ }\PYG{o}{*}\PYG{n}{iit}\PYG{p}{)}
+\PYG{+w}{            }\PYG{k}{return}\PYG{+w}{ }\PYG{n}{std}\PYG{o}{::}\PYG{n}{optional}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{n}{\PYGZus{}ERROR}\PYG{o}{::}\PYG{n}{BRACKET\PYGZus{}MISTAKE}\PYG{+w}{ }\PYG{p}{\PYGZcb{};}
+\PYG{+w}{        }\PYG{k}{else}\PYG{+w}{ }\PYG{n}{\PYGZus{}bracket}\PYG{p}{.}\PYG{n}{pop}\PYG{p}{();}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{    }\PYG{k}{return}\PYG{+w}{ }\PYG{n}{std}\PYG{o}{::}\PYG{n}{nullopt}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k+kt}{void}\PYG{+w}{ }\PYG{n}{translator}\PYG{o}{::}\PYG{n}{analyse}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{std}\PYG{o}{::}\PYG{n}{ifstream}\PYG{o}{\PYGZam{}}\PYG{+w}{ }\PYG{n}{\PYGZus{}ifstream}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k}{if}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{\PYGZus{}bracket}\PYG{p}{.}\PYG{n}{size}\PYG{p}{()}\PYG{+w}{ }\PYG{o}{!=}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{p}{)}
+\PYG{+w}{        }\PYG{n}{os\PYGZus{}error}\PYG{+w}{ }\PYG{o}{\PYGZlt{}\PYGZlt{}}\PYG{+w}{ }\PYG{n}{InfoError}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{            }\PYG{n}{\PYGZus{}ERROR}\PYG{o}{::}\PYG{n}{BRACKET\PYGZus{}MISTAKE}\PYG{p}{,}
+\PYG{+w}{            }\PYG{n}{\PYGZus{}current\PYGZus{}lines}\PYG{p}{,}
+\PYG{+w}{            }\PYG{l+s}{\PYGZdq{}lack: \PYGZdq{}}\PYG{+w}{ }\PYG{o}{+}\PYG{+w}{ }\PYG{n}{std}\PYG{o}{::}\PYG{n}{string}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{n}{\PYGZus{}bracket}\PYG{p}{.}\PYG{n}{top}\PYG{p}{().}\PYG{n}{get\PYGZus{}bracket}\PYG{p}{()}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}\PYG{+w}{ }\PYG{p}{\PYGZcb{};}
+\PYG{p}{\PYGZcb{}}
+\end{Verbatim}

@@ -1,0 +1,215 @@
+\hypertarget{classvar__table}{}\doxysection{Класс var\+\_\+table}
+\label{classvar__table}\index{var\_table@{var\_table}}
+
+
+Класс хранящий лексемы  
+
+
+
+
+{\ttfamily \#include $<$var\+\_\+table.\+hpp$>$}
+
+\doxysubsection*{Открытые члены}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classvar__table_a3347c1d0082d732bd1bc406b860298ae}\label{classvar__table_a3347c1d0082d732bd1bc406b860298ae}} 
+{\bfseries var\+\_\+table} (size\+\_\+t \+\_\+size=26 $\ast$2+1)
+\item 
+bool \mbox{\hyperlink{classvar__table_aa481d5fe93bfba153f301ace7f7e06df}{contains}} (const std\+::string \&name) const
+\begin{DoxyCompactList}\small\item\em Проверяет существования идентификатора в таблице \end{DoxyCompactList}\item 
+std\+::optional$<$ \mbox{\hyperlink{classplace}{place}} $>$ \mbox{\hyperlink{classvar__table_a6354ba6befad57eada3e5e5906a5a40b}{add}} (const std\+::string \&name)
+\begin{DoxyCompactList}\small\item\em Функция добавляет идентификатор в таблицу \end{DoxyCompactList}\item 
+std\+::optional$<$ \mbox{\hyperlink{classplace}{place}} $>$ \mbox{\hyperlink{classvar__table_a6d84a7ef59dcbe2a9970d5a24eeb5614}{find\+\_\+in\+\_\+table}} (const std\+::string \&name) const
+\begin{DoxyCompactList}\small\item\em Поиск идентификатора в таблице \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classvar__table}{var\+\_\+table}} \& \mbox{\hyperlink{classvar__table_a6de3ac437e211b0df4cfd391802cf60d}{set\+\_\+type}} (const \mbox{\hyperlink{classplace}{place}} \&plc, TYPE type)
+\begin{DoxyCompactList}\small\item\em Устанавить тип объекту \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classvar__table}{var\+\_\+table}} \& \mbox{\hyperlink{classvar__table_a35b82f3485ce3abc82690c11c28d85a5}{set\+\_\+value}} (const \mbox{\hyperlink{classplace}{place}} \&plc, bool value)
+\begin{DoxyCompactList}\small\item\em Устанавить значение объекту \end{DoxyCompactList}\item 
+std\+::optional$<$ \mbox{\hyperlink{classlexeme}{lexeme}} $>$ \mbox{\hyperlink{classvar__table_aa9dd536dc06d700e9c5a085a0c58d8a9}{get\+\_\+lexeme}} (const \mbox{\hyperlink{classplace}{place}} \&\+\_\+place) const
+\begin{DoxyCompactList}\small\item\em Получить лексему \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classvar__table_ad1231093e252adb44f3520bc973d3d59}\label{classvar__table_ad1231093e252adb44f3520bc973d3d59}} 
+std\+::vector$<$ std\+::vector$<$ \mbox{\hyperlink{classlexeme}{lexeme}} $>$ $>$\+::const\+\_\+iterator {\bfseries begin} () const
+\begin{DoxyCompactList}\small\item\em Возвращает константный итератор на начало таблицы \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classvar__table_abb767cb48e58e80a9b973c06dc45989d}\label{classvar__table_abb767cb48e58e80a9b973c06dc45989d}} 
+std\+::vector$<$ std\+::vector$<$ \mbox{\hyperlink{classlexeme}{lexeme}} $>$ $>$\+::const\+\_\+iterator {\bfseries end} () const
+\begin{DoxyCompactList}\small\item\em Возвращает константный итератор на конец таблицы \end{DoxyCompactList}\item 
+size\+\_\+t \mbox{\hyperlink{classvar__table_a2ee46659eb8c8beb251479fbbe34f5ad}{get\+\_\+hash}} (const std\+::string \&name) const
+\begin{DoxyCompactList}\small\item\em Возвращает хэш входной строки \end{DoxyCompactList}\item 
+size\+\_\+t \mbox{\hyperlink{classvar__table_a316bd23c81e56f5bc0c1acf9d6298ba5}{get\+\_\+size\+\_\+table}} () const
+\begin{DoxyCompactList}\small\item\em Получить размерность таблицы \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{classvar__table_a4bac69c9898b57a8dcfaaf41933394f7}{get\+\_\+size\+\_\+row}} (size\+\_\+t row) const
+\begin{DoxyCompactList}\small\item\em Получить размерность строки таблицы \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Друзья}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classvar__table_ad2bd56cafc22038a87baec8d27597125}\label{classvar__table_ad2bd56cafc22038a87baec8d27597125}} 
+std\+::ostream \& {\bfseries operator$<$$<$} (std\+::ostream \&out, const \mbox{\hyperlink{classvar__table}{var\+\_\+table}} \&\+\_\+tab)
+\begin{DoxyCompactList}\small\item\em Выводит таблицу в поток \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Подробное описание}
+Класс хранящий лексемы 
+
+\doxysubsection{Методы}
+\mbox{\Hypertarget{classvar__table_a6354ba6befad57eada3e5e5906a5a40b}\label{classvar__table_a6354ba6befad57eada3e5e5906a5a40b}} 
+\index{var\_table@{var\_table}!add@{add}}
+\index{add@{add}!var\_table@{var\_table}}
+\doxysubsubsection{\texorpdfstring{add()}{add()}}
+{\footnotesize\ttfamily std\+::optional$<$ \mbox{\hyperlink{classplace}{place}} $>$ var\+\_\+table\+::add (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{name }\end{DoxyParamCaption})}
+
+
+
+Функция добавляет идентификатор в таблицу 
+
+
+\begin{DoxyParams}{Аргументы}
+{\em name} & Имя идентификатора \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Возвращает}
+std\+::optional$<$place$>$ Будет иметь значение std\+::nullopt, если элемент уже существует 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classvar__table_aa481d5fe93bfba153f301ace7f7e06df}\label{classvar__table_aa481d5fe93bfba153f301ace7f7e06df}} 
+\index{var\_table@{var\_table}!contains@{contains}}
+\index{contains@{contains}!var\_table@{var\_table}}
+\doxysubsubsection{\texorpdfstring{contains()}{contains()}}
+{\footnotesize\ttfamily bool var\+\_\+table\+::contains (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{name }\end{DoxyParamCaption}) const}
+
+
+
+Проверяет существования идентификатора в таблице 
+
+
+\begin{DoxyParams}{Аргументы}
+{\em name} & Строка для поиска \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Возвращает}
+true Если такой идентификатор найден 
+
+false Если такой идентификатор не найден 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classvar__table_a6d84a7ef59dcbe2a9970d5a24eeb5614}\label{classvar__table_a6d84a7ef59dcbe2a9970d5a24eeb5614}} 
+\index{var\_table@{var\_table}!find\_in\_table@{find\_in\_table}}
+\index{find\_in\_table@{find\_in\_table}!var\_table@{var\_table}}
+\doxysubsubsection{\texorpdfstring{find\_in\_table()}{find\_in\_table()}}
+{\footnotesize\ttfamily std\+::optional$<$ \mbox{\hyperlink{classplace}{place}} $>$ var\+\_\+table\+::find\+\_\+in\+\_\+table (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{name }\end{DoxyParamCaption}) const}
+
+
+
+Поиск идентификатора в таблице 
+
+
+\begin{DoxyParams}{Аргументы}
+{\em name} & Имя идентификатора \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Возвращает}
+std\+::optional$<$place$>$ Будет иметь значение std\+::nullopt, если элемент не найден 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classvar__table_a2ee46659eb8c8beb251479fbbe34f5ad}\label{classvar__table_a2ee46659eb8c8beb251479fbbe34f5ad}} 
+\index{var\_table@{var\_table}!get\_hash@{get\_hash}}
+\index{get\_hash@{get\_hash}!var\_table@{var\_table}}
+\doxysubsubsection{\texorpdfstring{get\_hash()}{get\_hash()}}
+{\footnotesize\ttfamily size\+\_\+t var\+\_\+table\+::get\+\_\+hash (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{name }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Возвращает хэш входной строки 
+
+
+\begin{DoxyParams}{Аргументы}
+{\em name} & Строка, от которой нужно вычислить хэш \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Возвращает}
+size\+\_\+t Остаток от деления Хэша на Размер таблицы 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classvar__table_aa9dd536dc06d700e9c5a085a0c58d8a9}\label{classvar__table_aa9dd536dc06d700e9c5a085a0c58d8a9}} 
+\index{var\_table@{var\_table}!get\_lexeme@{get\_lexeme}}
+\index{get\_lexeme@{get\_lexeme}!var\_table@{var\_table}}
+\doxysubsubsection{\texorpdfstring{get\_lexeme()}{get\_lexeme()}}
+{\footnotesize\ttfamily std\+::optional$<$ \mbox{\hyperlink{classlexeme}{lexeme}} $>$ var\+\_\+table\+::get\+\_\+lexeme (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classplace}{place}} \&}]{\+\_\+place }\end{DoxyParamCaption}) const}
+
+
+
+Получить лексему 
+
+
+\begin{DoxyParams}{Аргументы}
+{\em \+\_\+place} & Позиция лексемы в таблице \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Возвращает}
+std\+::optional$<$lexeme$>$ Будет иметь значение std\+::nullopt, если указан неверная позиция 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classvar__table_a4bac69c9898b57a8dcfaaf41933394f7}\label{classvar__table_a4bac69c9898b57a8dcfaaf41933394f7}} 
+\index{var\_table@{var\_table}!get\_size\_row@{get\_size\_row}}
+\index{get\_size\_row@{get\_size\_row}!var\_table@{var\_table}}
+\doxysubsubsection{\texorpdfstring{get\_size\_row()}{get\_size\_row()}}
+{\footnotesize\ttfamily int var\+\_\+table\+::get\+\_\+size\+\_\+row (\begin{DoxyParamCaption}\item[{size\+\_\+t}]{row }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Получить размерность строки таблицы 
+
+
+\begin{DoxyParams}{Аргументы}
+{\em row} & Индекс строки \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Возвращает}
+int Размерность таблицы 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classvar__table_a316bd23c81e56f5bc0c1acf9d6298ba5}\label{classvar__table_a316bd23c81e56f5bc0c1acf9d6298ba5}} 
+\index{var\_table@{var\_table}!get\_size\_table@{get\_size\_table}}
+\index{get\_size\_table@{get\_size\_table}!var\_table@{var\_table}}
+\doxysubsubsection{\texorpdfstring{get\_size\_table()}{get\_size\_table()}}
+{\footnotesize\ttfamily size\+\_\+t var\+\_\+table\+::get\+\_\+size\+\_\+table (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Получить размерность таблицы 
+
+\begin{DoxyReturn}{Возвращает}
+size\+\_\+t Размерность таблицы 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classvar__table_a6de3ac437e211b0df4cfd391802cf60d}\label{classvar__table_a6de3ac437e211b0df4cfd391802cf60d}} 
+\index{var\_table@{var\_table}!set\_type@{set\_type}}
+\index{set\_type@{set\_type}!var\_table@{var\_table}}
+\doxysubsubsection{\texorpdfstring{set\_type()}{set\_type()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classvar__table}{var\+\_\+table}} \& var\+\_\+table\+::set\+\_\+type (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classplace}{place}} \&}]{plc,  }\item[{TYPE}]{type }\end{DoxyParamCaption})}
+
+
+
+Устанавить тип объекту 
+
+
+\begin{DoxyParams}{Аргументы}
+{\em plc} & Класс хранящий позицию лексемы \\
+\hline
+{\em type} & Значение типа \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classvar__table_a35b82f3485ce3abc82690c11c28d85a5}\label{classvar__table_a35b82f3485ce3abc82690c11c28d85a5}} 
+\index{var\_table@{var\_table}!set\_value@{set\_value}}
+\index{set\_value@{set\_value}!var\_table@{var\_table}}
+\doxysubsubsection{\texorpdfstring{set\_value()}{set\_value()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classvar__table}{var\+\_\+table}} \& var\+\_\+table\+::set\+\_\+value (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classplace}{place}} \&}]{plc,  }\item[{bool}]{value }\end{DoxyParamCaption})}
+
+
+
+Устанавить значение объекту 
+
+
+\begin{DoxyParams}{Аргументы}
+{\em plc} & Класс хранящий позицию лексемы \\
+\hline
+{\em value} & Принимает true, если значение было инициализировано \\
+\hline
+\end{DoxyParams}
+
+
+Объявления и описания членов класса находятся в файле\+:\begin{DoxyCompactItemize}
+\item 
+include/var\+\_\+table.\+hpp\end{DoxyCompactItemize}
