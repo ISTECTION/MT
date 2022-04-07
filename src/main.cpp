@@ -26,6 +26,7 @@ int main(int argc, const char* argv[]) {
         cxxtimer::Timer _timer(true);
         assembler _assembler(_inp);
 
+
         _timer.stop();
         std::cout << _timer;
 
