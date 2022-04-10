@@ -171,6 +171,8 @@ auto parse::read_parse_table (std::ifstream& fin) -> void {
         { "void", "int" },  1,
         false, true, false, true });
 
+
+
     std::string _line;
     while (std::getline(fin, _line)) {
         std::istringstream istream(_line);
@@ -262,7 +264,7 @@ auto parse::LL_parse () -> bool {
                     token_text,                             ///< Терминал вызвавший ошибку
                     table_parse[current_row]._terminal)     ///< Предполагаемые пути решения
                 : current_row++;    /// Иначе выполняем поиск следующего варианта ветвления
-            if (_err != 0) break;
+            if (_err != 0) { return false; }
 
         } else {
             /// Если нужно добавлять в стэк

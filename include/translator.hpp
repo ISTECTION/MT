@@ -358,8 +358,9 @@ translator::lexical (std::istreambuf_iterator<char>& iit) {
         if (++iit == _eos_buf())
             return std::optional { LEXICAL::EOF_FILE };
 
-        if (*iit == '+' || *iit == '-' ||
-            *iit == '<' || *iit == '>') {
+        /// Если понадобится инкремент или декремент
+        /// добавить (*iit == '+' || *iit == '-')
+        if ( *iit == '<' || *iit == '>' || *iit == '=') {
 
             nocomment_code << *iit;
             _operation     += *iit;
@@ -391,7 +392,6 @@ translator::lexical (std::istreambuf_iterator<char>& iit) {
 
 void translator::analyse (std::ifstream& _ifstream) {
     _Iter_buf eos, iit(_ifstream);
-
 
     skip_spaces(iit);
     while (iit != eos) {

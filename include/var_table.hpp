@@ -51,7 +51,7 @@ public:
      * @param plc  Класс хранящий позицию лексемы
      * @param type Значение типа
      */
-    var_table& set_type  (const place& plc, TYPE type );
+    var_table& set_type  (const place& plc, TYPE type);
 
     /**
      * @brief Устанавить значение объекту

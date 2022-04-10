@@ -59,7 +59,7 @@ VS_DEBUGGER_WORKING_DIRECTORY ${WORKING_PATH})
 # Попробовать это переделать
 # set_property - старая функция CMake < 3.6
 # Назначение проекта в качестве запускаемовго
-set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT MT)
+set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME})
 
 # -DGTEST_COMPILE=ON
 if(GTEST_COMPILE)
