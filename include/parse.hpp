@@ -283,7 +283,6 @@ auto parse::LL_parse () -> bool {
                     if (current_row == 69 || current_row == 46) { _token_id = _token; }
                 }
 
-
                 if (_postfix == true) {
                     /// Если это унарный минус
                     if (current_row == 50) {

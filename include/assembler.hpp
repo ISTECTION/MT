@@ -48,7 +48,28 @@ auto assembler::processing_postfix (std::ifstream& _ifstream_postfix) -> void {
     [](TYPE _type) -> std::string {
         return _type == TYPE::INT
             ? "dd"
-            : "db" ;
+            : "dw" ;
+    };
+
+    auto _bitw_shift =
+    [](char _bit) -> std::string {
+        return _bit == '<'
+            ? "SHL"
+            : "SHR" ;
+    };
+
+    auto _bitw_opers =
+    [](char _bit) -> std::string {
+        return _bit == '&'
+            ? "AND"
+            : "OR" ;
+    };
+
+    auto _logic_opers =
+    [](char _bit) -> std::string {
+        return _bit == '<'
+            ? "JG"
+            : "JL" ;
     };
 
     os_assembly_code << std::setw(80) << std::left << ".386"                        << ' ' << "; разрешает ассемблирование непривилегированных инструкций процессора 80386" << '\n';
@@ -65,7 +86,7 @@ auto assembler::processing_postfix (std::ifstream& _ifstream_postfix) -> void {
     for (auto iter = this->identifiers.begin(); iter != this->identifiers.end(); iter++) {
         for (auto it = iter->begin(); it  != iter->end(); it++) {
             std::string_view type_id = type_to_string_assembly(it->get_type());
-            os_assembly_code << std::setw(12) << std::left << it->get_name()        << ' ' << type_id << ' ' << '?'         << '\n';
+            os_assembly_code << std::setw(12) << std::left << it->get_name() << ' ' << type_id << ' ' << '?' << '\n';
         }
     }
 
@@ -82,11 +103,12 @@ auto assembler::processing_postfix (std::ifstream& _ifstream_postfix) -> void {
     }
 
     os_assembly_code << '\n';
-    os_assembly_code << std::setw(80) << std::left << ".CODE"                       << ' ' << "; сегмент кода"              << '\n';
-    os_assembly_code << std::setw(80) << std::left << "MAIN PROC"                   << ' ' << "; метка точки входа"         << '\n';
-    os_assembly_code << std::setw(80) << std::left << "FINIT"                       << ' '                          << '\n' << '\n';
+    os_assembly_code << std::setw(80) << std::left << ".CODE"     << ' ' << "; сегмент кода"      << '\n';
+    os_assembly_code << std::setw(80) << std::left << "MAIN PROC" << ' ' << "; метка точки входа" << '\n';
+    os_assembly_code << std::setw(80) << std::left << "FINIT"     << ' '                  << '\n' << '\n';
 
     std::string _record;
+    std::size_t _logic_count = 0;
     /// Пара, где bool хранит статус присваивания, а в строке хранится
     /// идентификатор, которому нужно присвоить вычисляемое значение
     auto _id_var_asm = std::pair<bool, std::string>(false, std::string { });
@@ -102,44 +124,73 @@ auto assembler::processing_postfix (std::ifstream& _ifstream_postfix) -> void {
                 ) {
 
             place _pl_const = constants.find_in_table(_record).value();
-            os_assembly_code << "FILD" << ' ' << "const_" << _pl_const(ROW) << '_' << _pl_const(COLLUMN)                    << '\n';
+            os_assembly_code << "FILD" << ' ' << "const_" << _pl_const(ROW) << '_' << _pl_const(COLLUMN) << '\n';
         }
 
         /// Если это идентификатор
         if (std::isalpha(_record.front()) || _record.front() == '_') {
+            if (_id_var_asm.first == true) {
+                os_assembly_code << "FILD" << ' ' << _record << '\n'; }
+
             /// Только если это идентификатор, которому нужно присвоить значение
             if (_id_var_asm.first == false) { _id_var_asm = std::make_pair(true, _record); }
-            os_assembly_code << "FILD" << ' ' << _record                                                                    << '\n';
         }
 
-        if (_record.front() == '+') { os_assembly_code << "FADD"  << ' ' << '\n'; }
-        if (_record.front() == '*') { os_assembly_code << "FMUL"  << ' ' << '\n'; }
+        if (_record.front() == '+') { os_assembly_code << "FADD" << ' ' << '\n'; }
+        if (_record.front() == '*') { os_assembly_code << "FMUL" << ' ' << '\n'; }
 
         /// Только если это не унарный минус
         if ((_record.front() == '-' && _record.length() == 1) || _record == "-=") {
-            os_assembly_code << "FSUB"  << ' ' << '\n';
+            os_assembly_code << "FSUB" << ' ' << '\n';
         }
 
-        if (_record == "<<") {
-            os_assembly_code << "FISTP" << ' ' << "tmp_bit"                             << '\n';
-            os_assembly_code << "FISTP" << ' ' << "tmp_var"                             << '\n';
-
-            os_assembly_code << "MOV"   << ' ' << "ECX"     << ',' << ' ' << "tmp_bit"  << '\n';
-            os_assembly_code << "SHL"   << ' ' << "tmp_var" << ',' << ' ' << "CL"       << '\n';
-            os_assembly_code << "FILD"  << ' ' << "tmp_var"                             << '\n';
+        if ((_record.front() == '<' || _record.front() == '>') && _record.length() == 1) {
+            os_assembly_code << "FCOM"                 << '\n';
+            os_assembly_code << "FSTSW" << ' ' << "AX" << '\n';
+            os_assembly_code << "SAHF"                 << '\n';
+            os_assembly_code << _logic_opers(_record.front()) << ' ' << "JMP_ZERO_" + std::to_string(_logic_count) << '\n';
+            os_assembly_code << '\t' << "FLD1" << '\n';
+            os_assembly_code << "JMP" << ' ' << "JMP_END_" + std::to_string(_logic_count) << '\n';
+            os_assembly_code << "JMP_ZERO_" + std::to_string(_logic_count) << ':' << '\n';
+            os_assembly_code << '\t' << "FLDZ" << '\n';
+            os_assembly_code << "JMP_END_"  + std::to_string(_logic_count) << ':' << '\n';
+            _logic_count++;
         }
 
-        if (_record == ">>") {
-            os_assembly_code << "FISTP" << ' ' << "tmp_bit"                             << '\n';
-            os_assembly_code << "FISTP" << ' ' << "tmp_var"                             << '\n';
+        if (_record == "<<" || _record == ">>") {
+            os_assembly_code << "FISTP" << ' ' << "tmp_bit" << '\n';
+            os_assembly_code << "FISTP" << ' ' << "tmp_var" << '\n';
 
-            os_assembly_code << "MOV"   << ' ' << "ECX"     << ',' << ' ' << "tmp_bit"  << '\n';
-            os_assembly_code << "SHR"   << ' ' << "tmp_var" << ',' << ' ' << "CL"       << '\n';
-            os_assembly_code << "FILD"  << ' ' << "tmp_var"                             << '\n';
+            os_assembly_code << "MOV"                        << ' ' << "ECX"     << ',' << ' ' << "tmp_bit" << '\n';
+            os_assembly_code << _bitw_shift(_record.front()) << ' ' << "tmp_var" << ',' << ' ' << "CL"      << '\n';
+            os_assembly_code << "FILD"                       << ' ' << "tmp_var"                            << '\n';
+        }
+
+        if ((_record.front() == '&' || _record.front() == '|') && _record.length() == 1) {
+            os_assembly_code << "FISTP" << ' ' << "tmp_var"                        << '\n';
+            os_assembly_code << "MOV"   << ' ' << "ECX" << ',' << ' ' << "tmp_var" << '\n';
+
+            os_assembly_code << "FISTP"                      << ' ' << "tmp_var"                        << '\n';
+            os_assembly_code << _bitw_opers(_record.front()) << ' ' << "tmp_var" << ',' << ' ' << "ECX" << '\n';
+            os_assembly_code << "FILD"                       << ' ' << "tmp_var"                        << '\n';
         }
 
         if (_record == "-=" || _record == "+=") {
             os_assembly_code << "FISTP" << ' ' << _id_var_asm.second << '\n' << '\n';
+            _id_var_asm.first = false;
+        }
+
+        if (_record == "&=" || _record == "|=") {
+            os_assembly_code << "FISTP"                      << ' ' << "tmp_var"                                     << '\n';
+            os_assembly_code << "MOV"                        << ' ' << "ECX"              << ',' << ' ' << "tmp_var" << '\n';
+            os_assembly_code << _bitw_opers(_record.front()) << ' ' << _id_var_asm.second << ',' << ' ' << "ECX"     << '\n' << '\n';
+            _id_var_asm.first = false;
+        }
+
+        if (_record == "<<=" || _record == ">>=") {
+            os_assembly_code << "FISTP"                      << ' ' << "tmp_bit"                                     << '\n';
+            os_assembly_code << "MOV"                        << ' ' << "ECX"              << ',' << ' ' << "tmp_bit" << '\n';
+            os_assembly_code << _bitw_shift(_record.front()) << ' ' << _id_var_asm.second << ',' << ' ' << "CL"      << '\n' << '\n';
             _id_var_asm.first = false;
         }
 
@@ -151,9 +202,9 @@ auto assembler::processing_postfix (std::ifstream& _ifstream_postfix) -> void {
         }
     }
 
-    os_assembly_code << std::setw(80) << std::left << "PUSH 0"                      << ' ' << "; параметр: код выхода"      << '\n';
-    os_assembly_code << "CALL ExitProcess@4"                                                                                << '\n';
-    os_assembly_code << "MAIN ENDP"                                                                                         << '\n';
+    os_assembly_code << std::setw(80) << std::left << "PUSH 0" << ' ' << "; параметр: код выхода" << '\n';
+    os_assembly_code << "CALL ExitProcess@4"                                                      << '\n';
+    os_assembly_code << "MAIN ENDP"                                                               << '\n';
     os_assembly_code << "END MAIN";
 }
 

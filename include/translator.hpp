@@ -367,6 +367,14 @@ translator::lexical (std::istreambuf_iterator<char>& iit) {
             _current_str   += *iit;         /// Текущая строка
             if (++iit == _eos_buf())
                 return std::optional { LEXICAL::EOF_FILE };
+
+            if (*iit == '=') {
+                nocomment_code << *iit;
+                _operation     += *iit;
+                _current_str   += *iit;         /// Текущая строка
+                if (++iit == _eos_buf())
+                    return std::optional { LEXICAL::EOF_FILE };
+            }
         }
 
         int flag = operations.get_num(_operation);
