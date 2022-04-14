@@ -1,11 +1,11 @@
-.386
+.386                                                                             ; разрешает ассемблирование непривилегированных инструкций процессора 80386
 .MODEL FLAT, STDCALL
 
-EXTRN ExitProcess@4:PROC
+EXTRN ExitProcess@4:PROC                                                         ; выход
 
-.DATA
-tmp_var      dd ?
-tmp_bit      dd ?
+.DATA                                                                            ; сегмент данных
+tmp_var      dd ?                                                                ; переменная, для преобразования типов
+tmp_bit      dd ?                                                                ; переменная, для операций побитового сдвига
 a            dd ?
 f            dd ?
 i            dw ?
@@ -20,8 +20,8 @@ const_32_0       dd 2
 const_43_0       dd 4
 const_46_0       dd 6
 
-.CODE
-MAIN PROC
+.CODE                                                                            ; сегмент кода
+MAIN PROC                                                                        ; метка точки входа
 FINIT
 
 FILD const_43_0
@@ -69,7 +69,7 @@ SHL h, CL
 
 FILD h
 FILD f
-FCOM
+FCOMPP
 FSTSW AX
 SAHF
 JL JMP_ZERO_0
@@ -88,7 +88,7 @@ FISTP i
 
 FILD const_23_0
 FILD const_32_0
-FCOM
+FCOMPP
 FSTSW AX
 SAHF
 JL JMP_ZERO_1

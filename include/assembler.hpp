@@ -9,6 +9,9 @@
 #include <cctype>
 #include <stack>
 
+/**
+ * @brief Класс переводящий С++ в Ассемблерный код из обратной польской записи
+ */
 class assembler : public parse
 {
 private:
@@ -37,7 +40,16 @@ public:
     }
 
 private:
+    /**
+     * @brief Подпрограмма перевода обратной польской записи в Ассемблерный код
+     *                w
+     */
     auto processing_postfix (std::ifstream& ) -> void;
+
+    /**
+     * @brief Функция записи Ассемблерного кода в файл `assembler.asm`
+     *
+     */
     auto write_file () -> void;
 };
 
@@ -66,10 +78,17 @@ auto assembler::processing_postfix (std::ifstream& _ifstream_postfix) -> void {
     };
 
     auto _logic_opers =
-    [](char _bit) -> std::string {
-        return _bit == '<'
-            ? "JG"
-            : "JL" ;
+    [](const std::string& _bit) -> std::string {
+        using namespace _switch::literals;
+        switch (_switch::hash(_bit))
+        {
+            case "<"_hash:  return "JG";  break;
+            case ">"_hash:  return "JL";  break;
+            case "!="_hash: return "JE";  break;
+            case "=="_hash: return "JNE"; break;
+
+            default: return std::string { };
+        }
     };
 
     os_assembly_code << std::setw(80) << std::left << ".386"                        << ' ' << "; разрешает ассемблирование непривилегированных инструкций процессора 80386" << '\n';
@@ -118,8 +137,8 @@ auto assembler::processing_postfix (std::ifstream& _ifstream_postfix) -> void {
 
         /// Если это число (положительное : отрицательное)
         if (std::isdigit(_record.front()) || (
-                _record.front() == '-'  &&
-                _record.length() > 1    &&
+                _record.front() == '-' &&
+                _record.length() > 1   &&
                 std::isdigit(_record.back()) )
                 ) {
 
@@ -144,11 +163,11 @@ auto assembler::processing_postfix (std::ifstream& _ifstream_postfix) -> void {
             os_assembly_code << "FSUB" << ' ' << '\n';
         }
 
-        if ((_record.front() == '<' || _record.front() == '>') && _record.length() == 1) {
-            os_assembly_code << "FCOM"                 << '\n';
+        if (((_record.front() == '<' || _record.front() == '>') && _record.length() == 1) || _record == "==" || _record == "!=") {
+            os_assembly_code << "FCOMPP"               << '\n';
             os_assembly_code << "FSTSW" << ' ' << "AX" << '\n';
             os_assembly_code << "SAHF"                 << '\n';
-            os_assembly_code << _logic_opers(_record.front()) << ' ' << "JMP_ZERO_" + std::to_string(_logic_count) << '\n';
+            os_assembly_code << _logic_opers(_record) << ' ' << "JMP_ZERO_" + std::to_string(_logic_count) << '\n';
             os_assembly_code << '\t' << "FLD1" << '\n';
             os_assembly_code << "JMP" << ' ' << "JMP_END_" + std::to_string(_logic_count) << '\n';
             os_assembly_code << "JMP_ZERO_" + std::to_string(_logic_count) << ':' << '\n';

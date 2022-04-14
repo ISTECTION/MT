@@ -205,7 +205,7 @@ auto parse::base (const std::string& _filename_token) -> void {
 
             if (LL_parse() == false) {
                 std::cerr
-                    << "lexical analyzer has detected error"
+                    << "syntactic analyzer has detected error"
                     << '\n';
             }
 
@@ -280,7 +280,7 @@ auto parse::LL_parse () -> bool {
                     ///< Запоминаем токен идентификатора, для установки поля init
                     ///< Если после него последовует знак `=`
                     ///< Только если находимся в объявлении или иницализации, до операции =
-                    if (current_row == 69 || current_row == 46) { _token_id = _token; }
+                    if (current_row == 71 || current_row == 46) { _token_id = _token; }
                 }
 
                 if (_postfix == true) {
@@ -303,8 +303,8 @@ auto parse::LL_parse () -> bool {
                     }
                     /// Иначе добавляем токен в инфиксную запись
                     else {
-                        /// Если находимся на переменной в выражении (97 - выражения) (46 - иницализации, 69 - объявления)
-                        if (token_text == "var" && current_row == 97) {
+                        /// Если находимся на переменной в выражении (101 - выражения) (46 - иницализации, 71 - объявления)
+                        if (token_text == "var" && current_row == 101) {
                             place _pl = _token.get_place();
                             std::optional<lexeme> _lexeme = this->identifiers.get_lexeme(_pl);
 
@@ -356,8 +356,8 @@ auto parse::LL_parse () -> bool {
                     case "char"_hash: is_set_type = TYPE::CHAR; break;
                 }
 
-                /// Если это объявление переменной (69) и задан тип переменной
-                if (token_text == "var" && is_set_type != TYPE::UNDEFINED && current_row == 69) {
+                /// Если это объявление переменной (71) и задан тип переменной
+                if (token_text == "var" && is_set_type != TYPE::UNDEFINED && current_row == 71) {
                     std::optional<lexeme> _lexeme = this->identifiers.get_lexeme(_token.get_place());
 
                     /// Если у данного идентифкатора уже установлен тип
@@ -378,7 +378,7 @@ auto parse::LL_parse () -> bool {
                 }
 
                 /// Обработка необъявленного типа идентификатора
-                if (token_text == "var" && (current_row == 46 || current_row == 97)) {
+                if (token_text == "var" && (current_row == 46 || current_row == 101)) {
                     std::optional<lexeme> _lexeme = this->identifiers.get_lexeme(_token.get_place());
 
                     if (_lexeme.value().get_type() == TYPE::UNDEFINED) {
