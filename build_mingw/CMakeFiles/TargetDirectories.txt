@@ -1,3 +1,0 @@
-C:/MEGA/NSTU/6 SEMESTER/MT/LAB-4/Project/build_mingw/CMakeFiles/mt.dir
-C:/MEGA/NSTU/6 SEMESTER/MT/LAB-4/Project/build_mingw/CMakeFiles/edit_cache.dir
-C:/MEGA/NSTU/6 SEMESTER/MT/LAB-4/Project/build_mingw/CMakeFiles/rebuild_cache.dir
